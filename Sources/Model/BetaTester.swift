@@ -1,6 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
-
-import Foundation
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 public struct BetaTester: Codable, Equatable {
 
@@ -8,23 +6,25 @@ public struct BetaTester: Codable, Equatable {
     public var firstName: String?
     public var lastName: String?
     public var inviteType: String?
-    public var betaGroups: [BetaGroup]
-    public var apps: [App]
+    public var betaGroups: [BetaGroup]?
 
     public init(
         email: String?,
         firstName: String?,
         lastName: String?,
         inviteType: String?,
-        betaGroups: [BetaGroup]?,
-        apps: [App]?
+        betaGroups: [BetaGroup]?
     ) {
         self.email = email
         self.firstName = firstName
         self.lastName = lastName
         self.inviteType = inviteType
-        self.betaGroups = betaGroups ?? []
-        self.apps = apps ?? []
+        self.betaGroups = betaGroups
     }
+}
 
+extension BetaTester {
+    public var apps: [App]? {
+        betaGroups?.compactMap(\.app)
+    }
 }

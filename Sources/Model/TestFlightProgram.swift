@@ -1,22 +1,19 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
-
-import Foundation
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 /// Aggregated model data representing the a TestFlight Beta Program (Apps, Testers and Groups)
 public struct TestFlightProgram {
 
     public var apps: [App]
-    public var testers: [BetaTester]
-    public var groups: [BetaGroup]
+    public var betaTesters: [BetaTester]
+    public var betaGroups: [BetaGroup]
 
     public init(
         apps: [App],
-        testers: [BetaTester],
-        groups: [BetaGroup]
+        betaTesters: [BetaTester],
+        betaGroups: [BetaGroup]
     ) {
         self.apps = apps
-        self.testers = testers
-        self.groups = groups
+        self.betaTesters = betaTesters
+        self.betaGroups = betaGroups
     }
-
 }

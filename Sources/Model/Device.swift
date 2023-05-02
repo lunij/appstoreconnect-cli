@@ -1,8 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 public struct Device: Codable, Equatable {
+    public let id: String
     public let udid: String?
     public let addedDate: Date?
     public let name: String?
@@ -12,6 +13,7 @@ public struct Device: Codable, Equatable {
     public let status: String?
 
     public init(
+        id: String,
         udid: String?,
         addedDate: Date?,
         name: String?,
@@ -20,6 +22,7 @@ public struct Device: Codable, Equatable {
         platform: String?,
         status: String?
     ) {
+        self.id = id
         self.udid = udid
         self.addedDate = addedDate
         self.name = name

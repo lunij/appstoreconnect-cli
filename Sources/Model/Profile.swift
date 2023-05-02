@@ -1,9 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 public struct Profile: Codable, Equatable {
-    public let id: String?
+    public let id: String
     public let name: String?
     public let platform: String?
     public let profileContent: String?
@@ -12,9 +12,12 @@ public struct Profile: Codable, Equatable {
     public let profileState: String?
     public let profileType: String?
     public let expirationDate: Date?
+    public let bundleIds: [BundleId]?
+    public let certificates: [Certificate]?
+    public let devices: [Device]?
 
     public init(
-        id: String?,
+        id: String,
         name: String?,
         platform: String?,
         profileContent: String?,
@@ -22,7 +25,10 @@ public struct Profile: Codable, Equatable {
         createdDate: Date?,
         profileState: String?,
         profileType: String?,
-        expirationDate: Date?
+        expirationDate: Date?,
+        bundleIds: [BundleId]?,
+        certificates: [Certificate]?,
+        devices: [Device]?
     ) {
         self.id = id
         self.name = name
@@ -33,5 +39,8 @@ public struct Profile: Codable, Equatable {
         self.profileState = profileState
         self.profileType = profileType
         self.expirationDate = expirationDate
+        self.bundleIds = bundleIds
+        self.certificates = certificates
+        self.devices = devices
     }
 }

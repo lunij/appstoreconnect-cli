@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "appstoreconnect-swift-sdk",
+      "identity" : "bagbutik",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/AvdLee/appstoreconnect-swift-sdk.git",
+      "location" : "https://github.com/MortenGregersen/Bagbutik.git",
       "state" : {
-        "revision" : "6961347904eaad966f6eedc3b605f685dac429f8",
-        "version" : "1.7.0"
+        "revision" : "e053914690fada30d9169fbe6bb3f0906b0824a8",
+        "version" : "2.1.2"
       }
     },
     {
@@ -14,8 +14,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/dehesa/CodableCSV.git",
       "state" : {
-        "revision" : "2db5f560db5f8c3444f3a00fa145aa699efac3bf",
-        "version" : "0.5.5"
+        "revision" : "99ace2cfdfbc19108b529c021005fb57a460e715",
+        "version" : "0.6.7"
+      }
+    },
+    {
+      "identity" : "collectionconcurrencykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/JohnSundell/CollectionConcurrencyKit.git",
+      "state" : {
+        "revision" : "b4f23e24b5a1bff301efc5e70871083ca029ff95",
+        "version" : "0.2.0"
       }
     },
     {
@@ -23,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/johnsundell/files.git",
       "state" : {
-        "revision" : "22fe84797d499ffca911ccd896b34efaf06a50b9",
-        "version" : "4.1.1"
+        "revision" : "d273b5b7025d386feef79ef6bad7de762e106eaf",
+        "version" : "4.2.0"
       }
     },
     {
@@ -34,6 +43,24 @@
       "state" : {
         "revision" : "df9ee6676cd5b3bf5b330ec7568a5644f547201b",
         "version" : "1.1.3"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto",
+      "state" : {
+        "revision" : "d9825fa541df64b1a7b182178d61b9a82730d01f",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "swiftformat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/SwiftFormat",
+      "state" : {
+        "revision" : "3a5a4b9baa2ad2f6bb528351807eefbf3b9c0786",
+        "version" : "0.50.3"
       }
     },
     {
@@ -52,6 +79,15 @@
       "state" : {
         "revision" : "01835dc202670b5bb90d07f3eae41867e9ed29f6",
         "version" : "5.0.1"
+      }
+    },
+    {
+      "identity" : "zip",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marmelroy/Zip.git",
+      "state" : {
+        "revision" : "67fa55813b9e7b3b9acee9c0ae501def28746d76",
+        "version" : "2.1.2"
       }
     }
   ],

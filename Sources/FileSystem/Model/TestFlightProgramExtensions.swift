@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 import Model
 
 extension TestFlightProgram {
-
     init(configuration: TestFlightConfiguration) {
         var apps: [Model.App] = []
         var testers: [String: Model.BetaTester] = [:]
@@ -19,21 +18,23 @@ extension TestFlightProgram {
 
             for betaTester in appConfiguration.betaTesters {
                 var tester = testers[betaTester.email] ?? Model.BetaTester(betaTester: betaTester)
-                tester.apps.append(app)
-                tester.betaGroups += appConfiguration.betaGroups
+                tester.betaGroups = appConfiguration
+                    .betaGroups
                     .filter { $0.testers.contains(betaTester.email) }
                     .map(betaGroupModel)
                 testers[betaTester.email] = tester
             }
         }
 
-        self.init(apps: apps, testers: Array(testers.values), groups: groups)
+        self.init(
+            apps: apps,
+            betaTesters: Array(testers.values),
+            betaGroups: groups
+        )
     }
-
 }
 
 private extension Model.App {
-
     init(app: App) {
         self.init(
             id: app.id,
@@ -43,26 +44,21 @@ private extension Model.App {
             sku: app.sku
         )
     }
-
 }
 
 private extension Model.BetaTester {
-
     init(betaTester: BetaTester) {
         self.init(
             email: betaTester.email,
             firstName: betaTester.firstName,
             lastName: betaTester.lastName,
             inviteType: nil,
-            betaGroups: [],
-            apps: []
+            betaGroups: nil
         )
     }
-
 }
 
 private extension Model.BetaGroup {
-
     init(app: Model.App, betaGroup: BetaGroup) {
         self.init(
             id: betaGroup.id,
@@ -76,5 +72,4 @@ private extension Model.BetaGroup {
             creationDate: nil
         )
     }
-
 }

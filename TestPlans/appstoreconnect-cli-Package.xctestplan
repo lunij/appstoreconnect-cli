@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "A2E619F5-F278-421D-B646-426331B02998",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "AppStoreConnectKitTests",
+        "name" : "AppStoreConnectKitTests"
+      }
+    }
+  ],
+  "version" : 1
+}

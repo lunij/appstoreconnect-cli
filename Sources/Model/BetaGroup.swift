@@ -1,11 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
-
-import Foundation
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 public struct BetaGroup: Codable, Equatable {
 
-    public let id: String?
-    public let app: App?
+    public let id: String
+    public var app: App?
     public let groupName: String?
     public let isInternal: Bool?
     public let publicLink: String?
@@ -15,7 +13,7 @@ public struct BetaGroup: Codable, Equatable {
     public let creationDate: String?
 
     public init(
-        id: String?,
+        id: String,
         app: App?,
         groupName: String?,
         isInternal: Bool?,
@@ -35,5 +33,4 @@ public struct BetaGroup: Codable, Equatable {
         self.publicLinkLimitEnabled = publicLinkLimitEnabled
         self.creationDate = creationDate
     }
-
 }

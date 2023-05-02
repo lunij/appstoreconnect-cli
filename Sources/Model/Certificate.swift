@@ -1,8 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 public struct Certificate: Codable, Equatable {
+    public let id: String
     public let name: String?
     public let type: String?
     public let content: String?
@@ -11,6 +12,7 @@ public struct Certificate: Codable, Equatable {
     public let serialNumber: String?
 
     public init(
+        id: String,
         name: String?,
         type: String?,
         content: String?,
@@ -18,6 +20,7 @@ public struct Certificate: Codable, Equatable {
         expirationDate: Date?,
         serialNumber: String?
     ) {
+        self.id = id
         self.name = name
         self.type = type
         self.content = content

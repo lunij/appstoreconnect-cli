@@ -7,7 +7,7 @@ struct BetaGroup: Codable, Equatable {
 
     typealias EmailAddress = String
 
-    var id: String?
+    var id: String
     var groupName: String
     var testers: [EmailAddress]
 

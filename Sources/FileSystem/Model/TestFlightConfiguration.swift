@@ -1,33 +1,29 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import Model
 
 struct TestFlightConfiguration {
+    var appConfigurations: [AppConfiguration]
 
-    var appConfigurations: [AppConfiguration] = []
-
-    init() {}
-
-    init(appConfigurations: [AppConfiguration]) {
+    init(appConfigurations: [AppConfiguration] = []) {
         self.appConfigurations = appConfigurations
     }
 
     init(program: TestFlightProgram) throws {
-        let groupsByApp = Dictionary(grouping: program.groups, by: \.app?.id)
-        let testers = program.testers
+        let groupsByApp = Dictionary(grouping: program.betaGroups, by: \.app?.id)
+        let testers = program.betaTesters
 
         appConfigurations = try program.apps.map { app in
             var config = try AppConfiguration(app: App(model: app))
 
             config.betaTesters = try testers
-                .filter { tester in tester.apps.map(\.id).contains(app.id) }
+                .filter { $0.apps?.contains { $0.id == app.id } ?? false }
                 .map(FileSystem.BetaTester.init)
 
             config.betaGroups = (groupsByApp[app.id] ?? []).map { betaGroup in
                 FileSystem.BetaGroup(
                     betaGroup: betaGroup,
-                    betaTesters: testers.filter { $0.betaGroups.map(\.id).contains(betaGroup.id) }
+                    betaTesters: testers.filter { $0.betaGroups?.contains { $0.id == betaGroup.id } ?? false }
                 )
             }
 
@@ -36,11 +32,8 @@ struct TestFlightConfiguration {
     }
 
     struct AppConfiguration {
-
         var app: App
         var betaTesters: [BetaTester] = []
         var betaGroups: [BetaGroup] = []
-
     }
-
 }
