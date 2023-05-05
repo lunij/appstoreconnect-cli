@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Combine
@@ -7,7 +7,8 @@ import Foundation
 struct AddGroupsToBuildCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "addbetagroup",
-        abstract: "Add access for beta groups to a build")
+        abstract: "Add access for beta groups to a build"
+    )
 
     @OptionGroup()
     var common: CommonOptions

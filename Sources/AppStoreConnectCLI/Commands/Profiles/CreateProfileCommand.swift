@@ -1,14 +1,14 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import Foundation
 
 struct CreateProfileCommand: CommonParsableCommand {
-
     static var configuration = CommandConfiguration(
         commandName: "create",
-        abstract: "Create a new provisioning profile.")
+        abstract: "Create a new provisioning profile."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -53,5 +53,4 @@ struct CreateProfileCommand: CommonParsableCommand {
 
         [profile].render(options: common.outputOptions)
     }
-
 }

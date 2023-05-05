@@ -1,11 +1,12 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 
 struct InviteBetaTesterCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "invite",
-        abstract: "Invite a beta tester and assign them to one or more groups")
+        abstract: "Invite a beta tester and assign them to one or more groups"
+    )
 
     @OptionGroup()
     var common: CommonOptions

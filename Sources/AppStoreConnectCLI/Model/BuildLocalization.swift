@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Model
@@ -14,11 +14,10 @@ extension Model.BuildLocalization {
 }
 
 extension Model.BuildLocalization: ResultRenderable, TableInfoProvider {
-
     static func tableColumns() -> [TextTableColumn] {
         [
             TextTableColumn(header: "Locale"),
-            TextTableColumn(header: "What's New (truncated)"),
+            TextTableColumn(header: "What's New (truncated)")
         ]
     }
 
@@ -28,8 +27,7 @@ extension Model.BuildLocalization: ResultRenderable, TableInfoProvider {
             (whatsNew ?? "")
                 .debugDescription
                 .replacingOccurrences(of: "\\n", with: " ")
-                .truncate(to: 100),
+                .truncate(to: 100)
         ]
     }
-
 }

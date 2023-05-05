@@ -1,10 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
-@testable import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import XCTest
+@testable import AppStoreConnect_Swift_SDK
+@testable import AppStoreConnectCLI
 
 final class GetBetaGroupOperationTests: XCTestCase {
     typealias Operation = GetBetaGroupOperation
@@ -40,9 +40,9 @@ final class GetBetaGroupOperationTests: XCTestCase {
 
     var betaGroupsResponseFuture: Future<BetaGroupsResponse, Error> {
         let response = BetaGroupsResponse(
-            data: [self.betaGroup],
+            data: [betaGroup],
             included: nil,
-            links: PagedDocumentLinks(first: nil, next: nil, self: self.testUrl),
+            links: PagedDocumentLinks(first: nil, next: nil, self: testUrl),
             meta: nil
         )
 

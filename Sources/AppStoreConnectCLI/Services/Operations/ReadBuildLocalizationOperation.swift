@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ReadBuildLocalizationOperation: APIOperation {
-
     struct Options {
         let id: String
         let locale: String
@@ -48,7 +47,7 @@ struct ReadBuildLocalizationOperation: APIOperation {
         }
         .tryMap { response -> BetaBuildLocalization in
             switch response.first {
-            case .some(let localizationInfo) where response.count == 1:
+            case let .some(localizationInfo) where response.count == 1:
                 return localizationInfo
             case .some:
                 throw Error.notUnique
@@ -58,5 +57,4 @@ struct ReadBuildLocalizationOperation: APIOperation {
         }
         .eraseToAnyPublisher()
     }
-
 }

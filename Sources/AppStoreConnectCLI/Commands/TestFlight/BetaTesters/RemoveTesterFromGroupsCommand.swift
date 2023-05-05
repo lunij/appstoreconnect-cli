@@ -1,11 +1,12 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 
 struct RemoveTesterFromGroupsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "removegroup",
-        abstract: "Remove a beta tester from beta groups")
+        abstract: "Remove a beta tester from beta groups"
+    )
 
     @OptionGroup()
     var common: CommonOptions

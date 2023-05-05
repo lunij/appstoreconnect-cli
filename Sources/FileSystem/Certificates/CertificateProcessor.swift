@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import Files
+import Foundation
 import Model
 
 public struct CertificateProcessor: ResourceWriter {
-
     let path: ResourcePath
 
     public init(path: ResourcePath) {
@@ -21,7 +20,6 @@ public struct CertificateProcessor: ResourceWriter {
     public func write(_ certificates: [Certificate]) throws -> [File] {
         try certificates.map { try write($0) }
     }
-
 }
 
 extension Certificate: FileProvider {
@@ -40,8 +38,8 @@ extension Certificate: FileProvider {
         guard
             let content = content,
             let data = Data(base64Encoded: content)
-            else {
-                throw Error.noContent
+        else {
+            throw Error.noContent
         }
 
         return data

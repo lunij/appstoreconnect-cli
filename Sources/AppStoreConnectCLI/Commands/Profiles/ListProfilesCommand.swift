@@ -1,14 +1,15 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
 import FileSystem
+import Foundation
 
 struct ListProfilesCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "list",
-        abstract: "Find and list provisioning profiles and download their data.")
+        abstract: "Find and list provisioning profiles and download their data."
+    )
 
     @OptionGroup()
     var common: CommonOptions

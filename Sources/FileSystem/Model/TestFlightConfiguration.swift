@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 import Model
 
 struct TestFlightConfiguration {
-
     var appConfigurations: [AppConfiguration] = []
 
     init() {}
@@ -36,11 +35,8 @@ struct TestFlightConfiguration {
     }
 
     struct AppConfiguration {
-
         var app: App
         var betaTesters: [BetaTester] = []
         var betaGroups: [BetaGroup] = []
-
     }
-
 }

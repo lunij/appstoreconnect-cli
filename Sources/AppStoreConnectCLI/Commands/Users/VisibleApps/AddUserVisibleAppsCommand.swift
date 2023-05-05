@@ -1,14 +1,14 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import Foundation
 
 struct AddUserVisibleAppsCommand: CommonParsableCommand {
-
     static var configuration = CommandConfiguration(
         commandName: "add-apps",
-        abstract: "Give a user on your team access to one or more apps.")
+        abstract: "Give a user on your team access to one or more apps."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -20,7 +20,7 @@ struct AddUserVisibleAppsCommand: CommonParsableCommand {
     var bundleIds: [String]
 
     public func run() throws {
-        // TODO
-        print(self.bundleIds)
+        // TODO:
+        print(bundleIds)
     }
 }

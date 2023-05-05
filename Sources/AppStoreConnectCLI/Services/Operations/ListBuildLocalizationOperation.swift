@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ListBuildLocalizationOperation: APIOperation {
-
     struct Options {
         let id: String
         let limit: Int?
@@ -33,12 +32,12 @@ struct ListBuildLocalizationOperation: APIOperation {
             .betaBuildLocalizations(
                 ofBuildWithId: options.id,
                 fields: [],
-                limit: options.limit)
+                limit: options.limit
             )
-            .map(\.data)
-            .eraseToAnyPublisher()
+        )
+        .map(\.data)
+        .eraseToAnyPublisher()
     }
-
 }
 
-extension BetaBuildLocalizationsResponse: PaginatedResponse { }
+extension BetaBuildLocalizationsResponse: PaginatedResponse {}

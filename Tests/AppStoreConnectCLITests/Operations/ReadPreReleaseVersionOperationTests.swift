@@ -1,9 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
 import Combine
 import XCTest
+@testable import AppStoreConnectCLI
 
 final class ReadPreReleaseVersionOperationTests: XCTestCase {
     typealias Operation = ReadPreReleaseVersionOperation
@@ -11,15 +11,18 @@ final class ReadPreReleaseVersionOperationTests: XCTestCase {
     typealias OperationError = ReadPreReleaseVersionOperation.Error
 
     let successResponseRequestor = OneEndpointTestRequestor(response: { _ in
-        Future({ $0(.success(onePreRealeseVersionResponse)) }) }
+        Future { $0(.success(onePreRealeseVersionResponse)) }
+    }
     )
 
     let noResponseRequestor = OneEndpointTestRequestor(response: { _ in
-        Future { $0(.success(noPreReleaseVersionResponse)) }}
+        Future { $0(.success(noPreReleaseVersionResponse)) }
+    }
     )
 
     let notUniqueRequestor = OneEndpointTestRequestor(response: { _ in
-        Future { $0(.success(notUniqueResponse)) }}
+        Future { $0(.success(notUniqueResponse)) }
+    }
     )
 
     func testOnePreReleaseVersion() throws {
@@ -45,10 +48,10 @@ final class ReadPreReleaseVersionOperationTests: XCTestCase {
     }
 
     static let onePreRealeseVersionResponse: PreReleaseVersionsResponse =
-    jsonDecoder.decodeFixture(named: "v1/prerelease_version/one_prerelease_version")
+        jsonDecoder.decodeFixture(named: "v1/prerelease_version/one_prerelease_version")
 
     static let notUniqueResponse: PreReleaseVersionsResponse = jsonDecoder.decodeFixture(named: "v1/prerelease_version/not_unique")
 
     static let noPreReleaseVersionResponse: PreReleaseVersionsResponse =
-    jsonDecoder.decodeFixture(named: "v1/prerelease_version/no_prerelease_version")
+        jsonDecoder.decodeFixture(named: "v1/prerelease_version/no_prerelease_version")
 }

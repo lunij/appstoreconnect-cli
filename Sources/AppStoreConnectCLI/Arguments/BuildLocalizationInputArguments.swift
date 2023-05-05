@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import FileSystem
@@ -27,9 +27,8 @@ protocol CreateUpdateBuildLocalizationCommand {
 }
 
 extension CreateUpdateBuildLocalizationCommand {
-
     func validateWhatsNewInput() throws {
-        if localization.whatsNew != nil && localization.path != nil {
+        if localization.whatsNew != nil, localization.path != nil {
             throw ValidationError("Please provide either a file path or whats new text in terminal.")
         }
     }
@@ -53,5 +52,4 @@ extension CreateUpdateBuildLocalizationCommand {
 
         return whatsNew
     }
-
 }

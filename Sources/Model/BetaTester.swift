@@ -1,9 +1,8 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 public struct BetaTester: Codable, Equatable {
-
     public var email: String?
     public var firstName: String?
     public var lastName: String?
@@ -26,5 +25,4 @@ public struct BetaTester: Codable, Equatable {
         self.betaGroups = betaGroups ?? []
         self.apps = apps ?? []
     }
-
 }

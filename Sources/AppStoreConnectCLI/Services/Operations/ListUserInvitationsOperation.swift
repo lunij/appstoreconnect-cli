@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ListUserInvitationsOperation: APIOperation {
-
     struct Options {
         let filterEmail: [String]
         let filterRole: [UserRole]
@@ -23,20 +22,20 @@ struct ListUserInvitationsOperation: APIOperation {
         var filters = [ListInvitedUsers.Filter]()
 
         if options.filterEmail.isNotEmpty { filters.append(.email(options.filterEmail)) }
-        if options.filterRole.isNotEmpty { filters.append(.roles(options.filterRole.map { $0.rawValue })) }
+        if options.filterRole.isNotEmpty { filters.append(.roles(options.filterRole.map(\.rawValue))) }
 
         let limit = options.limitVisibleApps.map { [ListInvitedUsers.Limit.visibleApps($0)] }
 
         return requestor.requestAllPages {
-                .invitedUsers(
-                    limit: limit,
-                    filter: filters,
-                    next: $0
-                )
-            }
-            .map { $0.flatMap { $0.data } }
-            .eraseToAnyPublisher()
+            .invitedUsers(
+                limit: limit,
+                filter: filters,
+                next: $0
+            )
+        }
+        .map { $0.flatMap(\.data) }
+        .eraseToAnyPublisher()
     }
 }
 
-extension UserInvitationsResponse: PaginatedResponse { }
+extension UserInvitationsResponse: PaginatedResponse {}

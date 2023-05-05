@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,8 @@ import Foundation
 struct GetUserInfoCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "info",
-        abstract: "Get information about a user on your team, such as name, roles, and app visibility.")
+        abstract: "Get information about a user on your team, such as name, roles, and app visibility."
+    )
 
     @OptionGroup()
     var common: CommonOptions

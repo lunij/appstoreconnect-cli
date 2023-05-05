@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Foundation
@@ -13,10 +13,10 @@ extension Model.PreReleaseVersion {
         let relationships = preReleaseVersion.relationships
 
         let includedApps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
-          if case let .app(app) = relationship {
-            return app
-          }
-          return nil
+            if case let .app(app) = relationship {
+                return app
+            }
+            return nil
         }
 
         let appDetails = includedApps?.first(where: { relationships?.app?.data?.id == $0.id })
@@ -32,22 +32,22 @@ extension Model.PreReleaseVersion {
 
 extension Model.PreReleaseVersion: ResultRenderable, TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-        return [
+        [
             TextTableColumn(header: "App ID"),
             TextTableColumn(header: "App Bundle ID"),
             TextTableColumn(header: "App Name"),
             TextTableColumn(header: "Platform"),
-            TextTableColumn(header: "Version"),
+            TextTableColumn(header: "Version")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
-        return [
+        [
             app?.id,
             app?.bundleId,
             app?.name,
             platform,
-            version,
+            version
         ].map { $0 ?? "" }
     }
 }

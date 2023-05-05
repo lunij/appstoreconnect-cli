@@ -1,12 +1,11 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import AppStoreConnect_Swift_SDK
+import Foundation
 import Yams
 
 extension APIConfiguration {
     init(_ authOptions: AuthOptions) throws {
-
         guard authOptions.apiIssuer.value.isEmpty == false else {
             throw AuthOptions.Error.issuerNotProvided
         }

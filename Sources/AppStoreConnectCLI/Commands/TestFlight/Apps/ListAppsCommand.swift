@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -6,7 +6,6 @@ import Foundation
 import struct Model.App
 
 struct ListAppsCommand: CommonParsableCommand {
-
     static var configuration = CommandConfiguration(
         commandName: "list",
         abstract: "Find and list apps added in App Store Connect"

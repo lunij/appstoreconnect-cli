@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
@@ -16,7 +16,6 @@ enum TestError: Error, Equatable {
 }
 
 extension JSONDecoder {
-
     // swiftlint:disable force_try
     func decodeFixture<T: Decodable>(named: String) -> T {
         let fixture = try! Fixture(named: named)

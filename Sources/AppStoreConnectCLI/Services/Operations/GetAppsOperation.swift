@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct GetAppsOperation: APIOperation {
-
     struct Options {
         let bundleIds: [String]
     }
@@ -16,9 +15,9 @@ struct GetAppsOperation: APIOperation {
 
         var errorDescription: String? {
             switch self {
-            case .couldntFindAnyAppsMatching(let bundleIds):
+            case let .couldntFindAnyAppsMatching(bundleIds):
                 return "No apps were found matching \(bundleIds)."
-            case .appsDoNotExist(let bundleIds):
+            case let .appsDoNotExist(bundleIds):
                 return "Specified apps were non found / do not exist: \(bundleIds)."
             }
         }
@@ -54,5 +53,4 @@ struct GetAppsOperation: APIOperation {
             }
             .eraseToAnyPublisher()
     }
-
 }

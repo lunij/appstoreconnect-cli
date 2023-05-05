@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ListBetaTestersOperation: APIOperation {
-
     struct Options {
         var email: String?
         var firstName: String?
@@ -93,34 +92,33 @@ struct ListBetaTestersOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Output, Swift.Error> {
-        let filters = self.filters
-        let limits = self.limits.nilIfEmpty()
-        let sorts = self.sorts
+        let filters = filters
+        let limits = limits.nilIfEmpty()
+        let sorts = sorts
         let includes: [ListBetaTesters.Include] = [.apps, .betaGroups]
 
         return requestor.requestAllPages {
-                .betaTesters(
-                    filter: filters,
-                    include: includes,
-                    limit: limits,
-                    sort: sorts,
-                    next: $0
-                )
-            }
-            .tryMap { (responses: [BetaTestersResponse]) throws -> Output in
-                try responses.flatMap { (response: BetaTestersResponse) -> Output in
-                    guard !response.data.isEmpty else {
-                        throw Error.notFound
-                    }
+            .betaTesters(
+                filter: filters,
+                include: includes,
+                limit: limits,
+                sort: sorts,
+                next: $0
+            )
+        }
+        .tryMap { (responses: [BetaTestersResponse]) throws -> Output in
+            try responses.flatMap { (response: BetaTestersResponse) -> Output in
+                guard !response.data.isEmpty else {
+                    throw Error.notFound
+                }
 
-                    return response.data.map {
-                        .init(betaTester: $0, includes: response.included)
-                    }
+                return response.data.map {
+                    .init(betaTester: $0, includes: response.included)
                 }
             }
-            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
-
 }
 
-extension BetaTestersResponse: PaginatedResponse { }
+extension BetaTestersResponse: PaginatedResponse {}

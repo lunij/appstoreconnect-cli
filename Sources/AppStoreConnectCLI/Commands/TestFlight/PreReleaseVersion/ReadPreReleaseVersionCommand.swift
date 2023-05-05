@@ -1,11 +1,12 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 
 struct ReadPreReleaseVersionCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "read",
-        abstract: "Get information about a specific prerelease version.")
+        abstract: "Get information about a specific prerelease version."
+    )
 
     @OptionGroup()
     var common: CommonOptions

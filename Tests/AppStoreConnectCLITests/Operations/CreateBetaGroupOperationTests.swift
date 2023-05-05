@@ -1,10 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
-@testable import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import XCTest
+@testable import AppStoreConnect_Swift_SDK
+@testable import AppStoreConnectCLI
 
 final class CreateBetaGroupOperationTests: XCTestCase {
     typealias Operation = CreateBetaGroupOperation
@@ -72,7 +72,7 @@ final class CreateBetaGroupOperationTests: XCTestCase {
         _ = try? Operation(options: options).execute(with: dependencies).await()
 
         let bodyJSON = (betaGroupEndpoint?.body)
-            .flatMap({ try? JSONSerialization.jsonObject(with: $0, options: []) }) as? [String: Any]
+            .flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) } as? [String: Any]
 
         guard
             let data = bodyJSON?["data"] as? [String: Any],

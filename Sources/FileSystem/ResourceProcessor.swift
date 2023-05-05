@@ -1,7 +1,7 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import Files
+import Foundation
 
 /// Resource processor root path
 public enum ResourcePath {
@@ -13,7 +13,7 @@ public enum ResourcePath {
     case file(path: String)
 }
 
-protocol ResourceProcessor: ResourceReader, ResourceWriter { }
+protocol ResourceProcessor: ResourceReader, ResourceWriter {}
 
 protocol ResourceReader: PathProvider {
     associatedtype T: Codable, FileProvider
@@ -21,26 +21,25 @@ protocol ResourceReader: PathProvider {
     func read() throws -> [T]
 }
 
-protocol ResourceWriter: PathProvider { }
+protocol ResourceWriter: PathProvider {}
 
 protocol PathProvider {
     var path: ResourcePath { get }
 }
 
 extension ResourceWriter {
-
     func writeFile(_ resource: FileProvider) throws -> File {
         var file: File
 
         switch path {
-        case .file(let path):
+        case let .file(path):
             let standardizedPath = path as NSString
             file = try Folder(path: standardizedPath.deletingLastPathComponent)
                 .createFile(
                     named: standardizedPath.lastPathComponent,
                     contents: resource.fileContent()
                 )
-        case .folder(let folderPath):
+        case let .folder(folderPath):
             file = try Folder(path: folderPath)
                 .createFile(
                     named: resource.fileName,
@@ -52,7 +51,7 @@ extension ResourceWriter {
     }
 }
 
-protocol FileProvider: FileNameProvider, FileContentProvider { }
+protocol FileProvider: FileNameProvider, FileContentProvider {}
 
 protocol FileNameProvider {
     var fileName: String { get }

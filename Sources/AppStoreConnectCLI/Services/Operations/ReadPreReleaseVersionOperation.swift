@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ReadPreReleaseVersionOperation: APIOperation {
-
     struct Options {
         let filterAppId: String
         let filterVersion: String
@@ -46,7 +45,7 @@ struct ReadPreReleaseVersionOperation: APIOperation {
         )
 
         return requestor.request(endpoint)
-            .tryMap { (response) throws -> Output in
+            .tryMap { response throws -> Output in
                 switch response.data.count {
                 case 0:
                     throw Error.noVersionExists
@@ -56,6 +55,6 @@ struct ReadPreReleaseVersionOperation: APIOperation {
                     throw Error.versionNotUnique
                 }
             }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 }

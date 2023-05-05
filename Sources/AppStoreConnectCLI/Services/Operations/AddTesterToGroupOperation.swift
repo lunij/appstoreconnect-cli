@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct AddTesterToGroupOperation: APIOperation {
-
     struct Options {
         enum AddStrategy {
             case addTestersToGroup(testerIds: [String], groupId: String)
@@ -19,9 +18,9 @@ struct AddTesterToGroupOperation: APIOperation {
 
     var endpoint: APIEndpoint<Void> {
         switch options.addStrategy {
-        case .addTestersToGroup(let testerIds, let groupId):
+        case let .addTestersToGroup(testerIds, groupId):
             return .add(betaTestersWithIds: testerIds, toBetaGroupWithId: groupId)
-        case .addTesterToGroups(let testerId, let groupIds):
+        case let .addTesterToGroups(testerId, groupIds):
             return .add(betaTesterWithId: testerId, toBetaGroupsWithIds: groupIds)
         }
     }

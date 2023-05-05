@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ListProfilesOperation: APIOperation {
-
     struct Options {
         let ids: [String]
         let filterName: [String]
@@ -21,7 +20,6 @@ struct ListProfilesOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[Profile], Error> {
-
         var filters = [Profiles.Filter]()
 
         if options.filterName.isNotEmpty { filters.append(.name(options.filterName)) }
@@ -48,4 +46,4 @@ struct ListProfilesOperation: APIOperation {
     }
 }
 
-extension ProfilesResponse: PaginatedResponse { }
+extension ProfilesResponse: PaginatedResponse {}

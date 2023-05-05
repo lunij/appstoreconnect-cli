@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -11,7 +11,6 @@ protocol EnvironmentLoadableArgument: ExpressibleByArgument, CustomStringConvert
 }
 
 extension EnvironmentLoadableArgument {
-
     static func environment(_ variableName: String) -> Self {
         Self(argument: "\(envPrefix)\(variableName)")!
     }
@@ -19,11 +18,11 @@ extension EnvironmentLoadableArgument {
     var description: String { argument }
 
     var value: String {
-       guard argument.hasPrefix(envPrefix) else {
-           return argument
-       }
+        guard argument.hasPrefix(envPrefix) else {
+            return argument
+        }
 
-       let envKey = String(argument.dropFirst(envPrefix.count))
-       return ProcessInfo.processInfo.environment[envKey] ?? ""
-   }
+        let envKey = String(argument.dropFirst(envPrefix.count))
+        return ProcessInfo.processInfo.environment[envKey] ?? ""
+    }
 }

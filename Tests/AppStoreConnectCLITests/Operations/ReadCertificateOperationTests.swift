@@ -1,34 +1,33 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
-import XCTest
 import Model
+import XCTest
+@testable import AppStoreConnectCLI
 
 final class ReadCertificateOperationTests: XCTestCase {
-
     let successRequestor = OneEndpointTestRequestor(response: { _ in
-            Future { $0(.success(Certificate.readCertificateResponse)) }
-        }
+        Future { $0(.success(Certificate.readCertificateResponse)) }
+    }
     )
 
     let failedRequestor = OneEndpointTestRequestor(response: { _ in
-            Future<CertificatesResponse, Error> { promise in
-                promise(.failure(TestError.somethingBadHappened))
-            }
+        Future<CertificatesResponse, Error> { promise in
+            promise(.failure(TestError.somethingBadHappened))
         }
+    }
     )
 
     let noResponseRequestor = OneEndpointTestRequestor(response: { _ in
-            Future { $0(.success(Certificate.noCertificateResponse)) }
-        }
+        Future { $0(.success(Certificate.noCertificateResponse)) }
+    }
     )
 
     let notUniqueRequestor = OneEndpointTestRequestor(response: { _ in
-            Future { $0(.success(Certificate.notUniqueResponse)) }
-        }
+        Future { $0(.success(Certificate.notUniqueResponse)) }
+    }
     )
 
     typealias OperationError = ReadCertificateOperation.Error
@@ -43,7 +42,7 @@ final class ReadCertificateOperationTests: XCTestCase {
         }
 
         switch result {
-        case .success(let sdkCertificate):
+        case let .success(sdkCertificate):
             let certificate = Model.Certificate(sdkCertificate)
             XCTAssertEqual(certificate.name, "Mac Installer Distribution: Hello")
             XCTAssertEqual(certificate.platform, BundleIdPlatform.macOS.rawValue)
@@ -63,7 +62,7 @@ final class ReadCertificateOperationTests: XCTestCase {
         let expectedError = TestError.somethingBadHappened
 
         switch result {
-        case .failure(let error as TestError):
+        case let .failure(error as TestError):
             XCTAssertEqual(expectedError, error)
         default:
             XCTFail("Expected failure with: \(expectedError), got: \(result)")
@@ -80,7 +79,7 @@ final class ReadCertificateOperationTests: XCTestCase {
         let expectedError = OperationError.couldNotFindCertificate("abcde")
 
         switch result {
-        case .failure(let error as OperationError):
+        case let .failure(error as OperationError):
             XCTAssertEqual(error.errorDescription, expectedError.errorDescription)
         default:
             XCTFail("Expected failed with \(expectedError), got: \(result)")
@@ -97,11 +96,10 @@ final class ReadCertificateOperationTests: XCTestCase {
         let expectedError = OperationError.serialNumberNotUnique("abcde")
 
         switch result {
-        case .failure(let error as OperationError):
+        case let .failure(error as OperationError):
             XCTAssertEqual(error.errorDescription, expectedError.errorDescription)
         default:
             XCTFail("Expected failed with \(expectedError), got: \(result)")
         }
     }
-
 }

@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ListPreReleaseVersionsOperation: APIOperation {
-
     struct Options {
         var filterAppIds: [String] = []
         var filterVersions: [String] = []
@@ -13,7 +12,7 @@ struct ListPreReleaseVersionsOperation: APIOperation {
         var sort: ListPrereleaseVersions.Sort?
     }
 
-    typealias PreReleaseVersion =  AppStoreConnect_Swift_SDK.PrereleaseVersion
+    typealias PreReleaseVersion = AppStoreConnect_Swift_SDK.PrereleaseVersion
     typealias Relationships = [AppStoreConnect_Swift_SDK.PreReleaseVersionRelationship]?
     typealias Output = [(preReleaseVersion: PreReleaseVersion, relationships: Relationships)]
 
@@ -49,4 +48,4 @@ struct ListPreReleaseVersionsOperation: APIOperation {
     }
 }
 
-extension PreReleaseVersionsResponse: PaginatedResponse { }
+extension PreReleaseVersionsResponse: PaginatedResponse {}

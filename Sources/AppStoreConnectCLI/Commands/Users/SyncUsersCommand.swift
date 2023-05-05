@@ -1,11 +1,11 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import Combine
+import FileSystem
 import Foundation
 import struct Model.User
-import FileSystem
 
 struct SyncUsersCommand: CommonParsableCommand {
     typealias UserChange = CollectionDifference<User>.Change
@@ -21,7 +21,7 @@ struct SyncUsersCommand: CommonParsableCommand {
     @Argument(help: "Path to the file containing the information about users. Specify format with --input-format")
     var config: String
 
-    @Option(help: "Read config file in provided format (\(InputFormat.allCases.map { $0.rawValue }.joined(separator: ", "))).")
+    @Option(help: "Read config file in provided format (\(InputFormat.allCases.map(\.rawValue).joined(separator: ", "))).")
     var inputFormat: InputFormat = .json
 
     @Flag(help: "Perform a dry run.")
@@ -61,13 +61,13 @@ struct SyncUsersCommand: CommonParsableCommand {
         let requests = changes
             .compactMap { change -> AnyPublisher<UserChange, Error>? in
                 switch change {
-                case .insert(_, let user, _):
+                case let .insert(_, user, _):
                     return client
                         .request(APIEndpoint.invite(user: user))
                         .map { _ in change }
                         .eraseToAnyPublisher()
 
-                case .remove(_, let user, _):
+                case let .remove(_, user, _):
                     let removeUser = { client.request(APIEndpoint.remove(userWithId: $0)) }
 
                     return client
@@ -95,9 +95,9 @@ private extension Renderers {
 
         func render(_ input: SyncUsersCommand.UserChange) {
             switch input {
-            case .insert(_, let user, _):
+            case let .insert(_, user, _):
                 print("+\(user.username)")
-            case .remove(_, let user, _):
+            case let .remove(_, user, _):
                 print("-\(user.username)")
             }
         }

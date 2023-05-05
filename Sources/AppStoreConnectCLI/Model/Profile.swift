@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Foundation
@@ -29,7 +29,7 @@ extension Model.Profile {
 
 extension Model.Profile: TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-        return [
+        [
             TextTableColumn(header: "ID"),
             TextTableColumn(header: "UUID"),
             TextTableColumn(header: "Name"),
@@ -37,12 +37,12 @@ extension Model.Profile: TableInfoProvider {
             TextTableColumn(header: "State"),
             TextTableColumn(header: "Type"),
             TextTableColumn(header: "Created Date"),
-            TextTableColumn(header: "Expiration Date"),
+            TextTableColumn(header: "Expiration Date")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
-        return [
+        [
             id ?? "",
             uuid ?? "",
             name ?? "",
@@ -50,7 +50,7 @@ extension Model.Profile: TableInfoProvider {
             profileState ?? "",
             profileType ?? "",
             createdDate?.formattedDate ?? "",
-            expirationDate?.formattedDate ?? "",
+            expirationDate?.formattedDate ?? ""
         ]
     }
 }

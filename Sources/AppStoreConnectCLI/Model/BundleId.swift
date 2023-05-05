@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -31,20 +31,20 @@ extension Model.BundleId {
 
 extension Model.BundleId: ResultRenderable, TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-        return [
+        [
             TextTableColumn(header: "Identifier"),
             TextTableColumn(header: "Name"),
             TextTableColumn(header: "Platform"),
-            TextTableColumn(header: "Seed ID"),
+            TextTableColumn(header: "Seed ID")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
-        return [
+        [
             identifier ?? "",
             name ?? "",
             platform ?? "",
-            seedId ?? "",
+            seedId ?? ""
         ]
     }
 }

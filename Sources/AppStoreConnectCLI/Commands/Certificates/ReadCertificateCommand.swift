@@ -1,12 +1,13 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import FileSystem
 
 struct ReadCertificateCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
-    commandName: "read",
-    abstract: "Get information about a certificate and download the certificate data.")
+        commandName: "read",
+        abstract: "Get information about a certificate and download the certificate data."
+    )
 
     @OptionGroup()
     var common: CommonOptions

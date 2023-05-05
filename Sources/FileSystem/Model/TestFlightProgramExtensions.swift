@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 import Model
 
 extension TestFlightProgram {
-
     init(configuration: TestFlightConfiguration) {
         var apps: [Model.App] = []
         var testers: [String: Model.BetaTester] = [:]
@@ -29,11 +28,9 @@ extension TestFlightProgram {
 
         self.init(apps: apps, testers: Array(testers.values), groups: groups)
     }
-
 }
 
 private extension Model.App {
-
     init(app: App) {
         self.init(
             id: app.id,
@@ -43,11 +40,9 @@ private extension Model.App {
             sku: app.sku
         )
     }
-
 }
 
 private extension Model.BetaTester {
-
     init(betaTester: BetaTester) {
         self.init(
             email: betaTester.email,
@@ -58,11 +53,9 @@ private extension Model.BetaTester {
             apps: []
         )
     }
-
 }
 
 private extension Model.BetaGroup {
-
     init(app: Model.App, betaGroup: BetaGroup) {
         self.init(
             id: betaGroup.id,
@@ -76,5 +69,4 @@ private extension Model.BetaGroup {
             creationDate: nil
         )
     }
-
 }

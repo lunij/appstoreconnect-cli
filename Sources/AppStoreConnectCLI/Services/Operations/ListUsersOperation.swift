@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import struct Model.User
 
 struct ListUsersOperation: APIOperation {
-
     typealias Filter = ListUsers.Filter
     typealias Limit = ListUsers.Limit
     typealias Include = ListUsers.Include
@@ -22,8 +21,8 @@ struct ListUsersOperation: APIOperation {
 
     var limit: [Limit]? {
         [options.limitUsers.map(Limit.users), options.limitVisibleApps.map(Limit.visibleApps)]
-        .compactMap { $0 }
-        .nilIfEmpty()
+            .compactMap { $0 }
+            .nilIfEmpty()
     }
 
     var include: [Include]? {
@@ -35,7 +34,7 @@ struct ListUsersOperation: APIOperation {
         let usernames = options.filterUsername.nilIfEmpty().map(Filter.username)
         let visibleApps = options.filterVisibleApps.nilIfEmpty().map(Filter.visibleApps)
 
-        return [roles, usernames, visibleApps].compactMap({ $0 }).nilIfEmpty()
+        return [roles, usernames, visibleApps].compactMap { $0 }.nilIfEmpty()
     }
 
     let options: Options
@@ -64,4 +63,4 @@ struct ListUsersOperation: APIOperation {
     }
 }
 
-extension UsersResponse: PaginatedResponse { }
+extension UsersResponse: PaginatedResponse {}

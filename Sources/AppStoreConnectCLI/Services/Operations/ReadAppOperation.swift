@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ReadAppOperation: APIOperation {
-
     struct Options {
         let identifier: AppLookupIdentifier
         var shouldMatchExactly: Bool = true
@@ -17,9 +16,9 @@ struct ReadAppOperation: APIOperation {
 
         var errorDescription: String? {
             switch self {
-            case .notFound(let identifier):
+            case let .notFound(identifier):
                 return "App with provided identifier '\(identifier)' doesn't exist."
-            case .notUnique(let identifier):
+            case let .notUnique(identifier):
                 return "App with provided identifier '\(identifier)' not unique."
             }
         }
@@ -37,11 +36,11 @@ struct ReadAppOperation: APIOperation {
         let result: AnyPublisher<App, Swift.Error>
 
         switch options.identifier {
-        case .appId(let appId):
+        case let .appId(appId):
             result = requestor.request(.app(withId: appId))
                 .map(\.data)
                 .eraseToAnyPublisher()
-        case .bundleId(let bundleId):
+        case let .bundleId(bundleId):
             let endpoint: APIEndpoint = .apps(filters: [.bundleId([bundleId])])
 
             result = requestor.request(endpoint)
@@ -70,5 +69,4 @@ struct ReadAppOperation: APIOperation {
 
         return result
     }
-
 }

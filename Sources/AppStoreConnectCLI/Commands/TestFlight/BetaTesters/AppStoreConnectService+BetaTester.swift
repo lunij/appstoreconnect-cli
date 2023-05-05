@@ -1,17 +1,16 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 extension AppStoreConnectService {
-
     private enum BetaTesterError: LocalizedError {
         case couldntFindBetaTester(email: String)
 
         var failureReason: String? {
             switch self {
-            case .couldntFindBetaTester(let email):
+            case let .couldntFindBetaTester(email):
                 return "Couldn't find beta tester with input email  \(email) or email not unique"
             }
         }
@@ -25,7 +24,7 @@ extension AppStoreConnectService {
             filter: [ListBetaTesters.Filter.email([email])]
         )
 
-        return self.request(endpoint)
+        return request(endpoint)
             .tryMap { response throws -> String in
                 guard response.data.count == 1, let id = response.data.first?.id else {
                     throw BetaTesterError.couldntFindBetaTester(email: email)
@@ -35,5 +34,4 @@ extension AppStoreConnectService {
             }
             .eraseToAnyPublisher()
     }
-
 }

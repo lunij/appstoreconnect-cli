@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Foundation
@@ -29,17 +29,17 @@ extension Model.Certificate: ResultRenderable, TableInfoProvider {
             TextTableColumn(header: "Name"),
             TextTableColumn(header: "Type"),
             TextTableColumn(header: "Platform"),
-            TextTableColumn(header: "Expiration Date"),
+            TextTableColumn(header: "Expiration Date")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
         [
-            self.serialNumber ?? "",
-            self.name ?? "",
-            self.type ?? "",
-            self.platform ?? "",
-            self.expirationDate ?? "",
+            serialNumber ?? "",
+            name ?? "",
+            type ?? "",
+            platform ?? "",
+            expirationDate ?? ""
         ]
     }
 }

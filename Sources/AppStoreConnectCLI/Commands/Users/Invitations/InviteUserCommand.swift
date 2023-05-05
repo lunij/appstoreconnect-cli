@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,8 @@ import Foundation
 struct InviteUserCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "invite",
-        abstract: "Invite a user with assigned user roles to join your team.")
+        abstract: "Invite a user with assigned user roles to join your team."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -56,10 +57,11 @@ struct InviteUserCommand: CommonParsableCommand {
             roles: userInfo.roles,
             allAppsVisible: userInfo.allAppsVisible,
             provisioningAllowed: userInfo.provisioningAllowed,
-            appsVisibleIds: appsVisibleIds) // appsVisibleIds should be empty when allAppsVisible is true
+            appsVisibleIds: appsVisibleIds
+        ) // appsVisibleIds should be empty when allAppsVisible is true
 
         let invitation = try service.request(request)
-            .map { $0.data }
+            .map(\.data)
             .await()
 
         invitation.render(options: common.outputOptions)

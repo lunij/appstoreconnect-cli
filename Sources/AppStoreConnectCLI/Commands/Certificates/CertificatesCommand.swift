@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -11,7 +11,7 @@ struct CertificatesCommand: ParsableCommand {
             CreateCertificateCommand.self,
             ListCertificatesCommand.self,
             ReadCertificateCommand.self,
-            RevokeCertificatesCommand.self,
+            RevokeCertificatesCommand.self
         ],
         defaultSubcommand: ListCertificatesCommand.self
     )

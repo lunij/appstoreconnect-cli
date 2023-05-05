@@ -1,14 +1,15 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
 import Foundation
 
 struct RemoveBuildFromGroupsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "removebetagroup",
-        abstract: "Remove access to a specific build for all beta testers in one or more beta groups")
+        abstract: "Remove access to a specific build for all beta testers in one or more beta groups"
+    )
 
     @OptionGroup()
     var common: CommonOptions

@@ -1,13 +1,11 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import FileSystem
 
 struct DownloadSalesAndTrendsReportsCommand: CommonParsableCommand {
-
     enum ReportFilter: String, ExpressibleByArgument, CaseIterable, CustomStringConvertible {
-
         // SALES
         case salesDailySummary = "sales_daily_summary"
         case salesWeeklySummary = "sales_weekly_summary"
@@ -87,7 +85,8 @@ struct DownloadSalesAndTrendsReportsCommand: CommonParsableCommand {
 
     static var configuration = CommandConfiguration(
         commandName: "sales",
-        abstract: "Download sales and trends reports filtered by your specified criteria.")
+        abstract: "Download sales and trends reports filtered by your specified criteria."
+    )
 
     @OptionGroup()
     var common: CommonOptions

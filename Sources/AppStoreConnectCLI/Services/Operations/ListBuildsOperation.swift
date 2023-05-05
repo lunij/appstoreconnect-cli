@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ListBuildsOperation: APIOperation {
-
     struct Options {
         let filterAppIds: [String]
         let filterExpired: [String]
@@ -27,7 +26,7 @@ struct ListBuildsOperation: APIOperation {
         filters += options.filterBuildNumbers.isEmpty ? [] : [.version(options.filterBuildNumbers)]
         filters += options.filterExpired.isEmpty ? [] : [.expired(options.filterExpired)]
         filters += options.filterProcessingStates.isEmpty ? [] : [.processingState(options.filterProcessingStates)]
-        filters += options.filterBetaReviewStates.isEmpty ? [] :  [.betaAppReviewSubmissionBetaReviewState(options.filterBetaReviewStates)]
+        filters += options.filterBetaReviewStates.isEmpty ? [] : [.betaAppReviewSubmissionBetaReviewState(options.filterBetaReviewStates)]
 
         return filters
     }
@@ -45,9 +44,9 @@ struct ListBuildsOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<Output, Error> {
-        let filters = self.filters
+        let filters = filters
         let include: [ListBuilds.Include] = [.app, .betaAppReviewSubmission, .buildBetaDetail, .preReleaseVersion]
-        let limit = self.limit
+        let limit = limit
         let sort: [ListBuilds.Sort] = [.uploadedDateAscending]
 
         return requestor
@@ -61,4 +60,4 @@ struct ListBuildsOperation: APIOperation {
     }
 }
 
-extension BuildsResponse: PaginatedResponse { }
+extension BuildsResponse: PaginatedResponse {}

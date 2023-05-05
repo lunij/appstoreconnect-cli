@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -13,9 +13,9 @@ public struct TestFlightCommand: ParsableCommand {
             TestFlightBetaTestersCommand.self,
             TestFlightBuildsCommand.self,
             TestFlightPreReleaseVersionCommand.self,
-            TestFlightSyncCommand.self,
-        ])
+            TestFlightSyncCommand.self
+        ]
+    )
 
-    public init() {
-    }
+    public init() {}
 }

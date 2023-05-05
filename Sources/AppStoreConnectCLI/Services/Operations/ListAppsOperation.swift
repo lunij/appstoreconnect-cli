@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ListAppsOperation: APIOperation {
-
     struct Options {
         var bundleIds: [String] = []
         var names: [String] = []
@@ -41,7 +40,6 @@ struct ListAppsOperation: APIOperation {
             .map(\.data)
             .eraseToAnyPublisher()
     }
-
 }
 
-extension AppsResponse: PaginatedResponse { }
+extension AppsResponse: PaginatedResponse {}

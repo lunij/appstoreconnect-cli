@@ -1,14 +1,15 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
 import Foundation
 
 struct ExpireBuildCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "expire",
-        abstract: "Expire a build.")
+        abstract: "Expire a build."
+    )
 
     @OptionGroup()
     var common: CommonOptions

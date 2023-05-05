@@ -1,14 +1,14 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import AppStoreConnect_Swift_SDK
+import Foundation
 import Model
 import SwiftyTextTable
 
 // MARK: - API conveniences
 
 extension Model.Device {
-    init( _ attributes: AppStoreConnect_Swift_SDK.Device.Attributes) {
+    init(_ attributes: AppStoreConnect_Swift_SDK.Device.Attributes) {
         self.init(
             udid: attributes.udid,
             addedDate: attributes.addedDate,
@@ -33,26 +33,26 @@ extension Model.Device {
 
 extension Model.Device: ResultRenderable, TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-        return [
+        [
             TextTableColumn(header: "UDID"),
             TextTableColumn(header: "Name"),
             TextTableColumn(header: "Date Added"),
             TextTableColumn(header: "Device Class"),
             TextTableColumn(header: "Model"),
             TextTableColumn(header: "Platform"),
-            TextTableColumn(header: "Status"),
+            TextTableColumn(header: "Status")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
-        return [
-          udid,
-          name,
-          addedDate?.formattedDate,
-          deviceClass,
-          model,
-          platform,
-          status,
+        [
+            udid,
+            name,
+            addedDate?.formattedDate,
+            deviceClass,
+            model,
+            platform,
+            status
         ].map { $0 ?? "" }
     }
 }

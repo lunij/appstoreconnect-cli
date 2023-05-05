@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -6,13 +6,12 @@ import Foundation
 import struct Model.User
 
 struct GetUserInfoOperation: APIOperation {
-
     enum Error: LocalizedError {
         case couldNotFindUser(email: String)
 
         var failureReason: String? {
             switch self {
-            case .couldNotFindUser(let email):
+            case let .couldNotFindUser(email):
                 return "Couldn't find user with input email: '\(email)' or email not unique"
             }
         }
@@ -47,5 +46,4 @@ struct GetUserInfoOperation: APIOperation {
             }
             .eraseToAnyPublisher()
     }
-
 }

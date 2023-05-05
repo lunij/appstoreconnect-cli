@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -9,7 +9,7 @@ struct TestFlightAppsCommand: ParsableCommand {
         abstract: "Application commands",
         subcommands: [
             ListAppsCommand.self,
-            ReadAppCommand.self,
+            ReadAppCommand.self
             // GetAppInfoCommand.self,
             // More...
         ],

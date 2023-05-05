@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ModifyUserOperation: APIOperation {
-
     struct Options {
         let userId: String
         let allAppsVisible: Bool
@@ -30,7 +29,7 @@ struct ModifyUserOperation: APIOperation {
         )
 
         return requestor.request(buildModifyEndpoint)
-            .map { $0.data }
+            .map(\.data)
             .eraseToAnyPublisher()
     }
 }
