@@ -28,20 +28,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "appstoreconnect-cli_appstoreconnect-cliTests"
-               BuildableName = "appstoreconnect-cli_appstoreconnect-cliTests"
-               BlueprintName = "appstoreconnect-cli_appstoreconnect-cliTests"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "AppStoreConnectCLI"
                BuildableName = "AppStoreConnectCLI"
                BlueprintName = "AppStoreConnectCLI"
@@ -84,23 +70,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "appstoreconnect-cli"
-               BuildableName = "appstoreconnect-cli"
-               BlueprintName = "appstoreconnect-cli"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "appstoreconnect-cliTests"
-               BuildableName = "appstoreconnect-cliTests"
-               BlueprintName = "appstoreconnect-cliTests"
+               BlueprintIdentifier = "appstoreconnect-cli_AppStoreConnectCLITests"
+               BuildableName = "appstoreconnect-cli_AppStoreConnectCLITests"
+               BlueprintName = "appstoreconnect-cli_AppStoreConnectCLITests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -119,13 +91,12 @@
       </TestPlans>
       <Testables>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "appstoreconnect-cliTests"
-               BuildableName = "appstoreconnect-cliTests"
-               BlueprintName = "appstoreconnect-cliTests"
+               BlueprintIdentifier = "AppStoreConnectCLITests"
+               BuildableName = "AppStoreConnectCLITests"
+               BlueprintName = "AppStoreConnectCLITests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>

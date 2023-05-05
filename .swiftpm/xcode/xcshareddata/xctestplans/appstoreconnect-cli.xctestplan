@@ -16,8 +16,8 @@
       "parallelizable" : true,
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "appstoreconnect-cliTests",
-        "name" : "appstoreconnect-cliTests"
+        "identifier" : "AppStoreConnectCLITests",
+        "name" : "AppStoreConnectCLITests"
       }
     }
   ],
