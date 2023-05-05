@@ -1,8 +1,8 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 import FileSystem
+import Foundation
 
 enum OutputFormat: String, CaseIterable, Codable, EnumerableFlag {
     case csv
@@ -13,7 +13,7 @@ enum OutputFormat: String, CaseIterable, Codable, EnumerableFlag {
 
 extension OutputFormat: CustomStringConvertible {
     var description: String {
-        self.rawValue
+        rawValue
     }
 }
 
@@ -25,7 +25,7 @@ extension OutputFormat: ExpressibleByArgument {
 
 extension InputFormat: CustomStringConvertible {
     public var description: String {
-        self.rawValue
+        rawValue
     }
 }
 

@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ReadBundleIdOperation: APIOperation {
-
     struct Options {
         let bundleId: String
     }
@@ -16,9 +15,9 @@ struct ReadBundleIdOperation: APIOperation {
 
         var errorDescription: String? {
             switch self {
-            case .couldNotFindBundleId(let bundleId):
+            case let .couldNotFindBundleId(bundleId):
                 return "Couldn't find Bundle ID: '\(bundleId)'."
-            case .bundleIdNotUnique(let bundleId):
+            case let .bundleIdNotUnique(bundleId):
                 return "The Bundle ID you provided '\(bundleId)' is not unique."
             }
         }
@@ -49,5 +48,4 @@ struct ReadBundleIdOperation: APIOperation {
         }
         .eraseToAnyPublisher()
     }
-
 }

@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 import Model
 
 struct BetaTester: Codable, Hashable {
-
     var email: String
     var firstName: String
     var lastName: String
@@ -47,5 +46,4 @@ struct BetaTester: Codable, Hashable {
         self.firstName = firstName
         self.lastName = lastName
     }
-
 }

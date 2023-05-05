@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct GetBetaGroupOperation: APIOperation {
-
     struct Options {
         let appId: String?
         let bundleId: String?
@@ -18,9 +17,9 @@ struct GetBetaGroupOperation: APIOperation {
 
         var errorDescription: String? {
             switch self {
-            case .betaGroupNotFound(let groupName, let bundleId, let appId):
+            case let .betaGroupNotFound(groupName, bundleId, appId):
                 return "No beta group found with name: \(groupName) and bundle id: \(bundleId) and app id: \(appId)"
-            case .betaGroupNotUniqueToApp(let groupName, let bundleId, let appId):
+            case let .betaGroupNotUniqueToApp(groupName, bundleId, appId):
                 return "Multiple beta groups found with name: \(groupName) and bundle id: \(bundleId) and app id: \(appId)"
             }
         }
@@ -49,7 +48,7 @@ struct GetBetaGroupOperation: APIOperation {
             let betaGroups = response.data.filter { $0.attributes?.name == betaGroupName }
 
             switch (betaGroups.first, betaGroups.count) {
-            case (.some(let betaGroup), 1):
+            case let (.some(betaGroup), 1):
                 return betaGroup
             case (.some, _):
                 throw Error.betaGroupNotUniqueToApp(groupName: betaGroupName, bundleId: bundleId, appId: appId)
@@ -60,5 +59,4 @@ struct GetBetaGroupOperation: APIOperation {
 
         return betaGroup.eraseToAnyPublisher()
     }
-
 }

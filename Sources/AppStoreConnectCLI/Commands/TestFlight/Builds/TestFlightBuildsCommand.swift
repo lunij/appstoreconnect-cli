@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -13,11 +13,10 @@ public struct TestFlightBuildsCommand: ParsableCommand {
             ReadBuildCommand.self,
             ExpireBuildCommand.self,
             RemoveBuildFromGroupsCommand.self,
-            AddGroupsToBuildCommand.self,
+            AddGroupsToBuildCommand.self
         ],
         defaultSubcommand: ListBuildsCommand.self
     )
 
-    public init() {
-    }
+    public init() {}
 }

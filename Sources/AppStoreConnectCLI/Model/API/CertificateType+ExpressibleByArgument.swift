@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -14,7 +14,7 @@ extension CertificateType: CaseIterable, ExpressibleByArgument, CustomStringConv
             .macInstallerDistribution,
             .macAppDevelopment,
             .developerIdKext,
-            .developerIdApplication,
+            .developerIdApplication
         ]
     }
 

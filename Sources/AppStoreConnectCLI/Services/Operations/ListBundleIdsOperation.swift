@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -32,18 +32,18 @@ struct ListBundleIdsOperation: APIOperation {
 
         guard let limit = options.limit else {
             return requestor.requestAllPages {
-                    .listBundleIds(filter: filters, next: $0)
-                }
-                .map { $0.flatMap(\.data) }
-                .eraseToAnyPublisher()
+                .listBundleIds(filter: filters, next: $0)
+            }
+            .map { $0.flatMap(\.data) }
+            .eraseToAnyPublisher()
         }
 
         return requestor.request(
-                .listBundleIds(filter: filters, limit: limit)
-            )
-            .map(\.data)
-            .eraseToAnyPublisher()
+            .listBundleIds(filter: filters, limit: limit)
+        )
+        .map(\.data)
+        .eraseToAnyPublisher()
     }
 }
 
-extension BundleIdsResponse: PaginatedResponse { }
+extension BundleIdsResponse: PaginatedResponse {}

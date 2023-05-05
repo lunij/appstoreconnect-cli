@@ -1,9 +1,8 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 struct APIKeyID: EnvironmentLoadableArgument {
-
     enum Error: Swift.Error {
         case apiKeyNotFound
     }
@@ -31,7 +30,6 @@ struct APIKeyID: EnvironmentLoadableArgument {
     }
 
     func load() throws -> String {
-
         // TODO: validate the format of the env var content
         // TODO: validate format of file is correct (if found)
 

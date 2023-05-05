@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -27,34 +27,33 @@ extension App {
 
 extension App: TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-        return [
+        [
             TextTableColumn(header: "App ID"),
             TextTableColumn(header: "App Bundle ID"),
             TextTableColumn(header: "Name"),
             TextTableColumn(header: "Primary Locale"),
-            TextTableColumn(header: "SKU"),
+            TextTableColumn(header: "SKU")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
-        return [
+        [
             id,
             bundleId ?? "",
             name ?? "",
             primaryLocale ?? "",
-            sku ?? "",
+            sku ?? ""
         ]
     }
 }
 
 extension AppStoreConnectService {
-
     private enum AppError: LocalizedError {
         case couldntFindApp(bundleId: [String])
 
         var errorDescription: String? {
             switch self {
-            case .couldntFindApp(let bundleIds):
+            case let .couldntFindApp(bundleIds):
                 return "No apps were found matching \(bundleIds)."
             }
         }
@@ -74,7 +73,7 @@ extension AppStoreConnectService {
 
                 return response.data
             }
-            .compactMap { $0.map { $0.id } }
+            .compactMap { $0.map(\.id) }
             .eraseToAnyPublisher()
     }
 }

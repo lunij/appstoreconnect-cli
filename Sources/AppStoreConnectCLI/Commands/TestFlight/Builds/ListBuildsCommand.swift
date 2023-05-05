@@ -1,14 +1,15 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
 import Foundation
 
 struct ListBuildsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "list",
-        abstract: "Find and list builds for all apps in App Store Connect.")
+        abstract: "Find and list builds for all apps in App Store Connect."
+    )
 
     @OptionGroup()
     var common: CommonOptions

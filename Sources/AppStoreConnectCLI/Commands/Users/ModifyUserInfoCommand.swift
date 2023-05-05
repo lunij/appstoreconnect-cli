@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,8 @@ import Foundation
 struct ModifyUserInfoCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "modify",
-        abstract: "Change a user's role, app visibility information, or other account details.")
+        abstract: "Change a user's role, app visibility information, or other account details."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -19,7 +20,7 @@ struct ModifyUserInfoCommand: CommonParsableCommand {
     var userInfo: UserInfoArguments
 
     func validate() throws {
-        if userInfo.bundleIds.isEmpty && userInfo.allAppsVisible == false {
+        if userInfo.bundleIds.isEmpty, userInfo.allAppsVisible == false {
             throw ValidationError("Invalid Input: If you set allAppsVisible to false, you must provide at least one value for the visibleApps relationship.")
         }
     }

@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -35,7 +35,7 @@ extension EndpointRequestor {
         next: PagedDocumentLinks? = nil
     ) -> AnyPublisher<[T], Error> {
         request(endpointProvider(next))
-            .flatMap { (response) -> AnyPublisher<[T], Error> in
+            .flatMap { response -> AnyPublisher<[T], Error> in
                 guard response.links.next != nil else {
                     return Just([response]).setFailureType(to: Error.self).eraseToAnyPublisher()
                 }

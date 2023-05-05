@@ -1,17 +1,17 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import XCTest
+@testable import AppStoreConnectCLI
 
 final class ListBetaGroupsOperationTests: XCTestCase {
     typealias Operation = ListBetaGroupsOperation
     typealias Options = Operation.Options
 
     let successRequestor = OneEndpointTestRequestor(
-        response: { _ in Future({ $0(.success(response)) }) }
+        response: { _ in Future { $0(.success(response)) } }
     )
 
     func testExecute_success() throws {
@@ -38,5 +38,4 @@ final class ListBetaGroupsOperationTests: XCTestCase {
     }
 
     static let response: BetaGroupsResponse = jsonDecoder.decodeFixture(named: "v1/betagroups/list_betagroup")
-
 }

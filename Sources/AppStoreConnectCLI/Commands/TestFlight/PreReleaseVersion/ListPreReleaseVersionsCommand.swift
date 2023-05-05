@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -6,7 +6,8 @@ import ArgumentParser
 struct ListPreReleaseVersionsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "list",
-        abstract: "Get a list of prerelease versions for all apps.")
+        abstract: "Get a list of prerelease versions for all apps."
+    )
 
     @OptionGroup()
     var common: CommonOptions

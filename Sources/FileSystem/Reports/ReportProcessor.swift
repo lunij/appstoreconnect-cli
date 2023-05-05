@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import Files
+import Foundation
 
 public struct ReportProcessor {
-
     public typealias Report = Data
 
     let path: String
@@ -22,5 +21,4 @@ public struct ReportProcessor {
                 contents: report
             )
     }
-
 }

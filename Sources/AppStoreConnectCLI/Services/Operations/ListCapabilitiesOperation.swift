@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ListCapabilitiesOperation: APIOperation {
-
     struct Options {
         let bundleIdResourceId: String
     }
@@ -12,7 +11,7 @@ struct ListCapabilitiesOperation: APIOperation {
     let option: Options
 
     init(options: Options) {
-        self.option = options
+        option = options
     }
 
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<[BundleIdCapability], Error> {
@@ -23,5 +22,4 @@ struct ListCapabilitiesOperation: APIOperation {
             .map(\.data)
             .eraseToAnyPublisher()
     }
-
 }

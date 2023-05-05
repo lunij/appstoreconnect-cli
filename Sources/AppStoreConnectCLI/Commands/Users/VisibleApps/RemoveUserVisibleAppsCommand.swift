@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,8 @@ import Foundation
 struct RemoveUserVisibleAppsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "remove-apps",
-        abstract: "Remove a user on your team's access to one or more apps.")
+        abstract: "Remove a user on your team's access to one or more apps."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -19,7 +20,7 @@ struct RemoveUserVisibleAppsCommand: CommonParsableCommand {
     var bundleIds: [String]
 
     public func run() throws {
-        // TODO
-        print(self.bundleIds)
+        // TODO:
+        print(bundleIds)
     }
 }

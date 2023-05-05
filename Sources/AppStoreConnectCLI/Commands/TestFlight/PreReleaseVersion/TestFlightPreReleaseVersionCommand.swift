@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -9,10 +9,10 @@ public struct TestFlightPreReleaseVersionCommand: ParsableCommand {
         abstract: "Platform-specific versions of your app intended for distribution to beta testers.",
         subcommands: [
             ListPreReleaseVersionsCommand.self,
-            ReadPreReleaseVersionCommand.self,
+            ReadPreReleaseVersionCommand.self
         ],
-        defaultSubcommand: ListPreReleaseVersionsCommand.self)
+        defaultSubcommand: ListPreReleaseVersionsCommand.self
+    )
 
-    public init() {
-    }
+    public init() {}
 }

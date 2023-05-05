@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Foundation
@@ -6,9 +6,7 @@ import Model
 import SwiftyTextTable
 
 extension Model.Build {
-
     init(_ build: AppStoreConnect_Swift_SDK.Build, _ includes: [AppStoreConnect_Swift_SDK.BuildRelationship]?) {
-
         let relationships = build.relationships
 
         let includedApps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
@@ -67,7 +65,7 @@ extension Model.Build {
 
 extension Model.Build: ResultRenderable, TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-        return [
+        [
             TextTableColumn(header: "Bundle Id"),
             TextTableColumn(header: "App Name"),
             TextTableColumn(header: "Platform"),
@@ -82,7 +80,7 @@ extension Model.Build: ResultRenderable, TableInfoProvider {
             TextTableColumn(header: "Uploaded Date"),
             TextTableColumn(header: "Expiration Date"),
             TextTableColumn(header: "Expired"),
-            TextTableColumn(header: "Uses Non Exempt Encryption"),
+            TextTableColumn(header: "Uses Non Exempt Encryption")
         ]
     }
 
@@ -102,9 +100,9 @@ extension Model.Build: ResultRenderable, TableInfoProvider {
             uploadedDate,
             expirationDate,
             expired,
-            usesNonExemptEncryption,
+            usesNonExemptEncryption
         ]
 
-        return row.map { $0 ?? ""}
+        return row.map { $0 ?? "" }
     }
 }

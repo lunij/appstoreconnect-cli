@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -12,7 +12,7 @@ struct BundleIdsCommand: ParsableCommand {
             ReadBundleIdCommand.self,
             ModifyBundleIdCommand.self,
             DeleteBundleIdCommand.self,
-            RegisterBundleIdCommand.self,
+            RegisterBundleIdCommand.self
         ],
         defaultSubcommand: ListBundleIdsCommand.self
     )

@@ -1,14 +1,15 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
 import Foundation
 
 struct ReadBuildCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "read",
-        abstract: "Get information about a specific build.")
+        abstract: "Get information about a specific build."
+    )
 
     @OptionGroup()
     var common: CommonOptions

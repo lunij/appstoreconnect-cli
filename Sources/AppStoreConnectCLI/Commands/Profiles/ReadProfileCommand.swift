@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import FileSystem
@@ -6,7 +6,8 @@ import FileSystem
 struct ReadProfileCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "read",
-        abstract: "Find and read a provisioning profile and download it data.")
+        abstract: "Find and read a provisioning profile and download it data."
+    )
 
     @OptionGroup()
     var common: CommonOptions

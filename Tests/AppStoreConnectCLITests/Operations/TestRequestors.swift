@@ -1,16 +1,16 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
+@testable import AppStoreConnectCLI
 
 extension EndpointRequestor {
-    func request<T>(_ endpoint: APIEndpoint<T>) -> Future<T, Error> where T: Decodable {
+    func request<T>(_: APIEndpoint<T>) -> Future<T, Error> where T: Decodable {
         Future { $0(.failure(TestError.somethingBadHappened)) }
     }
 
-    func request(_ endpoint: APIEndpoint<Void>) -> Future<Void, Error> {
+    func request(_: APIEndpoint<Void>) -> Future<Void, Error> {
         Future { $0(.failure(TestError.somethingBadHappened)) }
     }
 }

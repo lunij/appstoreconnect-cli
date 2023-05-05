@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,8 @@ import Foundation
 struct DeleteProfileCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "delete",
-        abstract: "Delete a provisioning profile that is used for app development or distribution.")
+        abstract: "Delete a provisioning profile that is used for app development or distribution."
+    )
 
     @OptionGroup()
     var common: CommonOptions

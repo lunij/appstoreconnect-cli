@@ -1,7 +1,7 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import CodableCSV
+import Foundation
 import SwiftyTextTable
 import Yams
 
@@ -12,9 +12,7 @@ protocol Reader {
 }
 
 public enum Readers {
-
     public struct FileReader<T: Decodable>: Reader {
-
         let format: InputFormat
 
         public init(format: InputFormat) {
@@ -36,8 +34,9 @@ public enum Readers {
             guard
                 let fileContents = try? String(contentsOfFile: filePath, encoding: .utf8),
                 let data = fileContents.data(using: .utf8),
-                let result = try? JSONDecoder().decode(T.self, from: data) else {
-                    fatalError("Could not read JSON file: \(filePath)")
+                let result = try? JSONDecoder().decode(T.self, from: data)
+            else {
+                fatalError("Could not read JSON file: \(filePath)")
             }
 
             return result
@@ -46,8 +45,9 @@ public enum Readers {
         public func readYAML<T: Decodable>(from filePath: String) -> T {
             guard
                 let fileContents = try? String(contentsOfFile: filePath, encoding: .utf8),
-                let result = try? YAMLDecoder().decode(T.self, from: fileContents) else {
-                    fatalError("Could not read YAML file: \(filePath)")
+                let result = try? YAMLDecoder().decode(T.self, from: fileContents)
+            else {
+                fatalError("Could not read YAML file: \(filePath)")
             }
 
             return result
@@ -61,12 +61,12 @@ public enum Readers {
 
             guard
                 let url = URL(string: "file://\(filePath)"),
-                let result = try? decoder.decode(T.self, from: url) else {
-                    fatalError("Could not read CSV file: \(filePath)")
+                let result = try? decoder.decode(T.self, from: url)
+            else {
+                fatalError("Could not read CSV file: \(filePath)")
             }
 
             return result
         }
     }
-
 }

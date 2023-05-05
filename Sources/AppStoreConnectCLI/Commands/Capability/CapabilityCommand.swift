@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 
@@ -8,7 +8,7 @@ struct CapabilityCommand: ParsableCommand {
         abstract: "Manage the app capabilities for a bundle ID.",
         subcommands: [
             EnableBundleIdCapabilityCommand.self,
-            DisableBundleIdCapabilityCommand.self,
+            DisableBundleIdCapabilityCommand.self
         ]
     )
 }

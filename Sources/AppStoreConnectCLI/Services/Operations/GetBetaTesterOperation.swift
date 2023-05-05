@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct GetBetaTesterOperation: APIOperation {
-
     struct Options {
         enum TesterIdentifier {
             case id(String)
@@ -24,9 +23,9 @@ struct GetBetaTesterOperation: APIOperation {
 
         var errorDescription: String? {
             switch self {
-            case .betaTesterNotFound(let email):
+            case let .betaTesterNotFound(email):
                 return "Beta tester with provided email '\(email)' doesn't exist."
-            case .betaTesterNotUnique(let email):
+            case let .betaTesterNotUnique(email):
                 return "Beta tester with email address '\(email)' not unique"
             }
         }
@@ -39,14 +38,14 @@ struct GetBetaTesterOperation: APIOperation {
 
         init(betaTester: AppStoreConnect_Swift_SDK.BetaTester, includes: [BetaTesterRelationship]?) {
             self.betaTester = betaTester
-            self.betaGroups = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.BetaGroup? in
+            betaGroups = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.BetaGroup? in
                 if case let .betaGroup(betaGroup) = relationship {
                     return betaGroup
                 }
                 return nil
             }
 
-            self.apps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
+            apps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
                 if case let .app(app) = relationship {
                     return app
                 }
@@ -99,7 +98,7 @@ struct GetBetaTesterOperation: APIOperation {
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Output, Swift.Error> {
         switch options.identifier {
-        case .id(let id):
+        case let .id(id):
             let endpoint = APIEndpoint.betaTester(
                 withId: id,
                 include: [.betaGroups, .apps],
@@ -108,14 +107,14 @@ struct GetBetaTesterOperation: APIOperation {
 
             return requestor.request(endpoint)
                 .tryMap { (response: BetaTesterResponse) -> Output in
-                    return Output(
+                    Output(
                         betaTester: response.data,
                         includes: response.included
                     )
-            }
-            .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
 
-        case .email(let email):
+        case let .email(email):
             let endpoint = APIEndpoint.betaTesters(
                 filter: [.email([email])],
                 include: [.betaGroups, .apps],
@@ -135,9 +134,8 @@ struct GetBetaTesterOperation: APIOperation {
                     default:
                         throw Error.betaTesterNotUnique(email)
                     }
-            }
-            .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
         }
     }
-
 }

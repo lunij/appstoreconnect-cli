@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 import Model
 
 struct TestFlightProgramDifference {
-
     enum Change {
         case addBetaGroup(BetaGroup)
         case removeBetaGroup(BetaGroup)
@@ -14,7 +13,6 @@ struct TestFlightProgramDifference {
         case removeBetaTesterFromGroups(BetaTester, [BetaGroup])
 
         var description: String {
-
             let operation: String = {
                 switch self {
                 case .addBetaGroup, .addBetaTesterToGroups, .addBetaTesterToApps:
@@ -25,22 +23,22 @@ struct TestFlightProgramDifference {
             }()
 
             switch self {
-            case .addBetaGroup(let betaGroup), .removeBetaGroup(let betaGroup):
+            case let .addBetaGroup(betaGroup), let .removeBetaGroup(betaGroup):
                 let name = betaGroup.groupName ?? ""
                 let bundleId = betaGroup.app?.bundleId ?? ""
 
                 return "Beta Group named: \(name) will be \(operation) app: \(bundleId)"
 
-            case .addBetaTesterToApps(let betaTester, let apps),
-                 .removeBetaTesterFromApps(let betaTester, let apps):
+            case let .addBetaTesterToApps(betaTester, apps),
+                 let .removeBetaTesterFromApps(betaTester, apps):
                 let email = betaTester.email ?? ""
                 let bundleIds = apps.compactMap(\.bundleId).joined(separator: ", ")
 
                 return "Beta Tester with email: \(email) " +
                     "will be \(operation) apps: \(bundleIds)"
 
-            case .addBetaTesterToGroups(let betaTester, let betaGroups),
-                 .removeBetaTesterFromGroups(let betaTester, let betaGroups):
+            case let .addBetaTesterToGroups(betaTester, betaGroups),
+                 let .removeBetaTesterFromGroups(betaTester, betaGroups):
                 let email = betaTester.email ?? ""
                 let groupNames = betaGroups.compactMap(\.groupName).joined(separator: ", ")
                 let bundleIds = betaGroups.compactMap(\.app?.bundleId).joined(separator: ", ")
@@ -111,5 +109,4 @@ struct TestFlightProgramDifference {
 
         self.changes = changes
     }
-
 }

@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct CreateBetaGroupOperation: APIOperation {
-
     struct Options {
         let app: AppStoreConnect_Swift_SDK.App
         let groupName: String

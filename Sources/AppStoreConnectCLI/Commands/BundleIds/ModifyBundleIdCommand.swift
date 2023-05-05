@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,6 @@ import Foundation
 import struct Model.BundleId
 
 struct ModifyBundleIdCommand: CommonParsableCommand {
-
     public static var configuration = CommandConfiguration(
         commandName: "modify",
         abstract: "Update a specific bundle ID's name."

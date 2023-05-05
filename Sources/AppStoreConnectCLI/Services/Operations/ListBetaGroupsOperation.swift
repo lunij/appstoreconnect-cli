@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ListBetaGroupsOperation: APIOperation {
-
     struct Options {
         var appIds: [String] = []
         var names: [String] = []
@@ -23,7 +22,7 @@ struct ListBetaGroupsOperation: APIOperation {
 
         var errorDescription: String? {
             switch self {
-            case .missingAppData(let betaGroup):
+            case let .missingAppData(betaGroup):
                 return "Missing app data for beta group: \(betaGroup)"
             }
         }
@@ -58,7 +57,7 @@ struct ListBetaGroupsOperation: APIOperation {
                 let apps = response.included?.reduce(
                     into: [String: AppStoreConnect_Swift_SDK.App](), { result, relationship in
                         switch relationship {
-                        case .app(let app):
+                        case let .app(app):
                             result[app.id] = app
                         default:
                             break
@@ -83,4 +82,4 @@ struct ListBetaGroupsOperation: APIOperation {
     }
 }
 
-extension BetaGroupsResponse: PaginatedResponse { }
+extension BetaGroupsResponse: PaginatedResponse {}

@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
-//
+// Copyright 2023 Itty Bitty Apps Pty Ltd
+
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ReadBuildOperation: APIOperation {
-
     struct Options {
         let appId: String
         let buildNumber: String
@@ -38,7 +37,6 @@ struct ReadBuildOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Output, Error> {
-
         var filters = [ListBuilds.Filter]()
 
         if options.preReleaseVersion.isEmpty == false {
@@ -59,7 +57,7 @@ struct ReadBuildOperation: APIOperation {
         )
 
         return requestor.request(endpoint)
-            .tryMap { (buildResponse) throws -> Output in
+            .tryMap { buildResponse throws -> Output in
                 switch buildResponse.data.count {
                 case 0:
                     throw ReadBuildError.noBuildExist
@@ -68,7 +66,7 @@ struct ReadBuildOperation: APIOperation {
                 default:
                     throw ReadBuildError.buildNotUnique
                 }
-        }
-        .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

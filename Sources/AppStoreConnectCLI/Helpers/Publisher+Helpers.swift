@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Combine
 import Foundation
@@ -10,11 +10,11 @@ enum PublisherAwaitError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .timedOut(let timeout):
+        case let .timedOut(timeout):
             return "Expected publisher output but timed out with timeout: \(timeout)"
         case .expectedOutput:
             return "Expected publisher output but none received"
-        case .expectedSingleOutput(let outputCount):
+        case let .expectedSingleOutput(outputCount):
             return "Expected single publisher output but received \(outputCount)"
         }
     }
@@ -38,15 +38,14 @@ extension Publisher {
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
 
-        let cancellable = self
-            .subscribe(on: dispatchQueue)
+        let cancellable = subscribe(on: dispatchQueue)
             .collect()
             .sink(
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
                         break
-                    case .failure(let failure):
+                    case let .failure(failure):
                         result = .failure(failure)
                     }
 
@@ -65,9 +64,9 @@ extension Publisher {
             throw PublisherAwaitError.timedOut(timeout: timeout)
         case (.none, .success):
             throw PublisherAwaitError.expectedOutput
-        case (.some(.success(let output)), .success):
+        case let (.some(.success(output)), .success):
             return output
-        case (.some(.failure(let error)), .success):
+        case let (.some(.failure(error)), .success):
             throw error
         }
     }

@@ -1,14 +1,14 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import FileSystem
 
 struct DownloadFinancialReportsCommand: CommonParsableCommand {
-
     static var configuration = CommandConfiguration(
         commandName: "financial",
-        abstract: "Download finance reports filtered by your specified criteria.")
+        abstract: "Download finance reports filtered by your specified criteria."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -16,7 +16,7 @@ struct DownloadFinancialReportsCommand: CommonParsableCommand {
     @Argument(help:
         ArgumentHelp(
             "You can download consolidated or separate financial reports per territory.",
-            discussion: "Possible values: (\(DownloadFinanceReports.RegionCode.allCases.map { $0.rawValue }.joined(separator: ", ")))"
+            discussion: "Possible values: (\(DownloadFinanceReports.RegionCode.allCases.map(\.rawValue).joined(separator: ", ")))"
         )
     )
     var regionCode: DownloadFinanceReports.RegionCode

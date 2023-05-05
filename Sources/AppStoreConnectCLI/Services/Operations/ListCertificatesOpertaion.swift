@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct ListCertificatesOperation: APIOperation {
-
     typealias Filter = Certificates.Filter
 
     enum Error: LocalizedError {
@@ -52,7 +51,7 @@ struct ListCertificatesOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<[Certificate], Swift.Error> {
-        let filters = self.filters
+        let filters = filters
         let sort = [options.sort].compactMap { $0 }
         let limit = options.limit
 
@@ -75,7 +74,6 @@ struct ListCertificatesOperation: APIOperation {
         }
         .eraseToAnyPublisher()
     }
-
 }
 
-extension CertificatesResponse: PaginatedResponse { }
+extension CertificatesResponse: PaginatedResponse {}

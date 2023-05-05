@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct CreateProfileOperation: APIOperation {
-
     struct Options {
         let name: String
         let bundleId: String
@@ -32,8 +31,7 @@ struct CreateProfileOperation: APIOperation {
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<Profile, Error> {
         requestor
             .request(endpoint)
-            .map { $0.data }
+            .map(\.data)
             .eraseToAnyPublisher()
     }
-
 }

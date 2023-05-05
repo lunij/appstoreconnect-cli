@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -11,10 +11,9 @@ struct DevicesCommand: ParsableCommand {
             ListDevicesCommand.self,
             ModifyDeviceCommand.self,
             ReadDeviceInfoCommand.self,
-            RegisterDeviceCommand.self,
-            /* TODO
-            SyncDevicesCommand.self, // Synchronise devices with configuration file
-            */
+            RegisterDeviceCommand.self
+            // TODO:
+            // SyncDevicesCommand.self, // Synchronise devices with configuration file
         ],
         defaultSubcommand: ListDevicesCommand.self
     )

@@ -1,6 +1,6 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 
-extension DownloadFinanceReports.RegionCode: ExpressibleByArgument { }
+extension DownloadFinanceReports.RegionCode: ExpressibleByArgument {}

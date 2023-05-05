@@ -1,17 +1,16 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import XCTest
+@testable import AppStoreConnectCLI
 
 final class ListCertificateOperationsTests: XCTestCase {
-
     typealias OperationError = ListCertificatesOperation.Error
 
     let noCertificatesRequestor = OneEndpointTestRequestor(
-        response: { _ in Future({ $0(.success(Certificate.noCertificateResponse)) }) }
+        response: { _ in Future { $0(.success(Certificate.noCertificateResponse)) } }
     )
 
     func testCouldNotFindCertificate() {

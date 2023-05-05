@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ReadProfileOperation: APIOperation {
-
     struct Options {
         let id: String
     }
@@ -22,5 +21,4 @@ struct ReadProfileOperation: APIOperation {
         .map(\.data)
         .eraseToAnyPublisher()
     }
-
 }

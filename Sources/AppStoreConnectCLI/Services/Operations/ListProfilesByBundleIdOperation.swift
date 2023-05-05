@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ListProfilesByBundleIdOperation: APIOperation {
-
     struct Options {
         let bundleIdResourceId: String
         let limit: Int?
@@ -17,7 +16,6 @@ struct ListProfilesByBundleIdOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[Profile], Error> {
-
         let endpoint: APIEndpoint<ProfilesResponse> = .listAllProfilesForBundleId(
             id: options.bundleIdResourceId,
             limit: options.limit

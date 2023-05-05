@@ -1,14 +1,12 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Combine
 
-extension Publishers {
-
+public extension Publishers {
     /// A publisher created by applying the concatenate function to many upstream publishers.
     ///
     /// Emits all of one publisher's elements before those from the next publisher.
-    public struct ConcatenateMany<Upstream>: Publisher where Upstream: Publisher {
-
+    struct ConcatenateMany<Upstream>: Publisher where Upstream: Publisher {
         /// The kind of values published by this publisher.
         public typealias Output = Upstream.Output
 
@@ -35,7 +33,5 @@ extension Publishers {
         public func receive<S>(subscriber: S) where S: Subscriber, ConcatenateMany.Failure == S.Failure, ConcatenateMany.Output == S.Input {
             concatenatePublisher.receive(subscriber: subscriber)
         }
-
     }
-
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -8,7 +8,8 @@ import Foundation
 public struct ListUsersCommand: CommonParsableCommand {
     public static var configuration = CommandConfiguration(
         commandName: "list",
-        abstract: "Get a list of the users on your team.")
+        abstract: "Get a list of the users on your team."
+    )
 
     public init() {}
 
@@ -23,7 +24,7 @@ public struct ListUsersCommand: CommonParsableCommand {
 
     @Option(
         parsing: SingleValueParsingStrategy.unconditional,
-        help: "Sort the results using the provided key (\(ListUsers.Sort.allCases.map { $0.rawValue }.joined(separator: ", "))).\nThe `-` prefix indicates descending order."
+        help: "Sort the results using the provided key (\(ListUsers.Sort.allCases.map(\.rawValue).joined(separator: ", "))).\nThe `-` prefix indicates descending order."
     )
     var sort: ListUsers.Sort?
 

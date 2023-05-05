@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -13,7 +13,7 @@ enum DeviceError: Error, LocalizedError {
 
     var failureReason: String? {
         switch self {
-        case .notFound(let udid):
+        case let .notFound(udid):
             return "Unable to find device with UDID of '\(udid)'."
         }
     }
@@ -52,5 +52,4 @@ struct ReadDeviceInfoCommand: CommonParsableCommand {
 
         device.render(options: common.outputOptions)
     }
-
 }

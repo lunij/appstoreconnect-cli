@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 import Model
 
 struct BetaGroup: Codable, Equatable {
-
     typealias EmailAddress = String
 
     var id: String?
@@ -16,5 +15,4 @@ struct BetaGroup: Codable, Equatable {
         groupName = betaGroup.groupName ?? ""
         testers = betaTesters.compactMap(\.email)
     }
-
 }

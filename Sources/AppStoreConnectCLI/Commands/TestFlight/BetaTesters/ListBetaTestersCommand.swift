@@ -1,13 +1,14 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
 
 struct ListBetaTestersCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "list",
-        abstract: "List beta testers")
+        abstract: "List beta testers"
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -71,7 +72,7 @@ struct ListBetaTestersCommand: CommonParsableCommand {
     var relatedResourcesLimit: Int?
 
     func validate() throws {
-        if !appLookupOptions.filterIdentifiers.isEmpty && !filterGroupNames.isEmpty {
+        if !appLookupOptions.filterIdentifiers.isEmpty, !filterGroupNames.isEmpty {
             throw ValidationError("Only one of these relationship filters ('app-id/ bundle-id', 'group-name') can be applied.")
         }
     }

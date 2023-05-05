@@ -1,10 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
-import struct Model.BetaTester
 import Foundation
+import struct Model.BetaTester
 
 struct ListBetaTesterByBuildsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -35,7 +35,7 @@ struct ListBetaTesterByBuildsCommand: CommonParsableCommand {
 
         var failureReason: String? {
             switch self {
-            case .noBuildsFound(let preReleaseVersions, let versions):
+            case let .noBuildsFound(preReleaseVersions, versions):
                 return "No builds were found matching preReleaseVersions \(preReleaseVersions) and versions \(versions)"
             }
         }
@@ -84,5 +84,4 @@ struct ListBetaTesterByBuildsCommand: CommonParsableCommand {
 
         betaTesters.render(options: common.outputOptions)
     }
-
 }

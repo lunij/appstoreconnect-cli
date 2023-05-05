@@ -1,13 +1,12 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import CodableCSV
+import Files
 import Foundation
 import Model
-import Files
 import Yams
 
 struct TestFlightConfigurationProcessor {
-
     let path: String
 
     init(path: String) {
@@ -29,7 +28,7 @@ struct TestFlightConfigurationProcessor {
         }
 
         let filenameForBetaGroup: (BetaGroup) -> String = { betaGroup in
-            return betaGroup.groupName
+            betaGroup.groupName
                 .components(separatedBy: CharacterSet(charactersIn: " *?:/\\."))
                 .joined(separator: "_")
                 + ".yml"
@@ -63,7 +62,7 @@ struct TestFlightConfigurationProcessor {
 
         var errorDescription: String? {
             switch self {
-            case .testerNotInTestersList(let email, let betaGroup, let app):
+            case let .testerNotInTestersList(email, betaGroup, app):
                 return "Tester with email: \(email) in beta group named: \(betaGroup.groupName) " +
                     "for app: \(app.bundleId) is not included in the \(betaTestersCSVName) file"
             }
@@ -116,5 +115,4 @@ struct TestFlightConfigurationProcessor {
 
         return configuration
     }
-
 }

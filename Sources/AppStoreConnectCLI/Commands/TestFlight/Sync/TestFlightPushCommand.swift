@@ -1,12 +1,11 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 import FileSystem
+import Foundation
 import Model
 
 struct TestFlightPushCommand: CommonParsableCommand {
-
     static var configuration = CommandConfiguration(
         commandName: "push",
         abstract: "Push local TestFlight configuration to the remote API."
@@ -32,5 +31,4 @@ struct TestFlightPushCommand: CommonParsableCommand {
 
         throw CommandError.unimplemented
     }
-
 }

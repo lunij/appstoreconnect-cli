@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -7,7 +7,6 @@ import Model
 import SwiftyTextTable
 
 extension Model.BetaGroup: TableInfoProvider, ResultRenderable {
-
     static func tableColumns() -> [TextTableColumn] {
         [
             TextTableColumn(header: "App ID"),
@@ -19,7 +18,7 @@ extension Model.BetaGroup: TableInfoProvider, ResultRenderable {
             TextTableColumn(header: "Public Link Enabled"),
             TextTableColumn(header: "Public Link Limit"),
             TextTableColumn(header: "Public Link Limit Enabled"),
-            TextTableColumn(header: "Creation Date"),
+            TextTableColumn(header: "Creation Date")
         ]
     }
 
@@ -34,7 +33,7 @@ extension Model.BetaGroup: TableInfoProvider, ResultRenderable {
             publicLinkEnabled ?? "",
             publicLinkLimit ?? "",
             publicLinkEnabled ?? "",
-            creationDate ?? "",
+            creationDate ?? ""
         ]
     }
 }

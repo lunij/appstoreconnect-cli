@@ -1,12 +1,11 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 import FileSystem
+import Foundation
 import Model
 
 struct TestFlightPullCommand: CommonParsableCommand {
-
     static var configuration = CommandConfiguration(
         commandName: "pull",
         abstract: "Pull TestFlight configuration, overwriting local configuration files."
@@ -31,5 +30,4 @@ struct TestFlightPullCommand: CommonParsableCommand {
 
         try FileSystem.writeTestFlightConfiguration(program: testflightProgram, to: outputPath)
     }
-
 }

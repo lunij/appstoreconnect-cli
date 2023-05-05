@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
@@ -7,7 +7,8 @@ import FileSystem
 struct ListCertificatesCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "list",
-        abstract: "Find and list certificates and download their data.")
+        abstract: "Find and list certificates and download their data."
+    )
 
     @OptionGroup()
     var common: CommonOptions
@@ -52,7 +53,6 @@ struct ListCertificatesCommand: CommonParsableCommand {
             let certificateProcessor = CertificateProcessor(path: .folder(path: downloadPath))
 
             try certificates.forEach {
-
                 let file = try certificateProcessor.write($0)
 
                 // Only print if the `PrintLevel` is set to verbose.
@@ -64,5 +64,4 @@ struct ListCertificatesCommand: CommonParsableCommand {
 
         certificates.render(options: common.outputOptions)
     }
-
 }

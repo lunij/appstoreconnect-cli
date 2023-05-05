@@ -1,18 +1,17 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct InviteTesterOperation: APIOperation {
-
     private enum InviteTesterError: LocalizedError {
         case noGroupsExist(groupNames: [String], bundleId: String)
         case noAppExist
 
         var errorDescription: String? {
             switch self {
-            case .noGroupsExist(let groupNames, let bundleId):
+            case let .noGroupsExist(groupNames, bundleId):
                 return "One or more of beta groups \"\(groupNames)\" don't exist or don't belong to application with bundle ID \"\(bundleId)\"."
             case .noAppExist:
                 return "App with provided bundleId doesn't exist."
@@ -39,17 +38,16 @@ struct InviteTesterOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<AppStoreConnect_Swift_SDK.BetaTester, Error> {
-
         let groupIds: [String]
 
         switch options.identifers {
-        case .bundleIdWithGroupNames(let bundleId, let groupNames):
+        case let .bundleIdWithGroupNames(bundleId, groupNames):
             let appIds = try GetAppsOperation(
-                    options: .init(bundleIds: [bundleId])
-                )
-                .execute(with: requestor)
-                .await()
-                .map { $0.id }
+                options: .init(bundleIds: [bundleId])
+            )
+            .execute(with: requestor)
+            .await()
+            .map(\.id)
 
             guard let appId = appIds.first else {
                 throw InviteTesterError.noAppExist
@@ -61,15 +59,16 @@ struct InviteTesterOperation: APIOperation {
                 .data
 
             guard Set(groupNames).isSubset(of:
-                Set(betaGroups.compactMap { $0.attributes?.name })) else {
-                    throw InviteTesterError.noGroupsExist(
-                        groupNames: groupNames,
-                        bundleId: bundleId
-                    )
-                }
+                Set(betaGroups.compactMap { $0.attributes?.name }))
+            else {
+                throw InviteTesterError.noGroupsExist(
+                    groupNames: groupNames,
+                    bundleId: bundleId
+                )
+            }
 
             groupIds = getGroupIds(in: betaGroups, matching: groupNames)
-        case .resourceId(let identifiers):
+        case let .resourceId(identifiers):
             groupIds = identifiers
         }
 
@@ -103,7 +102,6 @@ struct InviteTesterOperation: APIOperation {
 
             return names.contains(name)
         }
-        .map { $0.id }
+        .map(\.id)
     }
-
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -7,7 +7,6 @@ import Model
 import SwiftyTextTable
 
 extension Model.BetaTester {
-
     init(_ output: GetBetaTesterOperation.Output) {
         let betaTester = output.betaTester
         let appRelationships = (betaTester.relationships?.apps?.data) ?? []
@@ -30,29 +29,28 @@ extension Model.BetaTester {
             apps: apps.map(Model.App.init)
         )
     }
-
 }
 
 extension Model.BetaTester: ResultRenderable, TableInfoProvider {
     static func tableColumns() -> [TextTableColumn] {
-       return [
+        [
             TextTableColumn(header: "Email"),
             TextTableColumn(header: "First Name"),
             TextTableColumn(header: "Last Name"),
             TextTableColumn(header: "Invite Type"),
             TextTableColumn(header: "Beta Groups"),
-            TextTableColumn(header: "Apps"),
+            TextTableColumn(header: "Apps")
         ]
     }
 
     var tableRow: [CustomStringConvertible] {
-        return [
+        [
             email ?? "",
             firstName ?? "",
             lastName ?? "",
             inviteType ?? "",
             betaGroups.compactMap(\.groupName).joined(separator: ", "),
-            apps.compactMap(\.bundleId).joined(separator: ", "),
+            apps.compactMap(\.bundleId).joined(separator: ", ")
         ]
     }
 }

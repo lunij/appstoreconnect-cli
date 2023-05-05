@@ -1,10 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
-@testable import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import XCTest
+@testable import AppStoreConnect_Swift_SDK
+@testable import AppStoreConnectCLI
 
 final class ModifyBetaGroupOperationTests: XCTestCase {
     typealias Operation = ModifyBetaGroupOperation
@@ -48,8 +48,8 @@ final class ModifyBetaGroupOperationTests: XCTestCase {
     }
 
     var betaGroupResponseFuture: Future<BetaGroupResponse, Error> {
-        let response =  BetaGroupResponse(
-            data: self.betaGroup,
+        let response = BetaGroupResponse(
+            data: betaGroup,
             included: nil,
             links: DocumentLinks(self: URL(fileURLWithPath: "test"))
         )
@@ -93,7 +93,7 @@ final class ModifyBetaGroupOperationTests: XCTestCase {
             "name": "New Group Name",
             "publicLinkEnabled": true,
             "publicLinkLimit": 10,
-            "publicLinkLimitEnabled": true,
+            "publicLinkLimitEnabled": true
         ]
 
         XCTAssert(attributes.isEqual(to: expectedAttributes))

@@ -1,15 +1,16 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
 import FileSystem
+import Foundation
 
 struct ListProfilesByBundleIdCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "list-by-bundle",
         abstract: "Find and list provisioning profiles by bundle identifier and download their data.",
-        discussion: "Xcode managed profiles can be fetched with this command. Xcode managed profiles do not show up in the default profiles list.")
+        discussion: "Xcode managed profiles can be fetched with this command. Xcode managed profiles do not show up in the default profiles list."
+    )
 
     @OptionGroup()
     var common: CommonOptions

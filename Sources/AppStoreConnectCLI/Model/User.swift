@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
@@ -13,12 +13,13 @@ import SwiftyTextTable
 extension Model.User {
     static func fromAPIUser(_ apiUser: AppStoreConnect_Swift_SDK.User) -> Model.User? {
         guard let attributes = apiUser.attributes,
-              let username = attributes.username else {
+              let username = attributes.username
+        else {
             // TODO: Error handling
             return nil
         }
 
-        let visibleApps = apiUser.relationships?.visibleApps?.data?.map { $0.type }
+        let visibleApps = apiUser.relationships?.visibleApps?.data?.map(\.type)
 
         return User(
             username: username,
@@ -35,7 +36,7 @@ extension Model.User {
         let users: [AppStoreConnect_Swift_SDK.User] = response.data
 
         return users.compactMap { (user: AppStoreConnect_Swift_SDK.User) -> Model.User in
-            let userVisibleAppIds = user.relationships?.visibleApps?.data?.compactMap { $0.id }
+            let userVisibleAppIds = user.relationships?.visibleApps?.data?.map(\.id)
             let userVisibleApps = response.included?.filter {
                 userVisibleAppIds?.contains($0.id) ?? false
             }
@@ -70,7 +71,7 @@ extension Model.User: ResultRenderable, TableInfoProvider {
             TextTableColumn(header: "Role"),
             TextTableColumn(header: "Provisioning Allowed"),
             TextTableColumn(header: "All Apps Visible"),
-            TextTableColumn(header: "Visible Apps"),
+            TextTableColumn(header: "Visible Apps")
         ]
     }
 
@@ -82,13 +83,12 @@ extension Model.User: ResultRenderable, TableInfoProvider {
             roles.joined(separator: ", "),
             provisioningAllowed.toYesNo(),
             allAppsVisible.toYesNo(),
-            visibleApps?.joined(separator: ", ") ?? "",
+            visibleApps?.joined(separator: ", ") ?? ""
         ]
     }
 }
 
 extension AppStoreConnectService {
-
     /// Find the opaque internal identifier for this user; search by email address.
     ///
     /// This is an App Store Connect internal identifier
@@ -97,7 +97,7 @@ extension AppStoreConnectService {
             filter: [.username([email])]
         )
 
-        return self.request(endpoint)
+        return request(endpoint)
             .map { $0.data.filter { $0.attributes?.username == email } }
             .compactMap { response -> String? in
                 if response.count == 1 {
@@ -107,5 +107,4 @@ extension AppStoreConnectService {
             }
             .eraseToAnyPublisher()
     }
-
 }

@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct EnableBundleIdCapabilityOperation: APIOperation {
-
     struct Options {
         let bundleIdResourceId: String
         let capabilityType: CapabilityType
@@ -14,7 +13,7 @@ struct EnableBundleIdCapabilityOperation: APIOperation {
     let option: Options
 
     init(options: Options) {
-        self.option = options
+        option = options
     }
 
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<BundleIdCapabilityResponse, Error> {
@@ -27,5 +26,4 @@ struct EnableBundleIdCapabilityOperation: APIOperation {
             )
             .eraseToAnyPublisher()
     }
-
 }

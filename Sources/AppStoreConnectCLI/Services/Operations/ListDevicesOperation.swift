@@ -1,17 +1,16 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 
 struct ListDevicesOperation: APIOperation {
-
     struct Options {
-       let filterName: [String]
-       let filterPlatform: [Platform]
-       let filterUDID: [String]
-       let filterStatus: DeviceStatus?
-       let sort: Devices.Sort?
-       let limit: Int?
+        let filterName: [String]
+        let filterPlatform: [Platform]
+        let filterUDID: [String]
+        let filterStatus: DeviceStatus?
+        let sort: Devices.Sort?
+        let limit: Int?
     }
 
     private let options: Options
@@ -21,7 +20,6 @@ struct ListDevicesOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[Device], Error> {
-
         var filters = [Devices.Filter]()
 
         if options.filterName.isNotEmpty { filters.append(.name(options.filterName)) }
@@ -33,26 +31,26 @@ struct ListDevicesOperation: APIOperation {
 
         guard let limit = options.limit else {
             return requestor.requestAllPages {
-                    .listDevices(
-                        filter: filters,
-                        sort: sort,
-                        next: $0
-                    )
-                }
-                .map { $0.flatMap { $0.data } }
-                .eraseToAnyPublisher()
-        }
-
-        return requestor.request(
                 .listDevices(
                     filter: filters,
                     sort: sort,
-                    limit: limit
+                    next: $0
                 )
-            )
-            .map(\.data)
+            }
+            .map { $0.flatMap(\.data) }
             .eraseToAnyPublisher()
+        }
+
+        return requestor.request(
+            .listDevices(
+                filter: filters,
+                sort: sort,
+                limit: limit
+            )
+        )
+        .map(\.data)
+        .eraseToAnyPublisher()
     }
 }
 
-extension DevicesResponse: PaginatedResponse { }
+extension DevicesResponse: PaginatedResponse {}

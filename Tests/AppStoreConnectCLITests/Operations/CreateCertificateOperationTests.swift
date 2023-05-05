@@ -1,18 +1,19 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import XCTest
+@testable import AppStoreConnectCLI
 
 final class CreateCertificateOperationTests: XCTestCase {
     let options = CreateCertificateOperation.Options(
         certificateType: .iOSDevelopment,
-        csrContent: "")
+        csrContent: ""
+    )
 
     let successRequestor = OneEndpointTestRequestor(
-        response: { _ in Future({ $0(.success(Certificate.createCertificateResponse)) }) }
+        response: { _ in Future { $0(.success(Certificate.createCertificateResponse)) } }
     )
 
     func testExecute_success() {
@@ -23,7 +24,7 @@ final class CreateCertificateOperationTests: XCTestCase {
         }
 
         switch result {
-        case .success(let certificate):
+        case let .success(certificate):
             XCTAssertEqual(certificate.name, "Mac Installer Distribution: Hello")
             XCTAssertEqual(certificate.platform, BundleIdPlatform.macOS.rawValue)
             XCTAssertEqual(certificate.content, "MIIFpDCCBIygAwIBAgIIbgb/7NS42MgwDQ")
@@ -44,7 +45,7 @@ final class CreateCertificateOperationTests: XCTestCase {
         let expectedError = TestError.somethingBadHappened
 
         switch result {
-        case .failure(let error as TestError):
+        case let .failure(error as TestError):
             XCTAssertEqual(expectedError, error)
         default:
             XCTFail("Expected failure with: \(expectedError), got: \(result)")

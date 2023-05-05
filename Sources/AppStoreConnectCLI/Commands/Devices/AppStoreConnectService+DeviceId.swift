@@ -1,20 +1,19 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
-import Foundation
 import Combine
+import Foundation
 
 extension AppStoreConnectService {
-
     enum DeviceIDError: Error, LocalizedError {
         case notUnique(String)
         case notFound(String)
 
         var errorDescription: String? {
             switch self {
-            case .notUnique(let identifier):
+            case let .notUnique(identifier):
                 return "'\(identifier)' is not a unique Device UDID."
-            case .notFound(let identifier):
+            case let .notFound(identifier):
                 return "Unable to find device with UDID: '\(identifier)'."
             }
         }
@@ -35,7 +34,7 @@ extension AppStoreConnectService {
                 switch response.first {
                 case .none:
                     throw DeviceIDError.notFound(udid)
-                case .some(let udid) where response.count == 1:
+                case let .some(udid) where response.count == 1:
                     return udid.id
                 case .some:
                     throw DeviceIDError.notUnique(udid)

@@ -1,17 +1,17 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-@testable import AppStoreConnectCLI
 import AppStoreConnect_Swift_SDK
-import Foundation
 import Combine
+import Foundation
 import XCTest
+@testable import AppStoreConnectCLI
 
 final class ListPreReleaseVersionsOperationTests: XCTestCase {
     typealias Operation = ListPreReleaseVersionsOperation
     typealias Options = Operation.Options
 
     let successRequestor = OneEndpointTestRequestor(
-        response: { _ in Future({ $0(.success(dataResponse)) }) }
+        response: { _ in Future { $0(.success(dataResponse)) } }
     )
 
     func testReturnsOnePreReleaseVersion() throws {

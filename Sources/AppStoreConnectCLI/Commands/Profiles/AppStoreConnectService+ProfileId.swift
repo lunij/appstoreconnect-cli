@@ -1,20 +1,19 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
-import Foundation
 import Combine
+import Foundation
 
 extension AppStoreConnectService {
-
     enum ProfileError: Error, LocalizedError {
         case notFound(String)
         case notUnique(String)
 
         var failureReason: String? {
             switch self {
-            case .notFound(let identifier):
+            case let .notFound(identifier):
                 return "Profile with UUID '\(identifier)' not found."
-            case .notUnique(let identifier):
+            case let .notUnique(identifier):
                 return "'\(identifier)' does not uniquly identify a Profile."
             }
         }
@@ -26,7 +25,7 @@ extension AppStoreConnectService {
     /// - returns: The App Store Connect API resource identifier for the Profile UUID.
     func profileResourceId(matching uuid: String) -> AnyPublisher<String, Error> {
         // FIXME: limited by a single page.
-        return self.request(APIEndpoint.listProfiles())
+        request(APIEndpoint.listProfiles())
             .map {
                 $0.data.filter { $0.attributes?.uuid == uuid }
             }

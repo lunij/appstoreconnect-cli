@@ -1,19 +1,17 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 enum ModelError: LocalizedError {
-
     case missingBundleId(appId: String)
     case missingTesterEmail(firstName: String, lastName: String)
 
     var errorDescription: String? {
         switch self {
-        case .missingBundleId(let appId):
+        case let .missingBundleId(appId):
             return "App with id: \(appId) is missing bundleId data"
-        case .missingTesterEmail(let firstName, let lastName):
+        case let .missingTesterEmail(firstName, lastName):
             return "Tester named: \(firstName) \(lastName) is missing email data"
         }
     }
-
 }

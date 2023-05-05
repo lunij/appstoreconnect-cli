@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
 import Foundation
@@ -12,9 +12,9 @@ public struct LocalizationsCommand: ParsableCommand {
             DeleteBuildLocalizationsCommand.self,
             ListBuildLocalizationsCommand.self,
             ReadBuildLocalizationCommand.self,
-            UpdateBuildLocalizationsCommand.self,
+            UpdateBuildLocalizationsCommand.self
         ],
         defaultSubcommand: ListBuildLocalizationsCommand.self
     )
-    public init() { }
+    public init() {}
 }

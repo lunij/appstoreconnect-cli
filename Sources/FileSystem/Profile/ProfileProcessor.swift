@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Foundation
 import Files
+import Foundation
 import Model
 
 public struct ProfileProcessor: ResourceWriter {
-
     public static let profileExtension = "mobileprovision"
 
     let path: ResourcePath
@@ -23,7 +22,6 @@ public struct ProfileProcessor: ResourceWriter {
     public func write(_ certificates: [Profile]) throws -> [File] {
         try certificates.map { try write($0) }
     }
-
 }
 
 extension Profile: FileProvider {
@@ -41,9 +39,10 @@ extension Profile: FileProvider {
     func fileContent() throws -> Data {
         guard
             let content = profileContent,
-            let data = Data(base64Encoded: content) else {
-                throw Error.noContent
-            }
+            let data = Data(base64Encoded: content)
+        else {
+            throw Error.noContent
+        }
 
         return data
     }

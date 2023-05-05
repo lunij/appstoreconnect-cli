@@ -1,10 +1,9 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
 
 /// Aggregated model data representing the a TestFlight Beta Program (Apps, Testers and Groups)
 public struct TestFlightProgram {
-
     public var apps: [App]
     public var testers: [BetaTester]
     public var groups: [BetaGroup]
@@ -18,5 +17,4 @@ public struct TestFlightProgram {
         self.testers = testers
         self.groups = groups
     }
-
 }

@@ -1,11 +1,10 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 
 struct RemoveTesterOperation: APIOperation {
-
     struct Options {
         enum RemoveStrategy {
             case removeTestersFromGroup(testerIds: [String], groupId: String)
@@ -19,9 +18,9 @@ struct RemoveTesterOperation: APIOperation {
 
     var endpoint: APIEndpoint<Void> {
         switch options.removeStrategy {
-        case .removeTesterFromGroups(let testerId, let groupIds):
+        case let .removeTesterFromGroups(testerId, groupIds):
             return APIEndpoint.remove(betaTesterWithId: testerId, fromBetaGroupsWithIds: groupIds)
-        case .removeTestersFromGroup(let testerIds, let groupId):
+        case let .removeTestersFromGroup(testerIds, groupId):
             return APIEndpoint.remove(betaTestersWithIds: testerIds, fromBetaGroupWithId: groupId)
         }
     }
@@ -35,5 +34,4 @@ struct RemoveTesterOperation: APIOperation {
             .request(endpoint)
             .eraseToAnyPublisher()
     }
-
 }

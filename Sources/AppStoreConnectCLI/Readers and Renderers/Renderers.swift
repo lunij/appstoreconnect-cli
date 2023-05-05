@@ -1,4 +1,4 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import AppStoreConnect_Swift_SDK
 import CodableCSV
@@ -81,19 +81,17 @@ extension ResultRenderable {
 
 /// Provides the necessary info to be able to render a table with SwiftyTable
 protocol TableInfoProvider {
-
     /// Array of columns, with their headers, for display
     static func tableColumns() -> [TextTableColumn]
 
     /// A single row of table info, in the same order as `Self.tableColumns()`
     var tableRow: [CustomStringConvertible] { get }
-
 }
 
 extension Array: ResultRenderable where Element: TableInfoProvider & Codable {
     func renderAsCSV() -> String {
-        let headers = Element.tableColumns().map { $0.header }
-        let rows = self.map { $0.tableRow.map { "\($0)" } }
+        let headers = Element.tableColumns().map(\.header)
+        let rows = map { $0.tableRow.map { "\($0)" } }
         let wholeTable = [headers] + rows
 
         return try! CSVWriter.encode(rows: wholeTable, into: String.self) // swiftlint:disable:this force_try
@@ -101,15 +99,15 @@ extension Array: ResultRenderable where Element: TableInfoProvider & Codable {
 
     func renderAsTable() -> String {
         var table = TextTable(columns: Element.tableColumns())
-        table.addRows(values: self.map(\.tableRow))
+        table.addRows(values: map(\.tableRow))
         return table.render()
     }
 }
 
 extension ResultRenderable where Self: TableInfoProvider {
     func renderAsCSV() -> String {
-        let headers = Self.tableColumns().map { $0.header }
-        let row = self.tableRow.map { "\($0)" }
+        let headers = Self.tableColumns().map(\.header)
+        let row = tableRow.map { "\($0)" }
         let wholeTable = [headers] + [row]
 
         return try! CSVWriter.encode(rows: wholeTable, into: String.self) // swiftlint:disable:this force_try
@@ -117,7 +115,7 @@ extension ResultRenderable where Self: TableInfoProvider {
 
     func renderAsTable() -> String {
         var table = TextTable(columns: Self.tableColumns())
-        table.addRow(values: self.tableRow)
+        table.addRow(values: tableRow)
         return table.render()
     }
 }

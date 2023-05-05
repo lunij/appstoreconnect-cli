@@ -1,14 +1,15 @@
-// Copyright 2020 Itty Bitty Apps Pty Ltd
+// Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import ArgumentParser
 import AppStoreConnect_Swift_SDK
+import ArgumentParser
 import Combine
 import Foundation
 
 struct ReadBetaTesterCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "read",
-        abstract: "Get information about a beta tester")
+        abstract: "Get information about a beta tester"
+    )
 
     @OptionGroup()
     var common: CommonOptions
