@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "FAB7A51B-92A5-45A6-AFE1-8337B6F02161",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "appstoreconnect-cliTests",
+        "name" : "appstoreconnect-cliTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -26,6 +26,8 @@ Temporary Items
 .apdisk
 
 # SwiftPM Project Specific
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.swiftpm/xcode/xcuserdata
 /.build
 /Packages
 /*.xcodeproj
