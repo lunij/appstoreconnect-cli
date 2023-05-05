@@ -1,6 +1,7 @@
 // swift-tools-version:5.6
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
+import Foundation
 import PackageDescription
 
 let package = Package(
@@ -18,9 +19,13 @@ let package = Package(
         .package(url: "https://github.com/JohnSundell/Files.git", from: "4.1.1"),
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.1"),
         .package(url: "https://github.com/scottrhoyt/SwiftyTextTable.git", from: "0.9.0")
-    ],
+    ] + .plugins,
     targets: [
-        .executableTarget(name: "asc", dependencies: ["AppStoreConnectCLI"]),
+        .executableTarget(
+            name: "asc",
+            dependencies: ["AppStoreConnectCLI"],
+            plugins: .default
+        ),
         .target(
             name: "AppStoreConnectCLI",
             dependencies: [
@@ -31,14 +36,16 @@ let package = Package(
                 .product(name: "Yams", package: "Yams"),
                 .target(name: "Model"),
                 .target(name: "FileSystem")
-            ]
+            ],
+            plugins: .default
         ),
         .testTarget(
             name: "AppStoreConnectCLITests",
             dependencies: ["AppStoreConnectCLI"],
             resources: [
                 .copy("Fixtures")
-            ]
+            ],
+            plugins: .default
         ),
         .target(
             name: "FileSystem",
@@ -46,8 +53,37 @@ let package = Package(
                 .product(name: "CodableCSV", package: "CodableCSV"),
                 .product(name: "Yams", package: "Yams"),
                 .product(name: "Files", package: "Files"),
-            ]
+            ],
+            plugins: .default
         ),
-        .target(name: "Model")
+        .target(
+            name: "Model",
+            plugins: .default
+        )
     ]
 )
+
+extension [Target.PluginUsage] {
+    static var `default`: [Element] {
+        Environment.isDevelopment ? [
+            .plugin(name: "SwiftFormatPrebuildPlugin", package: "SwiftFormatPlugin"),
+            .plugin(name: "SwiftLintPrebuildFix", package: "SwiftLintPlugin"),
+            .plugin(name: "SwiftLint", package: "SwiftLintPlugin")
+        ] : []
+    }
+}
+
+extension [Package.Dependency] {
+    static var plugins: [Element] {
+        Environment.isDevelopment ? [
+            .package(url: "git@github.com:lunij/SwiftFormatPlugin", from: "0.50.7"),
+            .package(url: "git@github.com:lunij/SwiftLintPlugin", from: "0.50.3")
+        ] : []
+    }
+}
+
+enum Environment {
+    static var isDevelopment: Bool {
+        ProcessInfo.processInfo.environment["DEV"] == "true"
+    }
+}
