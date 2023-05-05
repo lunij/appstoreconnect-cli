@@ -37,7 +37,7 @@ let package = Package(
             name: "AppStoreConnectCLITests",
             dependencies: ["AppStoreConnectCLI"],
             resources: [
-                .copy("Models/Fixtures.bundle")
+                .copy("Fixtures")
             ]
         ),
         .target(

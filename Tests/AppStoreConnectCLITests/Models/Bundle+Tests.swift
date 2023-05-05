@@ -9,6 +9,8 @@ extension Folder {
     static let tests: Folder = try! Folder(
         path: URL(fileURLWithPath: #file)
             .deletingLastPathComponent()
-            .appendingPathComponent("Fixtures.bundle").path
+            .deletingLastPathComponent()
+            .appendingPathComponent("Fixtures")
+            .path
     )
 }
