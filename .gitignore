@@ -25,7 +25,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# SwiftPM Project Specific
+# Swift Package Manager
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .swiftpm/xcode/xcuserdata
 /.build
@@ -34,3 +34,4 @@ Temporary Items
 xcuserdata/
 config/auth.yml
 config/apps
+Package.resolved
