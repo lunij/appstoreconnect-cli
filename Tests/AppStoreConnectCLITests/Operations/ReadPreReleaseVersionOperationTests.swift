@@ -35,7 +35,7 @@ final class ReadPreReleaseVersionOperationTests: XCTestCase {
         let operation = Operation(options: Options(filterAppId: "1504341572", filterVersion: "0.0"))
 
         XCTAssertThrowsError(try operation.execute(with: noResponseRequestor).await()) { error in
-            XCTAssertEqual(error as! OperationError, OperationError.noVersionExists)
+            XCTAssertEqual(error as? OperationError, .noVersionExists)
         }
     }
 
@@ -43,7 +43,7 @@ final class ReadPreReleaseVersionOperationTests: XCTestCase {
         let operation = Operation(options: Options(filterAppId: "1504341572", filterVersion: "1.0"))
 
         XCTAssertThrowsError(try operation.execute(with: notUniqueRequestor).await()) { error in
-            XCTAssertEqual(error as! OperationError, OperationError.versionNotUnique)
+            XCTAssertEqual(error as? OperationError, .versionNotUnique)
         }
     }
 

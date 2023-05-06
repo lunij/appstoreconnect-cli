@@ -37,14 +37,16 @@ struct ReadBundleIdOperation: APIOperation {
         )
         .tryMap {
             let data = $0.data.filter { $0.attributes?.identifier == self.options.bundleId }
-            switch data.count {
-            case 0:
-                throw Error.couldNotFindBundleId(self.options.bundleId)
-            case 1:
-                return data.first!
-            default:
+
+            if data.count > 1 {
                 throw Error.bundleIdNotUnique(self.options.bundleId)
             }
+
+            guard let bundleId = data.first else {
+                throw Error.couldNotFindBundleId(self.options.bundleId)
+            }
+
+            return bundleId
         }
         .eraseToAnyPublisher()
     }

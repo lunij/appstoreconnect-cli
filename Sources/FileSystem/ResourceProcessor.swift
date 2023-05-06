@@ -16,9 +16,9 @@ public enum ResourcePath {
 protocol ResourceProcessor: ResourceReader, ResourceWriter {}
 
 protocol ResourceReader: PathProvider {
-    associatedtype T: Codable, FileProvider
+    associatedtype Entity: Codable, FileProvider
 
-    func read() throws -> [T]
+    func read() throws -> [Entity]
 }
 
 protocol ResourceWriter: PathProvider {}

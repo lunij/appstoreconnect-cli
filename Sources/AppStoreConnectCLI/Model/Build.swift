@@ -37,10 +37,10 @@ extension Model.Build {
             return nil
         }
 
-        let appDetails = includedApps?.filter { relationships?.app?.data?.id == $0.id }.first
-        let prereleaseVersion = includedPrereleaseVersions?.filter { relationships?.preReleaseVersion?.data?.id == $0.id }.first
-        let buildBetaDetail = includedBuildBetaDetails?.filter { relationships?.buildBetaDetail?.data?.id == $0.id }.first
-        let betaAppReviewSubmission = includedBetaAppReviewSubmissions?.filter { relationships?.betaAppReviewSubmission?.data?.id == $0.id }.first
+        let appDetails = includedApps?.first { relationships?.app?.data?.id == $0.id }
+        let prereleaseVersion = includedPrereleaseVersions?.first { relationships?.preReleaseVersion?.data?.id == $0.id }
+        let buildBetaDetail = includedBuildBetaDetails?.first { relationships?.buildBetaDetail?.data?.id == $0.id }
+        let betaAppReviewSubmission = includedBetaAppReviewSubmissions?.first { relationships?.betaAppReviewSubmission?.data?.id == $0.id }
 
         let app = appDetails.map(Model.App.init)
 

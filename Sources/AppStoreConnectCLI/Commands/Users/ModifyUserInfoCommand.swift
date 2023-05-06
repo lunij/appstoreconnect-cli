@@ -36,6 +36,6 @@ struct ModifyUserInfoCommand: CommonParsableCommand {
             bundleIds: userInfo.bundleIds
         )
 
-        user.render(options: common.outputOptions)
+        try user.render(options: common.outputOptions)
     }
 }

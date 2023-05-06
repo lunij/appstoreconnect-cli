@@ -20,7 +20,7 @@ struct SetUserVisibleAppsCommand: CommonParsableCommand {
     var bundleIds: [String]
 
     public func run() throws {
-        // TODO:
+        #warning("not implemented")
         print(bundleIds)
     }
 }

@@ -1,10 +1,13 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
+// swiftlint:disable file_length
+
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
 import Model
 
+// swiftlint:disable:next type_body_length
 class AppStoreConnectService {
     private let provider: APIProvider
     private let requestor: EndpointRequestor
@@ -359,7 +362,7 @@ class AppStoreConnectService {
 
         if filterAppIds.isEmpty == false {
             betaTesters = betaTesters.filter { betaTester in
-                betaTester.apps?.first(where: { app in filterAppIds.contains(app.id) }) != nil
+                betaTester.apps?.contains { app in filterAppIds.contains(app.id) } ?? false
             }
         }
 

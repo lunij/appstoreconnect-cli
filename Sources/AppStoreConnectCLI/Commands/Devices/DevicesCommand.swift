@@ -12,7 +12,6 @@ struct DevicesCommand: ParsableCommand {
             ModifyDeviceCommand.self,
             ReadDeviceInfoCommand.self,
             RegisterDeviceCommand.self
-            // TODO:
             // SyncDevicesCommand.self, // Synchronise devices with configuration file
         ],
         defaultSubcommand: ListDevicesCommand.self

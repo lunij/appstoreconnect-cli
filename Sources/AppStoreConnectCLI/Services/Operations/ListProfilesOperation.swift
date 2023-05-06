@@ -27,8 +27,6 @@ struct ListProfilesOperation: APIOperation {
         if let filterProfileState = options.filterProfileState { filters.append(.profileState([filterProfileState])) }
         if options.ids.isNotEmpty { filters.append(.id(options.ids)) }
 
-        let limits: [Profiles.Limit]? = options.limit != nil ? [.profiles(options.limit!)] : nil
-
         let sort = [options.sort].compactMap { $0 }
 
         return requestor
@@ -37,7 +35,7 @@ struct ListProfilesOperation: APIOperation {
                     filter: filters,
                     include: [.bundleId, .certificates, .devices],
                     sort: sort,
-                    limit: limits,
+                    limit: options.limit.map { [.profiles($0)] },
                     next: $0
                 )
             }

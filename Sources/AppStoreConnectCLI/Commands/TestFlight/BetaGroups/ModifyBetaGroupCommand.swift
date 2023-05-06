@@ -56,6 +56,6 @@ struct ModifyBetaGroupCommand: CommonParsableCommand {
             publicLinkLimitEnabled: publicLinkLimitEnabled
         )
 
-        betaGroup.render(options: common.outputOptions)
+        try betaGroup.render(options: common.outputOptions)
     }
 }

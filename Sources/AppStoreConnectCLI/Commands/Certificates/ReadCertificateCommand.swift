@@ -35,6 +35,6 @@ struct ReadCertificateCommand: CommonParsableCommand {
             }
         }
 
-        certificate.render(options: common.outputOptions)
+        try certificate.render(options: common.outputOptions)
     }
 }

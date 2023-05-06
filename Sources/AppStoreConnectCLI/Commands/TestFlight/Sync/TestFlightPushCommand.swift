@@ -27,7 +27,7 @@ struct TestFlightPushCommand: CommonParsableCommand {
 
         difference.changes.forEach { print($0.description) }
 
-        // TODO: Push the testflight program to the API
+        #warning("Push the testflight program to the API")
 
         throw CommandError.unimplemented
     }

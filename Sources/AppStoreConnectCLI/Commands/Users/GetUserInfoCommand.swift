@@ -27,6 +27,6 @@ struct GetUserInfoCommand: CommonParsableCommand {
             includeVisibleApps: includeVisibleApps
         )
 
-        user.render(options: common.outputOptions)
+        try user.render(options: common.outputOptions)
     }
 }

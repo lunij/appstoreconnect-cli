@@ -9,17 +9,14 @@ import SwiftyTextTable
 // MARK: - API conveniences
 
 extension Model.BundleId {
-    init(_ attributes: AppStoreConnect_Swift_SDK.BundleId.Attributes) {
-        self.init(
-            identifier: attributes.identifier,
-            name: attributes.name,
-            platform: attributes.platform?.rawValue,
-            seedId: attributes.seedId
-        )
-    }
-
     init(_ apiBundleId: AppStoreConnect_Swift_SDK.BundleId) {
-        self.init(apiBundleId.attributes!)
+        let attributes = apiBundleId.attributes
+        self.init(
+            identifier: attributes?.identifier,
+            name: attributes?.name,
+            platform: attributes?.platform?.rawValue,
+            seedId: attributes?.seedId
+        )
     }
 
     init(_ response: AppStoreConnect_Swift_SDK.BundleIdResponse) {

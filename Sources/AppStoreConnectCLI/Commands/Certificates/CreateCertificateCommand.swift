@@ -30,6 +30,6 @@ struct CreateCertificateCommand: CommonParsableCommand {
             csrContent: csrContent
         )
 
-        certificate.render(options: common.outputOptions)
+        try certificate.render(options: common.outputOptions)
     }
 }

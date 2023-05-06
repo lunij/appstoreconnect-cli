@@ -24,19 +24,19 @@ extension AppStoreConnectService {
     /// - parameter udid: The device UUID string.
     /// - returns: The App Store Connect API resource identifier for the Profile UUID.
     func profileResourceId(matching uuid: String) -> AnyPublisher<String, Error> {
-        // FIXME: limited by a single page.
-        request(APIEndpoint.listProfiles())
+        #warning("limited by a single page")
+        return request(APIEndpoint.listProfiles())
             .map {
                 $0.data.filter { $0.attributes?.uuid == uuid }
             }
             .tryMap { profiles -> String in
-                guard profiles.isEmpty == false else {
-                    throw ProfileError.notFound(uuid)
-                }
-                guard profiles.count == 1 else {
+                if profiles.count > 1 {
                     throw ProfileError.notUnique(uuid)
                 }
-                return profiles.first!.id
+                guard let profile = profiles.first else {
+                    throw ProfileError.notFound(uuid)
+                }
+                return profile.id
             }
             .eraseToAnyPublisher()
     }

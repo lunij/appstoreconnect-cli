@@ -64,6 +64,6 @@ struct InviteUserCommand: CommonParsableCommand {
             .map(\.data)
             .await()
 
-        invitation.render(options: common.outputOptions)
+        try invitation.render(options: common.outputOptions)
     }
 }

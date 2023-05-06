@@ -20,7 +20,7 @@ struct ListUserVisibleAppsCommand: CommonParsableCommand {
     var limit: Int?
 
     public func run() throws {
-        // TODO:
+        #warning("not implemented")
         print(username as Any)
     }
 }

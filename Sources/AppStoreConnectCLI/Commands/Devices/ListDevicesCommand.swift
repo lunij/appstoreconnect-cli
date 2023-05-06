@@ -73,6 +73,6 @@ struct ListDevicesCommand: CommonParsableCommand {
             limit: limit
         )
 
-        devices.render(options: common.outputOptions)
+        try devices.render(options: common.outputOptions)
     }
 }

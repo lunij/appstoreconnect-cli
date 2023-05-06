@@ -50,6 +50,6 @@ struct ReadDeviceInfoCommand: CommonParsableCommand {
             .map(Device.init)
             .await()
 
-        device.render(options: common.outputOptions)
+        try device.render(options: common.outputOptions)
     }
 }
