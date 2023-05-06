@@ -26,6 +26,6 @@ struct ReadPreReleaseVersionCommand: CommonParsableCommand {
         let service = try makeService()
 
         let prereleaseVersion = try service.readPreReleaseVersion(filterIdentifier: appLookupArgument.identifier, filterVersion: version)
-        prereleaseVersion.render(options: common.outputOptions)
+        try prereleaseVersion.render(options: common.outputOptions)
     }
 }

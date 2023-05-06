@@ -13,7 +13,7 @@ struct UsersCommand: ParsableCommand {
             GetUserInfoCommand.self,
             InviteUserCommand.self,
             ListUserInvitationsCommand.self,
-            // TODO: ListInvitedUserVisibleAppsCommand.self, // Get a list of apps that will be visible to a user with a pending invitation.
+            // ListInvitedUserVisibleAppsCommand.self, // Get a list of apps that will be visible to a user with a pending invitation.
             ListUsersCommand.self,
             ListUserVisibleAppsCommand.self,
             ModifyUserInfoCommand.self,

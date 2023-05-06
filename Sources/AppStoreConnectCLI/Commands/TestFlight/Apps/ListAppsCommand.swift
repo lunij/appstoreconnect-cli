@@ -36,6 +36,6 @@ struct ListAppsCommand: CommonParsableCommand {
             limit: limit
         )
 
-        apps.render(options: common.outputOptions)
+        try apps.render(options: common.outputOptions)
     }
 }

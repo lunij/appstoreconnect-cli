@@ -32,6 +32,6 @@ struct RegisterBundleIdCommand: CommonParsableCommand {
             .map(BundleId.init)
             .await()
 
-        bundleId.render(options: common.outputOptions)
+        try bundleId.render(options: common.outputOptions)
     }
 }

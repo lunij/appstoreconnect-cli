@@ -123,17 +123,15 @@ struct GetBetaTesterOperation: APIOperation {
 
             return requestor.request(endpoint)
                 .tryMap { (response: BetaTestersResponse) -> Output in
-                    switch response.data.count {
-                    case 0:
-                        throw Error.betaTesterNotFound(email)
-                    case 1:
-                        return Output(
-                            betaTester: response.data.first!,
-                            includes: response.included
-                        )
-                    default:
+                    if response.data.count > 1 {
                         throw Error.betaTesterNotUnique(email)
                     }
+
+                    guard let betaTester = response.data.first else {
+                        throw Error.betaTesterNotFound(email)
+                    }
+
+                    return Output(betaTester: betaTester, includes: response.included)
                 }
                 .eraseToAnyPublisher()
         }

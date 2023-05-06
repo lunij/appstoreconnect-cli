@@ -87,11 +87,11 @@ struct ListProfilesCommand: CommonParsableCommand {
 
                 // Only print if the `PrintLevel` is set to verbose.
                 if common.outputOptions.printLevel == .verbose {
-                    print("📥 Profile '\($0.name!)' downloaded to: \(file.path)")
+                    print("📥 Profile '\($0.name ?? "")' downloaded to: \(file.path)")
                 }
             }
         }
 
-        profiles.render(options: common.outputOptions)
+        try profiles.render(options: common.outputOptions)
     }
 }

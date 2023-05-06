@@ -27,6 +27,6 @@ struct ListBuildLocalizationsCommand: CommonParsableCommand {
             limit: limit
         )
 
-        localizations.render(options: common.outputOptions)
+        try localizations.render(options: common.outputOptions)
     }
 }

@@ -38,11 +38,10 @@ struct GetUserInfoOperation: APIOperation {
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.User, Swift.Error> {
         requestor.request(endpoint)
             .tryMap { [options] response in
-                guard response.data.count == 1 else {
+                guard let user = response.data.first else {
                     throw Error.couldNotFindUser(email: options.email)
                 }
-
-                return response.data.first!
+                return user
             }
             .eraseToAnyPublisher()
     }

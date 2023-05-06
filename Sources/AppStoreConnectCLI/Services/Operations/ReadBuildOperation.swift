@@ -58,14 +58,15 @@ struct ReadBuildOperation: APIOperation {
 
         return requestor.request(endpoint)
             .tryMap { buildResponse throws -> Output in
-                switch buildResponse.data.count {
-                case 0:
-                    throw ReadBuildError.noBuildExist
-                case 1:
-                    return Output(build: buildResponse.data.first!, relationships: buildResponse.included)
-                default:
+                if buildResponse.data.count > 1 {
                     throw ReadBuildError.buildNotUnique
                 }
+
+                guard let build = buildResponse.data.first else {
+                    throw ReadBuildError.noBuildExist
+                }
+
+                return Output(build: build, relationships: buildResponse.included)
             }
             .eraseToAnyPublisher()
     }

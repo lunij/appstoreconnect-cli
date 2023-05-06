@@ -46,14 +46,15 @@ struct ReadPreReleaseVersionOperation: APIOperation {
 
         return requestor.request(endpoint)
             .tryMap { response throws -> Output in
-                switch response.data.count {
-                case 0:
-                    throw Error.noVersionExists
-                case 1:
-                    return Output(preReleaseVersion: response.data.first!, relationships: response.included)
-                default:
+                if response.data.count > 1 {
                     throw Error.versionNotUnique
                 }
+
+                guard let preReleaseVersion = response.data.first else {
+                    throw Error.noVersionExists
+                }
+
+                return Output(preReleaseVersion: preReleaseVersion, relationships: response.included)
             }
             .eraseToAnyPublisher()
     }

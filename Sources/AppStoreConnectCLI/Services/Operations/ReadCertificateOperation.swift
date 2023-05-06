@@ -38,14 +38,15 @@ struct ReadCertificateOperation: APIOperation {
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.Certificate, Swift.Error> {
         requestor.request(endpoint)
             .tryMap { [serial = options.serial] (response: CertificatesResponse) -> AppStoreConnect_Swift_SDK.Certificate in
-                switch response.data.count {
-                case 0:
-                    throw Error.couldNotFindCertificate(serial)
-                case 1:
-                    return response.data.first!
-                default:
+                if response.data.count > 1 {
                     throw Error.serialNumberNotUnique(serial)
                 }
+
+                guard let certificate = response.data.first else {
+                    throw Error.couldNotFindCertificate(serial)
+                }
+
+                return certificate
             }
             .eraseToAnyPublisher()
     }

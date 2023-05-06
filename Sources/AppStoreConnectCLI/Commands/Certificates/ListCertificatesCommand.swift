@@ -62,6 +62,6 @@ struct ListCertificatesCommand: CommonParsableCommand {
             }
         }
 
-        certificates.render(options: common.outputOptions)
+        try certificates.render(options: common.outputOptions)
     }
 }

@@ -82,6 +82,6 @@ struct ListBetaTesterByBuildsCommand: CommonParsableCommand {
             }
             .await()
 
-        betaTesters.render(options: common.outputOptions)
+        try betaTesters.render(options: common.outputOptions)
     }
 }

@@ -33,9 +33,9 @@ struct ReadProfileCommand: CommonParsableCommand {
             let processor = ProfileProcessor(path: .folder(path: path))
             let file = try processor.write(profile)
 
-            print("📥 Profile '\(profile.name!)' downloaded to: \(file.path)")
+            print("📥 Profile '\(profile.name ?? "")' downloaded to: \(file.path)")
         }
 
-        [profile].render(options: common.outputOptions)
+        try [profile].render(options: common.outputOptions)
     }
 }

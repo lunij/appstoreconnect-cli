@@ -7,18 +7,18 @@ import SwiftyTextTable
 
 extension Model.Profile {
     init(_ apiProfile: AppStoreConnect_Swift_SDK.Profile) {
-        let attributes = apiProfile.attributes!
+        let attributes = apiProfile.attributes
 
         self.init(
             id: apiProfile.id,
-            name: attributes.name,
-            platform: attributes.platform?.rawValue,
-            profileContent: attributes.profileContent,
-            uuid: attributes.uuid,
-            createdDate: attributes.createdDate,
-            profileState: attributes.profileState?.rawValue,
-            profileType: attributes.profileType?.rawValue,
-            expirationDate: attributes.expirationDate
+            name: attributes?.name,
+            platform: attributes?.platform?.rawValue,
+            profileContent: attributes?.profileContent,
+            uuid: attributes?.uuid,
+            createdDate: attributes?.createdDate,
+            profileState: attributes?.profileState?.rawValue,
+            profileType: attributes?.profileType?.rawValue,
+            expirationDate: attributes?.expirationDate
         )
     }
 

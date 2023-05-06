@@ -37,6 +37,6 @@ struct ReadBetaTesterCommand: CommonParsableCommand {
                 limitBetaGroups: limitBetaGroups
             )
 
-        tester.render(options: common.outputOptions)
+        try tester.render(options: common.outputOptions)
     }
 }

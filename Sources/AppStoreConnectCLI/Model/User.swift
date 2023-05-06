@@ -6,8 +6,6 @@ import Foundation
 import Model
 import SwiftyTextTable
 
-// TODO: Extract these extensions somewhere that makes sense down the road
-
 // MARK: - API conveniences
 
 extension Model.User {
@@ -15,7 +13,7 @@ extension Model.User {
         guard let attributes = apiUser.attributes,
               let username = attributes.username
         else {
-            // TODO: Error handling
+            #warning("error handling")
             return nil
         }
 

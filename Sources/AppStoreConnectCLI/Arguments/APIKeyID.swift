@@ -30,8 +30,8 @@ struct APIKeyID: EnvironmentLoadableArgument {
     }
 
     func load() throws -> String {
-        // TODO: validate the format of the env var content
-        // TODO: validate format of file is correct (if found)
+        #warning("validate the format of the env var content")
+        #warning("validate format of file is correct (if found)")
 
         guard let apiKeyFileContent =
             try (ProcessInfo.processInfo.environment["APPSTORE_CONNECT_API_KEY"] ??

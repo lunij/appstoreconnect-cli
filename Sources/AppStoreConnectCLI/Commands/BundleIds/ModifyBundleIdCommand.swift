@@ -27,6 +27,6 @@ struct ModifyBundleIdCommand: CommonParsableCommand {
         let bundleId = try service
             .modifyBundleIdInformation(bundleId: identifier, name: name)
 
-        bundleId.render(options: common.outputOptions)
+        try bundleId.render(options: common.outputOptions)
     }
 }

@@ -45,12 +45,7 @@ struct ReadAppOperation: APIOperation {
 
             result = requestor.request(endpoint)
                 .tryMap { (response: AppsResponse) throws -> App in
-                    switch response.data.count {
-                    case 0:
-                        throw Error.notFound(bundleId)
-                    case 1:
-                        return response.data.first!
-                    default:
+                    if response.data.count > 1 {
                         guard options.shouldMatchExactly else {
                             throw Error.notUnique(bundleId)
                         }
@@ -63,6 +58,12 @@ struct ReadAppOperation: APIOperation {
 
                         return match
                     }
+
+                    guard let app = response.data.first else {
+                        throw Error.notFound(bundleId)
+                    }
+
+                    return app
                 }
                 .eraseToAnyPublisher()
         }
