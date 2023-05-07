@@ -2,7 +2,6 @@
 
 import AppStoreConnect_Swift_SDK
 import Combine
-import struct Model.User
 
 struct ListUsersOperation: APIOperation {
     typealias Filter = ListUsers.Filter
@@ -44,10 +43,10 @@ struct ListUsersOperation: APIOperation {
     }
 
     func execute(with requestor: EndpointRequestor) -> AnyPublisher<[User], Error> {
-        let include = self.include
-        let limit = self.limit
+        let include = include
+        let limit = limit
         let sort = options.sort.map { [$0] }
-        let filter = self.filter
+        let filter = filter
 
         return requestor.requestAllPages {
             .users(

@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import FileSystem
 
 struct ReadCertificateCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(

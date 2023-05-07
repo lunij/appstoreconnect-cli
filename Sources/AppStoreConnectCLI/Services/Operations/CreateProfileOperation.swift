@@ -28,7 +28,7 @@ struct CreateProfileOperation: APIOperation {
         )
     }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Profile, Error> {
+    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.Profile, Error> {
         requestor
             .request(endpoint)
             .map(\.data)

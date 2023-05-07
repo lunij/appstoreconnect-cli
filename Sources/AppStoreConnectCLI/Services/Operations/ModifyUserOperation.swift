@@ -19,7 +19,7 @@ struct ModifyUserOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<User, Error> {
+    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<AppStoreConnect_Swift_SDK.User, Error> {
         let buildModifyEndpoint = APIEndpoint.modify(
             userWithId: options.userId,
             allAppsVisible: options.allAppsVisible,

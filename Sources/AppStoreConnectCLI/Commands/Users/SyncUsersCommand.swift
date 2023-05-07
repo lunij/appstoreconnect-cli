@@ -3,9 +3,7 @@
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import Combine
-import FileSystem
 import Foundation
-import struct Model.User
 
 struct SyncUsersCommand: CommonParsableCommand {
     typealias UserChange = CollectionDifference<User>.Change

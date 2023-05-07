@@ -19,7 +19,7 @@ struct ListProfilesOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[Profile], Error> {
+    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[AppStoreConnect_Swift_SDK.Profile], Error> {
         var filters = [Profiles.Filter]()
 
         if options.filterName.isNotEmpty { filters.append(.name(options.filterName)) }

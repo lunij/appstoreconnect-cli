@@ -15,7 +15,7 @@ struct ListProfilesByBundleIdOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[Profile], Error> {
+    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[AppStoreConnect_Swift_SDK.Profile], Error> {
         let endpoint: APIEndpoint<ProfilesResponse> = .listAllProfilesForBundleId(
             id: options.bundleIdResourceId,
             limit: options.limit

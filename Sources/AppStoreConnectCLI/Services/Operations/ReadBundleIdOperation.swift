@@ -29,7 +29,7 @@ struct ReadBundleIdOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<BundleId, Swift.Error> {
+    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.BundleId, Swift.Error> {
         requestor.request(
             .listBundleIds(
                 filter: [.identifier([options.bundleId])]

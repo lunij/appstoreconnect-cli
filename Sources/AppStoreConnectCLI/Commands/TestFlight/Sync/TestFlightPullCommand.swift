@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import FileSystem
 import Foundation
-import Model
 
 struct TestFlightPullCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -28,6 +26,6 @@ struct TestFlightPullCommand: CommonParsableCommand {
 
         let testflightProgram = try service.getTestFlightProgram(bundleIds: filterBundleIds)
 
-        try FileSystem.writeTestFlightConfiguration(program: testflightProgram, to: outputPath)
+        try writeTestFlightConfiguration(program: testflightProgram, to: outputPath)
     }
 }

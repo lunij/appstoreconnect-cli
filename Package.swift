@@ -32,10 +32,9 @@ let package = Package(
                 .product(name: "AppStoreConnect-Swift-SDK", package: "AppStoreConnect-Swift-SDK"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "CodableCSV", package: "CodableCSV"),
+                .product(name: "Files", package: "Files"),
                 .product(name: "SwiftyTextTable", package: "SwiftyTextTable"),
-                .product(name: "Yams", package: "Yams"),
-                .target(name: "Model"),
-                .target(name: "FileSystem")
+                .product(name: "Yams", package: "Yams")
             ],
             plugins: .default
         ),
@@ -45,19 +44,6 @@ let package = Package(
             resources: [
                 .copy("Fixtures")
             ],
-            plugins: .default
-        ),
-        .target(
-            name: "FileSystem",
-            dependencies: [
-                .product(name: "CodableCSV", package: "CodableCSV"),
-                .product(name: "Yams", package: "Yams"),
-                .product(name: "Files", package: "Files"),
-            ],
-            plugins: .default
-        ),
-        .target(
-            name: "Model",
             plugins: .default
         )
     ]

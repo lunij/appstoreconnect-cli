@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import FileSystem
 
 struct UpdateBuildLocalizationsCommand: CommonParsableCommand, CreateUpdateBuildLocalizationCommand {
     static var configuration = CommandConfiguration(

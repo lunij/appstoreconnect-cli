@@ -50,7 +50,7 @@ struct ListCertificatesOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<[Certificate], Swift.Error> {
+    func execute(with requestor: EndpointRequestor) -> AnyPublisher<[AppStoreConnect_Swift_SDK.Certificate], Swift.Error> {
         let filters = filters
         let sort = [options.sort].compactMap { $0 }
         let limit = options.limit
@@ -64,7 +64,7 @@ struct ListCertificatesOperation: APIOperation {
             )
         }
         .tryMap {
-            try $0.flatMap { (response: CertificatesResponse) -> [Certificate] in
+            try $0.flatMap { response in
                 guard !response.data.isEmpty else {
                     throw Error.couldNotFindCertificate
                 }
