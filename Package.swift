@@ -16,8 +16,10 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.1.3"),
         .package(url: "https://github.com/AvdLee/appstoreconnect-swift-sdk.git", from: "1.7.0"),
         .package(url: "https://github.com/dehesa/CodableCSV.git", from: "0.5.5"),
+        .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.2.0"),
         .package(url: "https://github.com/JohnSundell/Files.git", from: "4.1.1"),
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.1"),
+        .package(url: "https://github.com/MortenGregersen/Bagbutik.git", from: "5.1.0"),
         .package(url: "https://github.com/scottrhoyt/SwiftyTextTable.git", from: "0.9.0")
     ] + .plugins,
     targets: [
@@ -31,7 +33,9 @@ let package = Package(
             dependencies: [
                 .product(name: "AppStoreConnect-Swift-SDK", package: "AppStoreConnect-Swift-SDK"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Bagbutik", package: "Bagbutik"),
                 .product(name: "CodableCSV", package: "CodableCSV"),
+                .product(name: "CollectionConcurrencyKit", package: "CollectionConcurrencyKit"),
                 .product(name: "Files", package: "Files"),
                 .product(name: "SwiftyTextTable", package: "SwiftyTextTable"),
                 .product(name: "Yams", package: "Yams")
