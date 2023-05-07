@@ -14,7 +14,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.1.3"),
-        .package(url: "https://github.com/AvdLee/appstoreconnect-swift-sdk.git", from: "1.7.0"),
         .package(url: "https://github.com/dehesa/CodableCSV.git", from: "0.5.5"),
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.2.0"),
         .package(url: "https://github.com/JohnSundell/Files.git", from: "4.1.1"),
@@ -31,7 +30,6 @@ let package = Package(
         .target(
             name: "AppStoreConnectCLI",
             dependencies: [
-                .product(name: "AppStoreConnect-Swift-SDK", package: "AppStoreConnect-Swift-SDK"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Bagbutik", package: "Bagbutik"),
                 .product(name: "CodableCSV", package: "CodableCSV"),
