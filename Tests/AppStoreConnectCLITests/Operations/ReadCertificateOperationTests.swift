@@ -3,7 +3,6 @@
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
-import Model
 import XCTest
 @testable import AppStoreConnectCLI
 
@@ -43,7 +42,7 @@ final class ReadCertificateOperationTests: XCTestCase {
 
         switch result {
         case let .success(sdkCertificate):
-            let certificate = Model.Certificate(sdkCertificate)
+            let certificate = Certificate(sdkCertificate)
             XCTAssertEqual(certificate.name, "Mac Installer Distribution: Hello")
             XCTAssertEqual(certificate.platform, BundleIdPlatform.macOS.rawValue)
             XCTAssertEqual(certificate.content, "MIIFpDCCBIygAwIBAgIIbgb/7NS42MgwDQ")

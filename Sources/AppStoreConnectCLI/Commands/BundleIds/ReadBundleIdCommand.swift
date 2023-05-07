@@ -4,7 +4,6 @@ import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import Combine
 import Foundation
-import struct Model.BundleId
 
 struct ReadBundleIdCommand: CommonParsableCommand {
     public static var configuration = CommandConfiguration(

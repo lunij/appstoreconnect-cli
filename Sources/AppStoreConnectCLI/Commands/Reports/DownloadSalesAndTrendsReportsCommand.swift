@@ -2,7 +2,6 @@
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import FileSystem
 
 struct DownloadSalesAndTrendsReportsCommand: CommonParsableCommand {
     enum ReportFilter: String, ExpressibleByArgument, CaseIterable, CustomStringConvertible {

@@ -3,7 +3,6 @@
 import AppStoreConnect_Swift_SDK
 import Combine
 import Foundation
-import struct Model.User
 
 struct GetUserInfoOperation: APIOperation {
     enum Error: LocalizedError {

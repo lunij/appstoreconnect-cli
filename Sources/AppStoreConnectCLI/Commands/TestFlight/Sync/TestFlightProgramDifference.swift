@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Foundation
-import Model
 
 struct TestFlightProgramDifference {
     enum Change {

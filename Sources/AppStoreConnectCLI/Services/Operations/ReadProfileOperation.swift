@@ -14,7 +14,7 @@ struct ReadProfileOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Profile, Swift.Error> {
+    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.Profile, Swift.Error> {
         requestor.request(
             .readProfileInformation(id: options.id)
         )

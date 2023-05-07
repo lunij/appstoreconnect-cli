@@ -2,7 +2,6 @@
 
 import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import FileSystem
 
 struct ListCertificatesCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(

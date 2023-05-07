@@ -19,7 +19,7 @@ struct ListDevicesOperation: APIOperation {
         self.options = options
     }
 
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[Device], Error> {
+    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[AppStoreConnect_Swift_SDK.Device], Error> {
         var filters = [Devices.Filter]()
 
         if options.filterName.isNotEmpty { filters.append(.name(options.filterName)) }

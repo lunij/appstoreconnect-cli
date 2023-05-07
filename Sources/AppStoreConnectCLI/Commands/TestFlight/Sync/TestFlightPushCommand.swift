@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import FileSystem
 import Foundation
-import Model
 
 struct TestFlightPushCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -20,7 +18,7 @@ struct TestFlightPushCommand: CommonParsableCommand {
     func run() throws {
         let service = try makeService()
 
-        let local = try FileSystem.readTestFlightConfiguration(from: inputPath)
+        let local = try readTestFlightConfiguration(from: inputPath)
         let remote = try service.getTestFlightProgram()
 
         let difference = TestFlightProgramDifference(local: local, remote: remote)

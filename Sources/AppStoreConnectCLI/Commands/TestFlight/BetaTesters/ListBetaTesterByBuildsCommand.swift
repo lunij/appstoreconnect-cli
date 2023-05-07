@@ -4,7 +4,6 @@ import AppStoreConnect_Swift_SDK
 import ArgumentParser
 import Combine
 import Foundation
-import struct Model.BetaTester
 
 struct ListBetaTesterByBuildsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
