@@ -4,29 +4,13 @@ import AppStoreConnect_Swift_SDK
 import Foundation
 import SwiftyTextTable
 
-public struct Certificate: Codable, Equatable {
-    public let name: String?
-    public let type: String?
-    public let content: String?
-    public let platform: String?
-    public let expirationDate: Date?
-    public let serialNumber: String?
-
-    public init(
-        name: String?,
-        type: String?,
-        content: String?,
-        platform: String?,
-        expirationDate: Date?,
-        serialNumber: String?
-    ) {
-        self.name = name
-        self.type = type
-        self.content = content
-        self.platform = platform
-        self.expirationDate = expirationDate
-        self.serialNumber = serialNumber
-    }
+struct Certificate: Codable, Equatable {
+    let name: String?
+    let type: String?
+    let content: String?
+    let platform: String?
+    let expirationDate: Date?
+    let serialNumber: String?
 }
 
 // MARK: - Extensions

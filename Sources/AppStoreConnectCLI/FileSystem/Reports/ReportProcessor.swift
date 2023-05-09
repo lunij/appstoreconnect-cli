@@ -3,17 +3,13 @@
 import Files
 import Foundation
 
-public struct ReportProcessor {
-    public typealias Report = Data
+struct ReportProcessor {
+    typealias Report = Data
 
     let path: String
 
-    public init(path: String) {
-        self.path = path
-    }
-
     @discardableResult
-    public func write(_ report: Report) throws -> File {
+    func write(_ report: Report) throws -> File {
         let standardizedPath = path as NSString
         return try Folder(path: standardizedPath.deletingLastPathComponent)
             .createFile(

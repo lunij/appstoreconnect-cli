@@ -5,32 +5,14 @@ import Combine
 import Foundation
 import SwiftyTextTable
 
-public struct User: Codable, Equatable {
-    public let username: String
-    public let firstName: String
-    public let lastName: String
-    public let roles: [String]
-    public let provisioningAllowed: Bool
-    public let allAppsVisible: Bool
-    public let visibleApps: [String]?
-
-    public init(
-        username: String,
-        firstName: String,
-        lastName: String,
-        roles: [String],
-        provisioningAllowed: Bool,
-        allAppsVisible: Bool,
-        visibleApps: [String]?
-    ) {
-        self.username = username
-        self.firstName = firstName
-        self.lastName = lastName
-        self.roles = roles
-        self.provisioningAllowed = provisioningAllowed
-        self.allAppsVisible = allAppsVisible
-        self.visibleApps = visibleApps
-    }
+struct User: Codable, Equatable {
+    let username: String
+    let firstName: String
+    let lastName: String
+    let roles: [String]
+    let provisioningAllowed: Bool
+    let allAppsVisible: Bool
+    let visibleApps: [String]?
 }
 
 // MARK: - Extensions

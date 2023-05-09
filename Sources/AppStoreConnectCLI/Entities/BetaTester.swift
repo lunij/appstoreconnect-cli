@@ -5,29 +5,13 @@ import Combine
 import Foundation
 import SwiftyTextTable
 
-public struct BetaTester: Codable, Equatable {
-    public var email: String?
-    public var firstName: String?
-    public var lastName: String?
-    public var inviteType: String?
-    public var betaGroups: [BetaGroup]
-    public var apps: [App]
-
-    public init(
-        email: String?,
-        firstName: String?,
-        lastName: String?,
-        inviteType: String?,
-        betaGroups: [BetaGroup]?,
-        apps: [App]?
-    ) {
-        self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
-        self.inviteType = inviteType
-        self.betaGroups = betaGroups ?? []
-        self.apps = apps ?? []
-    }
+struct BetaTester: Codable, Equatable {
+    var email: String?
+    var firstName: String?
+    var lastName: String?
+    var inviteType: String?
+    var betaGroups: [BetaGroup]
+    var apps: [App]
 }
 
 // MARK: - Extensions

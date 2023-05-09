@@ -3,22 +3,18 @@
 import Files
 import Foundation
 
-public struct ProfileProcessor: ResourceWriter {
-    public static let profileExtension = "mobileprovision"
+struct ProfileProcessor: ResourceWriter {
+    static let profileExtension = "mobileprovision"
 
     let path: ResourcePath
 
-    public init(path: ResourcePath) {
-        self.path = path
-    }
-
     @discardableResult
-    public func write(_ certificate: Profile) throws -> File {
+    func write(_ certificate: Profile) throws -> File {
         try writeFile(certificate)
     }
 
     @discardableResult
-    public func write(_ certificates: [Profile]) throws -> [File] {
+    func write(_ certificates: [Profile]) throws -> [File] {
         try certificates.map { try write($0) }
     }
 }

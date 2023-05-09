@@ -4,38 +4,16 @@ import AppStoreConnect_Swift_SDK
 import Foundation
 import SwiftyTextTable
 
-public struct Profile: Codable, Equatable {
-    public let id: String?
-    public let name: String?
-    public let platform: String?
-    public let profileContent: String?
-    public let uuid: String?
-    public let createdDate: Date?
-    public let profileState: String?
-    public let profileType: String?
-    public let expirationDate: Date?
-
-    public init(
-        id: String?,
-        name: String?,
-        platform: String?,
-        profileContent: String?,
-        uuid: String?,
-        createdDate: Date?,
-        profileState: String?,
-        profileType: String?,
-        expirationDate: Date?
-    ) {
-        self.id = id
-        self.name = name
-        self.platform = platform
-        self.profileContent = profileContent
-        self.uuid = uuid
-        self.createdDate = createdDate
-        self.profileState = profileState
-        self.profileType = profileType
-        self.expirationDate = expirationDate
-    }
+struct Profile: Codable, Equatable {
+    let id: String?
+    let name: String?
+    let platform: String?
+    let profileContent: String?
+    let uuid: String?
+    let createdDate: Date?
+    let profileState: String?
+    let profileType: String?
+    let expirationDate: Date?
 }
 
 // MARK: - Extensions

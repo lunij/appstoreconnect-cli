@@ -4,7 +4,7 @@ import Files
 import Foundation
 
 /// Resource processor root path
-public enum ResourcePath {
+enum ResourcePath {
     /// folder: The certain *path* of the folder
     /// - path: resource processor root path will be the path of a folder, file be written inside this folder. (eg. documents/foldername/)
     case folder(path: String)
