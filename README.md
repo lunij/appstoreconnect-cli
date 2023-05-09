@@ -91,7 +91,8 @@ SUBCOMMANDS:
 
 _AppStoreConnect CLI_ requires the use of an AppStore Connect API Key. See the [Apple documentation][docs-api-key] for more details on how to create these keys.
 
-When using _AppStoreConnect CLI_ commands you need to specify the API Key Issuer and API Key ID. This can be done via the `--api-issuer` and `--api-key-id` command line options or `APPSTORE_CONNECT_ISSUER_ID` and `APPSTORE_CONNECT_API_KEY_ID` environment variables respectively.
+When using _AppStoreConnect CLI_ commands you need to specify the API Key Issuer and API Key ID. 
+This can be done via the `--api-issuer` and `--api-key-id` command line options or `APP_STORE_CONNECT_ISSUER_ID` and `APP_STORE_CONNECT_API_KEY_ID` environment variables respectively.
 
 The API private key is expected to be named `AuthKey_<api-key-id>.p8` and located in one of the following directories:
 
@@ -100,7 +101,7 @@ The API private key is expected to be named `AuthKey_<api-key-id>.p8` and locate
 - `~/.private_keys`
 - `~/.appstoreconnect/private_keys`
 
-The API private key can also be stored in the environment variable `APPSTORE_CONNECT_API_KEY`.
+The API private key can also be stored in the environment variable `APP_STORE_CONNECT_API_KEY`.
 
 ## Contribute to _AppStoreConnect CLI_
 
