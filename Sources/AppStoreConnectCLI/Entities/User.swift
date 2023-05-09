@@ -106,8 +106,8 @@ extension User: TableInfoProvider {
             firstName,
             lastName,
             roles.joined(separator: ", "),
-            provisioningAllowed.toYesNo(),
-            allAppsVisible.toYesNo(),
+            provisioningAllowed.yesNo,
+            allAppsVisible.yesNo,
             visibleApps?.joined(separator: ", ") ?? ""
         ]
     }
