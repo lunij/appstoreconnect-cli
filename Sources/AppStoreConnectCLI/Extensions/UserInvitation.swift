@@ -27,8 +27,8 @@ extension UserInvitation: TableInfoProvider {
             attributes?.lastName ?? "",
             attributes?.roles?.map(\.rawValue).joined(separator: ", ") ?? "",
             attributes?.expirationDate ?? "",
-            attributes?.provisioningAllowed?.toYesNo() ?? "",
-            attributes?.allAppsVisible?.toYesNo() ?? ""
+            attributes?.provisioningAllowed?.yesNo ?? "",
+            attributes?.allAppsVisible?.yesNo ?? ""
         ]
     }
 }

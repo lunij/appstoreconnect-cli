@@ -100,14 +100,14 @@ extension Build {
             version: prereleaseVersion?.attributes?.version,
             externalBuildState: buildBetaDetail?.attributes?.externalBuildState?.rawValue,
             internalBuildState: buildBetaDetail?.attributes?.internalBuildState?.rawValue,
-            autoNotifyEnabled: buildBetaDetail?.attributes?.autoNotifyEnabled?.toYesNo(),
+            autoNotifyEnabled: buildBetaDetail?.attributes?.autoNotifyEnabled?.yesNo,
             buildNumber: build.attributes?.version,
             processingState: build.attributes?.processingState,
             minOsVersion: build.attributes?.minOsVersion,
             uploadedDate: build.attributes?.uploadedDate?.formattedDate,
             expirationDate: build.attributes?.expirationDate?.formattedDate,
-            expired: build.attributes?.expired?.toYesNo(),
-            usesNonExemptEncryption: build.attributes?.usesNonExemptEncryption?.toYesNo(),
+            expired: build.attributes?.expired?.yesNo,
+            usesNonExemptEncryption: build.attributes?.usesNonExemptEncryption?.yesNo,
             betaReviewState: betaAppReviewSubmission?.attributes?.betaReviewState?.rawValue
         )
     }
