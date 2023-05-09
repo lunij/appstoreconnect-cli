@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct GetBetaGroupOperation: APIOperation {
     struct Options {
@@ -11,52 +10,36 @@ struct GetBetaGroupOperation: APIOperation {
         let betaGroupName: String
     }
 
-    enum Error: LocalizedError {
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
         case betaGroupNotFound(groupName: String, bundleId: String, appId: String)
-        case betaGroupNotUniqueToApp(groupName: String, bundleId: String, appId: String)
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
             case let .betaGroupNotFound(groupName, bundleId, appId):
-                return "No beta group found with name: \(groupName) and bundle id: \(bundleId) and app id: \(appId)"
-            case let .betaGroupNotUniqueToApp(groupName, bundleId, appId):
-                return "Multiple beta groups found with name: \(groupName) and bundle id: \(bundleId) and app id: \(appId)"
+                return "Beta group not found with the name '\(groupName)', the bundle id '\(bundleId)' and the app id '\(appId)'"
             }
         }
     }
 
-    typealias App = AppStoreConnect_Swift_SDK.App
-    typealias BetaGroup = AppStoreConnect_Swift_SDK.BetaGroup
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    private let options: Options
-
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<BetaGroup, Swift.Error> {
+    func execute() async throws -> Bagbutik_Models.BetaGroup {
         let betaGroupName = options.betaGroupName
         let bundleId = options.bundleId ?? ""
         let appId = options.appId ?? ""
 
-        var filters: [ListBetaGroups.Filter] = [.name([betaGroupName])]
+        var filters: [ListBetaGroupsV1.Filter] = [.name([betaGroupName])]
         filters += appId.isEmpty ? [] : [.app([appId])]
 
-        let endpoint = APIEndpoint.betaGroups(filter: filters)
+        let betaGroups = try await service
+            .request(.listBetaGroupsV1(filters: filters))
+            .data
 
-        let betaGroup = requestor.request(endpoint).tryMap { response -> BetaGroup in
-            let betaGroups = response.data.filter { $0.attributes?.name == betaGroupName }
-
-            switch (betaGroups.first, betaGroups.count) {
-            case let (.some(betaGroup), 1):
-                return betaGroup
-            case (.some, _):
-                throw Error.betaGroupNotUniqueToApp(groupName: betaGroupName, bundleId: bundleId, appId: appId)
-            case (.none, _):
-                throw Error.betaGroupNotFound(groupName: betaGroupName, bundleId: bundleId, appId: appId)
-            }
+        guard let betaGroup = betaGroups.first(where: { $0.attributes?.name == betaGroupName }) else {
+            throw Error.betaGroupNotFound(groupName: betaGroupName, bundleId: bundleId, appId: appId)
         }
 
-        return betaGroup.eraseToAnyPublisher()
+        return betaGroup
     }
 }

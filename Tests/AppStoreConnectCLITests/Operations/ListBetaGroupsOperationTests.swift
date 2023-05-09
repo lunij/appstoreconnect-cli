@@ -1,41 +1,35 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 import XCTest
 @testable import AppStoreConnectCLI
 
 final class ListBetaGroupsOperationTests: XCTestCase {
-    typealias Operation = ListBetaGroupsOperation
-    typealias Options = Operation.Options
+    func test_listBetaGroups_success() async throws {
+        let service = BagbutikServiceMock { _, _ in
+            (try Fixture(named: "v1/betagroups/list_betagroup").data, HTTPURLResponse.fake())
+        }
 
-    let successRequestor = OneEndpointTestRequestor(
-        response: { _ in Future { $0(.success(response)) } }
-    )
-
-    func testExecute_success() throws {
-        let operation = Operation(options: Options(appIds: [], names: [], sort: nil))
-
-        let output = try operation.execute(with: successRequestor).await()
+        let output = try await ListBetaGroupsOperation(service: service, options: .init()).execute()
 
         XCTAssertEqual(output.count, 1)
-        XCTAssertEqual(output.first?.app.id, "1234567890")
         XCTAssertEqual(output.first?.betaGroup.id, "12345678-90ab-cdef-1234-567890abcdef")
-    }
 
-    func testExecute_propagatesUpstreamErrors() {
-        let operation = Operation(options: Options(appIds: [], names: [], sort: nil))
-
-        let result = Result { try operation.execute(with: FailureTestRequestor()).await() }
-
-        switch result {
-        case .failure(TestError.somethingBadHappened):
-            break
-        default:
-            XCTFail("Expected \(TestError.somethingBadHappened), got: \(result)")
+        guard case let .app(app) = output.first?.includes.first else {
+            return XCTFail("An app object is expected to be included")
         }
+        XCTAssertEqual(app.id, "1234567890")
     }
 
-    static let response: BetaGroupsResponse = jsonDecoder.decodeFixture(named: "v1/betagroups/list_betagroup")
+    func test_listBetaGroups_propagatesUpstreamErrors() async throws {
+        let service = BagbutikServiceMock { _, _ in
+            throw FakeError()
+        }
+
+        let error: FakeError? = try await catchError {
+            _ = try await ListBetaGroupsOperation(service: service, options: .init()).execute()
+        }
+
+        XCTAssertNotNil(error)
+    }
 }

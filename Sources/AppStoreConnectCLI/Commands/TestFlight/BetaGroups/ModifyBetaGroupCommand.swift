@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 
 struct ModifyBetaGroupCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -17,7 +16,8 @@ struct ModifyBetaGroupCommand: CommonParsableCommand {
         The reverse-DNS bundle ID of the app which the group should be associated with. \
         Must be unique. (eg. com.example.app)
         """
-    ) var appBundleId: String
+    )
+    var bundleId: String
 
     @Argument(
         help: ArgumentHelp(
@@ -28,12 +28,14 @@ struct ModifyBetaGroupCommand: CommonParsableCommand {
             """,
             valueName: "beta-group-name"
         )
-    ) var currentGroupName: String
+    )
+    var currentGroupName: String
 
     @Option(
         name: .customLong("name"),
         help: "Modifies the name of the beta group"
-    ) var newGroupName: String?
+    )
+    var newGroupName: String?
 
     @Option(help: "Enables or disables the public link")
     var publicLinkEnabled: Bool?
@@ -44,18 +46,34 @@ struct ModifyBetaGroupCommand: CommonParsableCommand {
     @Option(help: "Enables or disables whether to use a public link limit")
     var publicLinkLimitEnabled: Bool?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let betaGroup = try service.modifyBetaGroup(
-            appBundleId: appBundleId,
-            currentGroupName: currentGroupName,
-            newGroupName: newGroupName,
-            publicLinkEnabled: publicLinkEnabled,
-            publicLinkLimit: publicLinkLimit,
-            publicLinkLimitEnabled: publicLinkLimitEnabled
+        let app = try await GetAppOperation(
+            service: service,
+            options: .init(bundleId: bundleId)
         )
+        .execute()
 
-        try betaGroup.render(options: common.outputOptions)
+        let betaGroup = try await GetBetaGroupOperation(
+            service: service,
+            options: .init(appId: app.id, bundleId: bundleId, betaGroupName: currentGroupName)
+        )
+        .execute()
+
+        let updatedBetaGroup = try await UpdateBetaGroupOperation(
+            service: service,
+            options: .init(
+                betaGroup: betaGroup,
+                betaGroupName: newGroupName,
+                publicLinkEnabled: publicLinkEnabled,
+                publicLinkLimit: publicLinkLimit,
+                publicLinkLimitEnabled: publicLinkLimitEnabled
+            )
+        )
+        .execute()
+
+        try BetaGroup(updatedBetaGroup, app: app)
+            .render(options: common.outputOptions)
     }
 }

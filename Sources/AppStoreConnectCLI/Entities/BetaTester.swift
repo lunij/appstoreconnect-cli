@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct BetaTester: Codable, Equatable {
@@ -10,33 +8,32 @@ struct BetaTester: Codable, Equatable {
     var firstName: String?
     var lastName: String?
     var inviteType: String?
-    var betaGroups: [BetaGroup]
-    var apps: [App]
+    var betaGroups: [BetaGroup]?
 }
 
 // MARK: - Extensions
 
 extension BetaTester {
-    init(_ output: GetBetaTesterOperation.Output) throws {
-        let betaTester = output.betaTester
-        let appRelationships = (betaTester.relationships?.apps?.data) ?? []
-        let betaGroupRelationships = (betaTester.relationships?.betaGroups?.data) ?? []
+    var apps: [App]? {
+        betaGroups?.compactMap(\.app)
+    }
+}
 
-        let apps = appRelationships.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
-            output.apps?.first { app in relationship.id == app.id }
-        }
+extension BetaTester {
+    init(_ betaTester: Bagbutik_Models.BetaTester) {
+        self.init(betaTester, betaGroups: nil)
+    }
 
-        let betaGroups = betaGroupRelationships.compactMap { relationship -> AppStoreConnect_Swift_SDK.BetaGroup? in
-            output.betaGroups?.first { betaGroup in relationship.id == betaGroup.id }
-        }
-
+    init(
+        _ betaTester: Bagbutik_Models.BetaTester,
+        betaGroups: [BetaGroup]?
+    ) {
         self.init(
             email: betaTester.attributes?.email,
             firstName: betaTester.attributes?.firstName,
             lastName: betaTester.attributes?.lastName,
             inviteType: betaTester.attributes?.inviteType?.rawValue,
-            betaGroups: try betaGroups.map { try BetaGroup(nil, $0) },
-            apps: try apps.map(App.init)
+            betaGroups: betaGroups?.nilIfEmpty
         )
     }
 }
@@ -61,8 +58,8 @@ extension BetaTester: TableInfoProvider {
             firstName ?? "",
             lastName ?? "",
             inviteType ?? "",
-            betaGroups.compactMap(\.groupName).joined(separator: ", "),
-            apps.map(\.bundleId).joined(separator: ", ")
+            betaGroups?.compactMap(\.groupName).joined(separator: ", ") ?? "",
+            apps?.map(\.bundleId).joined(separator: ", ") ?? ""
         ]
     }
 }

@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ReadBuildLocalizationOperation: APIOperation {
     struct Options {
@@ -10,51 +9,32 @@ struct ReadBuildLocalizationOperation: APIOperation {
         let locale: String
     }
 
-    enum Error: LocalizedError {
-        case notUnique
-        case notFound
+    enum Error: Swift.Error, CustomStringConvertible {
+        case betaBuildLocalizationNotFound
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
-            case .notUnique:
-                return "Localization info is not unique."
-            case .notFound:
+            case .betaBuildLocalizationNotFound:
                 return "Unable to find Localization info for build."
             }
         }
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
+    func execute() async throws -> BetaBuildLocalization {
+        let betaBuildLocalizations = try await service
+            .requestAllPages(.listBetaBuildLocalizationsForBuildV1(id: options.id))
+            .data
+            .filter { betaBuildLocalization in
+                betaBuildLocalization.attributes?.locale?.lowercased() == options.locale.lowercased()
+            }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<BetaBuildLocalization, Swift.Error> {
-        requestor.requestAllPages { [options] in
-            .betaBuildLocalizations(
-                ofBuildWithId: options.id,
-                fields: nil,
-                next: $0
-            )
+        guard let betaBuildLocalization = betaBuildLocalizations.first else {
+            throw Error.betaBuildLocalizationNotFound
         }
-        .map {
-            $0.flatMap {
-                $0.data.filter {
-                    $0.attributes?.locale?.lowercased() == self.options.locale.lowercased()
-                }
-            }
-        }
-        .tryMap { response -> BetaBuildLocalization in
-            switch response.first {
-            case let .some(localizationInfo) where response.count == 1:
-                return localizationInfo
-            case .some:
-                throw Error.notUnique
-            case .none:
-                throw Error.notFound
-            }
-        }
-        .eraseToAnyPublisher()
+
+        return betaBuildLocalization
     }
 }

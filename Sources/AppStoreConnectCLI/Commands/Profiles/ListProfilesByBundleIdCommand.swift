@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct ListProfilesByBundleIdCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -37,10 +36,24 @@ struct ListProfilesByBundleIdCommand: CommonParsableCommand {
     )
     var downloadPath: String?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let profiles = try service.listProfilesByBundleId(bundleId, limit: limit)
+        let bundleIdResourceIds = try await ListBundleIdsOperation(
+            service: service,
+            options: .init(identifiers: [bundleId], names: [], platforms: [], seedIds: [], limit: nil)
+        )
+        .execute()
+        .filter { $0.attributes?.identifier?.starts(with: bundleId) ?? false }
+        .map(\.id)
+
+        let profiles = try await bundleIdResourceIds.asyncFlatMap {
+            try await ListProfilesByBundleIdOperation(
+                service: service,
+                options: .init(bundleIdResourceId: $0, limit: limit)
+            )
+            .execute()
+        }
 
         if let path = downloadPath {
             let processor = ProfileProcessor(path: .folder(path: path))

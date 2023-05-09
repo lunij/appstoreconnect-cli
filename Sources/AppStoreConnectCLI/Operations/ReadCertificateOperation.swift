@@ -1,53 +1,40 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct ReadCertificateOperation: APIOperation {
     struct Options {
         let serial: String
     }
 
-    enum Error: LocalizedError {
-        case couldNotFindCertificate(String)
-        case serialNumberNotUnique(String)
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case certificateNotFound(String)
+        case multipleCertificatesFound(String)
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
-            case let .couldNotFindCertificate(serial):
-                return "Couldn't find certificate with serial '\(serial)'."
-            case let .serialNumberNotUnique(serial):
-                return "The serial number your provided '\(serial)' is not unique."
+            case let .certificateNotFound(serial):
+                return "No certificate found with serial number \(serial)."
+            case let .multipleCertificatesFound(serial):
+                return "Multiple certificates found. The serial number \(serial) is not unique."
             }
         }
     }
 
-    private var endpoint: APIEndpoint<CertificatesResponse> {
-        APIEndpoint.listDownloadCertificates(
-            filter: [.serialNumber([options.serial])]
-        )
-    }
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    private let options: Options
+    func execute() async throws -> Certificate {
+        let certificates = try await service
+            .request(.listCertificatesV1Customized(filters: [.serialNumber([options.serial])]))
+            .data
 
-    init(options: Options) {
-        self.options = options
-    }
+        if certificates.count > 1 {
+            throw Error.multipleCertificatesFound(options.serial)
+        }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.Certificate, Swift.Error> {
-        requestor.request(endpoint)
-            .tryMap { [serial = options.serial] (response: CertificatesResponse) -> AppStoreConnect_Swift_SDK.Certificate in
-                if response.data.count > 1 {
-                    throw Error.serialNumberNotUnique(serial)
-                }
+        guard let certificate = certificates.first else {
+            throw Error.certificateNotFound(options.serial)
+        }
 
-                guard let certificate = response.data.first else {
-                    throw Error.couldNotFindCertificate(serial)
-                }
-
-                return certificate
-            }
-            .eraseToAnyPublisher()
+        return Certificate(certificate)
     }
 }

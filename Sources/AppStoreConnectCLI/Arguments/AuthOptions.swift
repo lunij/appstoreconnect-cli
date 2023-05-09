@@ -25,7 +25,7 @@ struct AuthOptions: ParsableArguments {
             "An AppStore Connect API Key issuer ID.",
             discussion:
             """
-            The value for this option can be obtained from the AppStore Connect portal and takes the form of a UUID.
+            The value for this option can be obtained from the App Store Connect and takes the form of a UUID.
 
             If not specified on the command line this value will be read from the environment variable \(Environment.appStoreConnectIssuerId.rawValue).
             """,
@@ -34,13 +34,12 @@ struct AuthOptions: ParsableArguments {
     )
     var apiIssuer: String = Environment.appStoreConnectIssuerId.load()
 
-    // swiftlint:disable line_length
     @Option(
         help: ArgumentHelp(
             "An AppStoreConnect API Key ID.",
             discussion:
             """
-            The value for this option can be obtained from the AppStore Connect portal and takes the form of an 10 character alpha-numeric identifier, eg. 7MM5YSX5LS
+            The value for this option can be obtained from the App Store Connect and takes the form of an 10 character alpha-numeric identifier, eg. 7MM5YSX5LS
 
             If not specified on the command line the value of this option will be read from the environment variable \(Environment.appStoreConnectApiKeyId.rawValue).
 

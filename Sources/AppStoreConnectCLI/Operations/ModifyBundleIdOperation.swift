@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ModifyBundleIdOperation: APIOperation {
     struct Options {
@@ -10,22 +8,21 @@ struct ModifyBundleIdOperation: APIOperation {
         let name: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    var endpoint: APIEndpoint<BundleIdResponse> {
-        .modifyBundleId(
-            id: options.resourceId,
-            name: options.name
+    func execute() async throws -> Bagbutik_Models.BundleId {
+        try await service.request(
+            .updateBundleIdV1(
+                id: options.resourceId,
+                requestBody: .init(
+                    data: .init(
+                        id: options.resourceId,
+                        attributes: .init(name: options.name)
+                    )
+                )
+            )
         )
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<BundleIdResponse, Error> {
-        requestor
-            .request(endpoint)
-            .eraseToAnyPublisher()
+        .data
     }
 }

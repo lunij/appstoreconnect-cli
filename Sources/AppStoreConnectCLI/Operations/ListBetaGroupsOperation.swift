@@ -1,26 +1,20 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ListBetaGroupsOperation: APIOperation {
     struct Options {
         var appIds: [String] = []
         var names: [String] = []
-        var sort: ListBetaGroups.Sort?
+        var sorts: [ListBetaGroupsV1.Sort] = []
         var excludeInternal: Bool?
     }
 
-    typealias BetaGroup = AppStoreConnect_Swift_SDK.BetaGroup
-    typealias App = AppStoreConnect_Swift_SDK.App
-
-    typealias Output = [(app: App, betaGroup: BetaGroup)]
-
-    enum Error: LocalizedError {
+    enum Error: Swift.Error, CustomStringConvertible {
         case missingAppData(BetaGroup)
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
             case let .missingAppData(betaGroup):
                 return "Missing app data for beta group: \(betaGroup)"
@@ -28,14 +22,13 @@ struct ListBetaGroupsOperation: APIOperation {
         }
     }
 
-    private let options: Options
+    typealias Output = [(betaGroup: Bagbutik_Models.BetaGroup, includes: [BetaGroupsResponse.Included])]
 
-    init(options: Options) {
-        self.options = options
-    }
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Output, Swift.Error> {
-        var filters: [ListBetaGroups.Filter] = []
+    func execute() async throws -> Output {
+        var filters: [ListBetaGroupsV1.Filter] = []
         filters += options.appIds.isEmpty ? [] : [.app(options.appIds)]
         filters += options.names.isEmpty ? [] : [.name(options.names)]
 
@@ -43,43 +36,18 @@ struct ListBetaGroupsOperation: APIOperation {
             filters += [.isInternalGroup(["\(!excludeInternal)"])]
         }
 
-        let response = requestor.requestAllPages {
-            APIEndpoint.betaGroups(
-                filter: filters,
-                include: [.app],
-                sort: [self.options.sort].compactMap { $0 },
-                next: $0
-            )
-        }
+        let responses = try await service
+            .requestAllPages(.listBetaGroupsV1(
+                filters: filters,
+                includes: [.app],
+                sorts: options.sorts.nilIfEmpty
+            ))
+            .responses
 
-        let output = response.tryMap { (responses: [BetaGroupsResponse]) in
-            try responses.flatMap { response -> Output in
-                let apps = response.included?.reduce(
-                    into: [String: AppStoreConnect_Swift_SDK.App](), { result, relationship in
-                        switch relationship {
-                        case let .app(app):
-                            result[app.id] = app
-                        default:
-                            break
-                        }
-                    }
-                )
-
-                return try response.data.map { betaGroup -> (App, BetaGroup) in
-                    guard
-                        let appId = betaGroup.relationships?.app?.data?.id,
-                        let app = apps?[appId]
-                    else {
-                        throw Error.missingAppData(betaGroup)
-                    }
-
-                    return (app, betaGroup)
-                }
+        return responses.flatMap { response in
+            response.data.map { betaGroup in
+                (betaGroup, response.included ?? [])
             }
         }
-
-        return output.eraseToAnyPublisher()
     }
 }
-
-extension BetaGroupsResponse: PaginatedResponse {}

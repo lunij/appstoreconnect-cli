@@ -1,13 +1,10 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Core
 
-protocol CommonParsableCommand: ParsableCommand {
+protocol CommonParsableCommand: AsyncParsableCommand {
     var common: CommonOptions { get }
-
-    func makeService() throws -> AppStoreConnectService
 }
 
 /// A level representing the verbosity of a command.
@@ -19,8 +16,8 @@ enum PrintLevel {
 }
 
 extension CommonParsableCommand {
-    func makeService() throws -> AppStoreConnectService {
-        AppStoreConnectService(configuration: try APIConfiguration(common.authOptions))
+    func makeService() throws -> BagbutikServiceProtocol {
+        try BagbutikService(jwt: .init(common.authOptions))
     }
 }
 

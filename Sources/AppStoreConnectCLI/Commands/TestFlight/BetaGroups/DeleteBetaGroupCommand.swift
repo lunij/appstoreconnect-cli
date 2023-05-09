@@ -1,7 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct DeleteBetaGroupCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -17,7 +17,8 @@ struct DeleteBetaGroupCommand: CommonParsableCommand {
         The reverse-DNS bundle ID of the app which the group is associated with. \
         Must be unique. (eg. com.example.app)
         """
-    ) var appBundleId: String
+    )
+    var appBundleId: String
 
     @Argument(
         help: ArgumentHelp(
@@ -27,11 +28,29 @@ struct DeleteBetaGroupCommand: CommonParsableCommand {
             app bundle id
             """
         )
-    ) var betaGroupName: String
+    )
+    var betaGroupName: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        try service.deleteBetaGroup(appBundleId: appBundleId, betaGroupName: betaGroupName)
+        let appId = try await GetAppOperation(
+            service: service,
+            options: .init(bundleId: appBundleId)
+        )
+        .execute()
+        .id
+
+        let betaGroup = try await GetBetaGroupOperation(
+            service: service,
+            options: .init(appId: appId, bundleId: appBundleId, betaGroupName: betaGroupName)
+        )
+        .execute()
+
+        try await DeleteBetaGroupOperation(
+            service: service,
+            options: .init(betaGroupId: betaGroup.id)
+        )
+        .execute()
     }
 }

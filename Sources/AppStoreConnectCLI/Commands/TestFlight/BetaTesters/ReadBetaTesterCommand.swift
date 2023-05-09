@@ -1,9 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
 
 struct ReadBetaTesterCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -26,17 +23,20 @@ struct ReadBetaTesterCommand: CommonParsableCommand {
     @Option(help: "Number of included beta group resources to return.")
     var limitBetaGroups: Int?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let tester = try service
-            .getBetaTester(
-                email: email,
+        let betaTester = try await GetBetaTesterOperation(
+            service: service,
+            options: .init(
+                identifier: .email(email),
                 limitApps: limitApps,
                 limitBuilds: limitBuilds,
                 limitBetaGroups: limitBetaGroups
             )
+        )
+        .execute()
 
-        try tester.render(options: common.outputOptions)
+        try BetaTester(betaTester)
+            .render(options: common.outputOptions)
     }
 }

@@ -1,25 +1,18 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
 
 struct ListCapabilitiesOperation: APIOperation {
     struct Options {
         let bundleIdResourceId: String
     }
 
-    let option: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        option = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<[BundleIdCapability], Error> {
-        requestor
-            .request(
-                .listAllCapabilitiesForBundleId(id: option.bundleIdResourceId)
-            )
-            .map(\.data)
-            .eraseToAnyPublisher()
+    func execute() async throws -> [Bagbutik_Models.BundleIdCapability] {
+        try await service
+            .request(.listBundleIdCapabilitiesForBundleIdV1(id: options.bundleIdResourceId))
+            .data
     }
 }

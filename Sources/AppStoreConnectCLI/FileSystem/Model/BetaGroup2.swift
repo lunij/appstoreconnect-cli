@@ -5,7 +5,7 @@ import Foundation
 struct BetaGroup2: Codable, Equatable {
     typealias EmailAddress = String
 
-    var id: String?
+    var id: String
     var groupName: String
     var testers: [EmailAddress]
 

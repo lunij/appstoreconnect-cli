@@ -1,19 +1,17 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct GetAppsOperation: APIOperation {
     struct Options {
         let bundleIds: [String]
     }
 
-    enum GetAppIdsError: LocalizedError {
+    enum Error: Swift.Error, CustomStringConvertible {
         case couldntFindAnyAppsMatching(bundleIds: [String])
         case appsDoNotExist(bundleIds: [String])
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
             case let .couldntFindAnyAppsMatching(bundleIds):
                 return "No apps were found matching \(bundleIds)."
@@ -23,34 +21,27 @@ struct GetAppsOperation: APIOperation {
         }
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    typealias App = AppStoreConnect_Swift_SDK.App
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<[App], Error> {
+    func execute() async throws -> [Bagbutik_Models.App] {
         let bundleIds = options.bundleIds
-        let endpoint = APIEndpoint.apps(filters: [.bundleId(bundleIds)])
+        let apps = try await service
+            .request(.listAppsV1(filters: [.bundleId(bundleIds)]))
+            .data
 
-        return requestor.request(endpoint)
-            .tryMap { (response: AppsResponse) throws -> [App] in
-                guard !response.data.isEmpty else {
-                    throw GetAppIdsError.couldntFindAnyAppsMatching(bundleIds: bundleIds)
-                }
+        guard !apps.isEmpty else {
+            throw Error.couldntFindAnyAppsMatching(bundleIds: bundleIds)
+        }
 
-                let responseBundleIds = Set(response.data.compactMap { $0.attributes?.bundleId })
-                let bundleIds = Set(bundleIds)
+        let responseBundleIds = Set(apps.compactMap { $0.attributes?.bundleId })
+        let bundleIdsSet = Set(bundleIds)
 
-                guard responseBundleIds == bundleIds else {
-                    let nonExistentBundleIds = bundleIds.subtracting(responseBundleIds)
-                    throw GetAppIdsError.appsDoNotExist(bundleIds: Array(nonExistentBundleIds))
-                }
+        guard responseBundleIds == bundleIdsSet else {
+            let nonExistentBundleIds = bundleIdsSet.subtracting(responseBundleIds)
+            throw Error.appsDoNotExist(bundleIds: Array(nonExistentBundleIds))
+        }
 
-                return response.data
-            }
-            .eraseToAnyPublisher()
+        return apps
     }
 }

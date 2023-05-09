@@ -1,10 +1,10 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
+import Bagbutik_Models
 
 struct ListUserInvitationsCommand: CommonParsableCommand {
-    public static var configuration = CommandConfiguration(
+    static var configuration = CommandConfiguration(
         commandName: "list-invitations",
         abstract: "Get a list of pending invitations to join your team."
     )
@@ -18,22 +18,25 @@ struct ListUserInvitationsCommand: CommonParsableCommand {
     @Option(parsing: .upToNextOption, help: "Filter the results by the specified username")
     var filterEmail: [String] = []
 
-    @Option(parsing: .upToNextOption, help: "Filter the results by the specified roles, (eg. \(UserRole.allCases.compactMap { $0.rawValue.lowercased() })")
+    @Option(parsing: .upToNextOption, help: "Filter the results by roles: \(UserRole.allValueStringsFormatted)")
     var filterRole: [UserRole] = []
 
     @Flag(help: "Include visible apps in results.")
     var includeVisibleApps = false
 
-    public func run() throws {
+    public func run() async throws {
         let service = try makeService()
-
-        let invitations = try service.listUserInvitaions(
-            filterEmail: filterEmail,
-            filterRole: filterRole,
-            limitVisibleApps: limitVisibleApps,
-            includeVisibleApps: includeVisibleApps
+        try await ListUserInvitationsOperation(
+            service: service,
+            options: .init(
+                filterEmail: filterEmail,
+                filterRole: filterRole,
+                includeVisibleApps: includeVisibleApps,
+                limitVisibleApps: limitVisibleApps
+            )
         )
-
-        try invitations.render(options: common.outputOptions)
+        .execute()
+        .map(UserInvitation.init)
+        .render(options: common.outputOptions)
     }
 }

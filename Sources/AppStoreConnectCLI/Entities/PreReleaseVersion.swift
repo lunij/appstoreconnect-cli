@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Foundation
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct PreReleaseVersion: Codable, Equatable {
@@ -14,23 +13,19 @@ struct PreReleaseVersion: Codable, Equatable {
 
 extension PreReleaseVersion {
     init(
-        _ preReleaseVersion: AppStoreConnect_Swift_SDK.PrereleaseVersion,
-        _ includes: [AppStoreConnect_Swift_SDK.PreReleaseVersionRelationship]?
+        _ preReleaseVersion: Bagbutik_Models.PrereleaseVersion,
+        _ includes: [Bagbutik_Models.PreReleaseVersionsResponse.Included]
     ) throws {
-        let relationships = preReleaseVersion.relationships
+        var app: Bagbutik_Models.App?
 
-        let includedApps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
-            if case let .app(app) = relationship {
-                return app
+        for include in includes {
+            if case let .app(value) = include {
+                app = value
             }
-            return nil
         }
 
-        let appDetails = includedApps?.first(where: { relationships?.app?.data?.id == $0.id })
-        let app = try appDetails.map(App.init)
-
         self.init(
-            app: app,
+            app: try app.map(App.init),
             platform: preReleaseVersion.attributes?.platform?.rawValue,
             version: preReleaseVersion.attributes?.version
         )

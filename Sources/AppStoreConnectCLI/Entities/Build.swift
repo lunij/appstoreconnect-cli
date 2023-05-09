@@ -1,6 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
+import Bagbutik_Models
 import Foundation
 import SwiftyTextTable
 
@@ -24,53 +24,36 @@ struct Build: Codable, Equatable {
 // MARK: - Extensions
 
 extension Build {
-    init(_ build: AppStoreConnect_Swift_SDK.Build, _ includes: [AppStoreConnect_Swift_SDK.BuildRelationship]?) throws {
-        let relationships = build.relationships
+    init(_ build: Bagbutik_Models.Build, _ includes: [Bagbutik_Models.BuildsResponse.Included]) throws {
+        var app: Bagbutik_Models.App?
+        var prereleaseVersion: Bagbutik_Models.PrereleaseVersion?
+        var buildBetaDetail: Bagbutik_Models.BuildBetaDetail?
+        var betaAppReviewSubmission: Bagbutik_Models.BetaAppReviewSubmission?
 
-        let includedApps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
-            if case let .app(app) = relationship {
-                return app
+        for include in includes {
+            switch include {
+            case let .app(value):
+                app = value
+            case let .prereleaseVersion(value):
+                prereleaseVersion = value
+            case let .buildBetaDetail(value):
+                buildBetaDetail = value
+            case let .betaAppReviewSubmission(value):
+                betaAppReviewSubmission = value
+            default:
+                break
             }
-            return nil
         }
-
-        let includedPrereleaseVersions = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.PrereleaseVersion? in
-            if case let .preReleaseVersion(prereleaseVersion) = relationship {
-                return prereleaseVersion
-            }
-            return nil
-        }
-
-        let includedBuildBetaDetails = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.BuildBetaDetail? in
-            if case let .buildBetaDetail(buildBetaDetail) = relationship {
-                return buildBetaDetail
-            }
-            return nil
-        }
-
-        let includedBetaAppReviewSubmissions = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.BetaAppReviewSubmission? in
-            if case let .betaAppReviewSubmission(betaAppReviewSubmission) = relationship {
-                return betaAppReviewSubmission
-            }
-            return nil
-        }
-
-        let appDetails = includedApps?.first { relationships?.app?.data?.id == $0.id }
-        let prereleaseVersion = includedPrereleaseVersions?.first { relationships?.preReleaseVersion?.data?.id == $0.id }
-        let buildBetaDetail = includedBuildBetaDetails?.first { relationships?.buildBetaDetail?.data?.id == $0.id }
-        let betaAppReviewSubmission = includedBetaAppReviewSubmissions?.first { relationships?.betaAppReviewSubmission?.data?.id == $0.id }
-
-        let app = try appDetails.map(App.init)
 
         self.init(
-            app: app,
+            app: try app.map(App.init),
             platform: prereleaseVersion?.attributes?.platform?.rawValue,
             version: prereleaseVersion?.attributes?.version,
             externalBuildState: buildBetaDetail?.attributes?.externalBuildState?.rawValue,
             internalBuildState: buildBetaDetail?.attributes?.internalBuildState?.rawValue,
             autoNotifyEnabled: buildBetaDetail?.attributes?.autoNotifyEnabled?.yesNo,
             buildNumber: build.attributes?.version,
-            processingState: build.attributes?.processingState,
+            processingState: build.attributes?.processingState?.rawValue,
             minOsVersion: build.attributes?.minOsVersion,
             uploadedDate: build.attributes?.uploadedDate?.formattedDate,
             expirationDate: build.attributes?.expirationDate?.formattedDate,

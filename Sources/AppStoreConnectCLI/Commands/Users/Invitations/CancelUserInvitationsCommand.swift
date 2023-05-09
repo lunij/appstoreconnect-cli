@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
 
 struct CancelUserInvitationsCommand: CommonParsableCommand {
     public static var configuration = CommandConfiguration(
@@ -16,14 +14,36 @@ struct CancelUserInvitationsCommand: CommonParsableCommand {
     @Argument(help: "The email address of a pending user invitation.")
     var email: String
 
-    public func run() throws {
+    public func run() async throws {
         let service = try makeService()
+        let id = try await service.invitationIdentifier(matching: email)
+        try await service.request(.deleteUserInvitationV1(id: id))
+    }
 
-        let cancelInvitation = { service.request(APIEndpoint.cancel(userInvitationWithId: $0)) }
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case userInvitationNotFound(email: String)
 
-        try service
-            .invitationIdentifier(matching: email)
-            .flatMap(cancelInvitation)
-            .await()
+        var description: String {
+            switch self {
+            case let .userInvitationNotFound(email):
+                return "User invitation with email address '\(email)' not found"
+            }
+        }
+    }
+}
+
+private extension BagbutikServiceProtocol {
+    /// Find the opaque internal identifier for this invitation; search by email address.
+    ///
+    /// This is an App Store Connect internal identifier
+    func invitationIdentifier(matching email: String) async throws -> String {
+        let invitations = try await request(.listUserInvitationsV1(filters: [.email([email])]))
+            .data
+
+        guard let invitation = invitations.first(where: { $0.attributes?.email == email }) else {
+            throw CancelUserInvitationsCommand.Error.userInvitationNotFound(email: email)
+        }
+
+        return invitation.id
     }
 }

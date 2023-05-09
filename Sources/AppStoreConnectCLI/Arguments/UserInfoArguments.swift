@@ -1,13 +1,12 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct UserInfoArguments: ParsableArguments {
     @Option(
         parsing: .upToNextOption,
-        help: "Assigned user roles that determine the user's access to sections of App Store Connect and tasks they can perform. \(UserRole.allCases)"
+        help: "Assigned user roles that determine the user's access to sections of App Store Connect and tasks they can perform: \(UserRole.allValueStringsFormatted)"
     )
     var roles: [UserRole] = []
 

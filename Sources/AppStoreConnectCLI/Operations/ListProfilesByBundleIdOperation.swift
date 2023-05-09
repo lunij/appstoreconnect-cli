@@ -1,29 +1,21 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-
 struct ListProfilesByBundleIdOperation: APIOperation {
     struct Options {
         let bundleIdResourceId: String
         let limit: Int?
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[AppStoreConnect_Swift_SDK.Profile], Error> {
-        let endpoint: APIEndpoint<ProfilesResponse> = .listAllProfilesForBundleId(
+    func execute() async throws -> [Profile] {
+        let profiles = try await service.request(.listProfilesForBundleIdV1(
             id: options.bundleIdResourceId,
             limit: options.limit
-        )
+        ))
+        .data
 
-        return requestor
-            .request(endpoint)
-            .map(\.data)
-            .eraseToAnyPublisher()
+        return profiles.map { .init($0) }
     }
 }

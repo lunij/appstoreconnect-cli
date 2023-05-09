@@ -8,10 +8,6 @@ import Yams
 struct TestFlightConfigurationProcessor {
     let path: String
 
-    init(path: String) {
-        self.path = path
-    }
-
     private static let appYAMLName = "app.yml"
     private static let betaTestersCSVName = "beta-testers.csv"
     private static let betaGroupFolderName = "betagroups"
@@ -71,7 +67,6 @@ struct TestFlightConfigurationProcessor {
 
     func readConfiguration() throws -> TestFlightConfiguration {
         let folder = try Folder(path: path)
-        var configuration = TestFlightConfiguration()
 
         let decodeBetaTesters: (Data) throws -> [BetaTester2] = { data in
             var configuration = CSVReader.Configuration()
@@ -88,7 +83,7 @@ struct TestFlightConfigurationProcessor {
             }
         }
 
-        configuration.appConfigurations = try folder.subfolders.map { appFolder in
+        let appConfigurations = try folder.subfolders.map { appFolder in
             let appYAML = try appFolder.file(named: Self.appYAMLName).readAsString()
             let app = try YAMLDecoder().decode(from: appYAML) as App
 
@@ -113,6 +108,6 @@ struct TestFlightConfigurationProcessor {
             return appConfiguration
         }
 
-        return configuration
+        return TestFlightConfiguration(appConfigurations: appConfigurations)
     }
 }

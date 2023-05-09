@@ -1,56 +1,42 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
+import Bagbutik_Provisioning
 
 struct ListDevicesOperation: APIOperation {
     struct Options {
-        let filterName: [String]
-        let filterPlatform: [Platform]
-        let filterUDID: [String]
-        let filterStatus: DeviceStatus?
-        let sort: Devices.Sort?
-        let limit: Int?
+        var filterName: [String] = []
+        var filterPlatform: [BundleIdPlatform] = []
+        var filterUDID: [String] = []
+        var filterStatus: DeviceStatus?
+        var sorts: [ListDevicesV1.Sort]?
+        var limit: Int?
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[AppStoreConnect_Swift_SDK.Device], Error> {
-        var filters = [Devices.Filter]()
+    func execute() async throws -> [Bagbutik_Models.Device] {
+        var filters: [ListDevicesV1.Filter] = []
 
         if options.filterName.isNotEmpty { filters.append(.name(options.filterName)) }
         if options.filterPlatform.isNotEmpty { filters.append(.platform(options.filterPlatform)) }
         if options.filterUDID.isNotEmpty { filters.append(.udid(options.filterUDID)) }
         if let filterStatus = options.filterStatus { filters.append(.status([filterStatus])) }
 
-        let sort = [options.sort].compactMap { $0 }
-
         guard let limit = options.limit else {
-            return requestor.requestAllPages {
-                .listDevices(
-                    filter: filters,
-                    sort: sort,
-                    next: $0
-                )
-            }
-            .map { $0.flatMap(\.data) }
-            .eraseToAnyPublisher()
+            return try await service.requestAllPages(.listDevicesV1(
+                filters: filters,
+                sorts: options.sorts
+            ))
+            .data
         }
 
-        return requestor.request(
-            .listDevices(
-                filter: filters,
-                sort: sort,
-                limit: limit
-            )
-        )
-        .map(\.data)
-        .eraseToAnyPublisher()
+        return try await service.request(.listDevicesV1(
+            filters: filters,
+            sorts: options.sorts,
+            limit: limit
+        ))
+        .data
     }
 }
-
-extension DevicesResponse: PaginatedResponse {}

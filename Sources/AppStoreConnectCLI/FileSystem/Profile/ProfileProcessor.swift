@@ -43,6 +43,6 @@ extension Profile: FileProvider {
     }
 
     var fileName: String {
-        "\(uuid ?? id ?? "noname").\(ProfileProcessor.profileExtension)"
+        "\(uuid ?? id).\(ProfileProcessor.profileExtension)"
     }
 }

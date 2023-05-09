@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
 
 struct UpdateBuildLocalizationOperation: APIOperation {
     struct Options {
@@ -9,20 +8,19 @@ struct UpdateBuildLocalizationOperation: APIOperation {
         let whatsNew: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<BetaBuildLocalization, Error> {
-        requestor.request(
-            .modify(
-                betaBuildLocalizationWithId: options.localizationId,
-                whatsNew: options.whatsNew
+    func execute() async throws -> BetaBuildLocalization {
+        try await service.request(
+            .updateBetaBuildLocalizationV1(
+                id: options.localizationId,
+                requestBody: .init(data: .init(
+                    id: options.localizationId,
+                    attributes: .init(whatsNew: options.whatsNew)
+                ))
             )
         )
-        .map(\.data)
-        .eraseToAnyPublisher()
+        .data
     }
 }

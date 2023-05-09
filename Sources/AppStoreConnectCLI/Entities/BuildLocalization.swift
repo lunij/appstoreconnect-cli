@@ -1,6 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct BuildLocalization: Codable, Equatable {
@@ -11,7 +11,7 @@ struct BuildLocalization: Codable, Equatable {
 // MARK: - Extensions
 
 extension BuildLocalization {
-    init(_ localization: AppStoreConnect_Swift_SDK.BetaBuildLocalization) {
+    init(_ localization: Bagbutik_Models.BetaBuildLocalization) {
         self.init(
             locale: localization.attributes?.locale,
             whatsNew: localization.attributes?.whatsNew

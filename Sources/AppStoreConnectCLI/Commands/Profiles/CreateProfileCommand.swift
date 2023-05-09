@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct CreateProfileCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -16,7 +15,7 @@ struct CreateProfileCommand: CommonParsableCommand {
     @Argument(help: "The name of the provisioning profile to create.")
     var name: String
 
-    @Argument(help: "The type of profile to create \(ProfileType.allCases).")
+    @Argument(help: "The type of profile to create: \(ProfileType.allValueStringsFormatted).")
     var profileType: ProfileType
 
     @Argument(help: "The reverse-DNS bundle ID identifier to associate with this profile (must already exist).")
@@ -26,30 +25,68 @@ struct CreateProfileCommand: CommonParsableCommand {
         parsing: .upToNextOption,
         help: "The serial numbers of Certificates. (eg. 1A2B3C4D5E6FD798)"
     )
-    var certificatesSerialNumbers: [String]
+    var certificateSerialNumbers: [String]
 
     @Option(
         parsing: .upToNextOption,
-        help: "The UDIDs of Devices."
+        help: "The UDIDs of Devices. Required for development profiles only."
     )
-    var devicesUdids: [String]
+    var devicesUdids: [String] = []
 
     func validate() throws {
-        if certificatesSerialNumbers.isEmpty {
-            throw ValidationError("Expected at least one certificate serial number.")
+        if profileType.isDistributionProfile {
+            if devicesUdids.isNotEmpty {
+                throw ValidationError("Distribution Profiles are not expected to contain device UDIDs.")
+            }
+        } else {
+            if devicesUdids.isEmpty {
+                throw ValidationError("Device UDIDs are required for Development Profiles.")
+            }
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let profile = try service.createProfile(
-            name: name,
-            bundleId: bundleId,
-            profileType: profileType,
-            certificateSerialNumbers: certificatesSerialNumbers,
-            deviceUDIDs: devicesUdids
+        let bundleIdResourceId = try await ReadBundleIdOperation(
+            service: service,
+            options: .init(bundleId: bundleId)
         )
+        .execute()
+        .id
+
+        let deviceIds = try await ListDevicesOperation(
+            service: service,
+            options: .init(
+                filterName: [],
+                filterPlatform: [],
+                filterUDID: devicesUdids
+            )
+        )
+        .execute()
+        .map(\.id)
+
+        let certificateIds = try await certificateSerialNumbers.asyncCompactMap {
+            try await ListCertificatesOperation(
+                service: service,
+                options: .init(filterSerial: $0)
+            )
+            .execute()
+            .first?
+            .id
+        }
+
+        let profile = try await CreateProfileOperation(
+            service: service,
+            options: .init(
+                name: name,
+                bundleIdResourceId: bundleIdResourceId,
+                profileType: profileType,
+                certificateIds: certificateIds,
+                deviceIds: deviceIds
+            )
+        )
+        .execute()
 
         try [profile].render(options: common.outputOptions)
     }

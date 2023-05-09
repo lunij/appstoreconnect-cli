@@ -1,20 +1,14 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
-extension BundleIdPlatform: CaseIterable, ExpressibleByArgument, CustomStringConvertible {
-    public typealias AllCases = [BundleIdPlatform]
-    public static var allCases: AllCases {
-        [.iOS, .macOS, .universal]
+extension BundleIdPlatform: ExpressibleByArgument {
+    public static var allValueStrings: [String] {
+        allCases.map { $0.rawValue.lowercased() }
     }
 
     public init?(argument: String) {
         self.init(rawValue: argument.uppercased())
-    }
-
-    public var description: String {
-        rawValue.lowercased()
     }
 }

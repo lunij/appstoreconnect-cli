@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct EnableBundleIdCapabilityOperation: APIOperation {
     struct Options {
@@ -10,20 +8,15 @@ struct EnableBundleIdCapabilityOperation: APIOperation {
         let capabilityType: CapabilityType
     }
 
-    let option: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        option = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<BundleIdCapabilityResponse, Error> {
-        requestor
-            .request(
-                .enableCapability(
-                    id: option.bundleIdResourceId,
-                    capabilityType: option.capabilityType
-                )
-            )
-            .eraseToAnyPublisher()
+    func execute() async throws -> Bagbutik_Models.BundleIdCapability {
+        try await service
+            .request(.createBundleIdCapabilityV1(requestBody: .init(data: .init(
+                attributes: .init(capabilityType: options.capabilityType),
+                relationships: .init(bundleId: .init(data: .init(id: options.bundleIdResourceId)))
+            ))))
+            .data
     }
 }

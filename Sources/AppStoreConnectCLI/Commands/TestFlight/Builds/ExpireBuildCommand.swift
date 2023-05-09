@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ExpireBuildCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -17,13 +15,28 @@ struct ExpireBuildCommand: CommonParsableCommand {
     @OptionGroup()
     var build: BuildArguments
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        _ = try service.expireBuild(
-            bundleId: build.bundleId,
-            buildNumber: build.buildNumber,
-            preReleaseVersion: build.preReleaseVersion
+        let appId = try await GetAppOperation(
+            service: service,
+            options: .init(bundleId: build.bundleId)
         )
+        .execute()
+        .id
+
+        let buildId = try await ReadBuildOperation(
+            service: service,
+            options: .init(
+                appId: appId,
+                buildNumber: build.buildNumber,
+                preReleaseVersion: build.preReleaseVersion
+            )
+        )
+        .execute()
+        .build
+        .id
+
+        try await ExpireBuildOperation(service: service, options: .init(buildId: buildId)).execute()
     }
 }

@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_Users
 
 struct ListUserInvitationsOperation: APIOperation {
     struct Options {
@@ -12,30 +11,19 @@ struct ListUserInvitationsOperation: APIOperation {
         let limitVisibleApps: Int?
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[UserInvitation], Error> {
-        var filters = [ListInvitedUsers.Filter]()
+    func execute() async throws -> [Bagbutik_Models.UserInvitation] {
+        var filters: [ListUserInvitationsV1.Filter] = []
 
         if options.filterEmail.isNotEmpty { filters.append(.email(options.filterEmail)) }
-        if options.filterRole.isNotEmpty { filters.append(.roles(options.filterRole.map(\.rawValue))) }
+        if options.filterRole.isNotEmpty { filters.append(.roles(options.filterRole)) }
 
-        let limit = options.limitVisibleApps.map { [ListInvitedUsers.Limit.visibleApps($0)] }
+        let limits = options.limitVisibleApps.map { [ListUserInvitationsV1.Limit.visibleApps($0)] }
 
-        return requestor.requestAllPages {
-            .invitedUsers(
-                limit: limit,
-                filter: filters,
-                next: $0
-            )
-        }
-        .map { $0.flatMap(\.data) }
-        .eraseToAnyPublisher()
+        return try await service
+            .requestAllPages(.listUserInvitationsV1(filters: filters, limits: limits))
+            .data
     }
 }
-
-extension UserInvitationsResponse: PaginatedResponse {}

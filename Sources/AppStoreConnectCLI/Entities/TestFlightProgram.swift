@@ -5,8 +5,8 @@ import Foundation
 /// Aggregated model data representing the a TestFlight Beta Program (Apps, Testers and Groups)
 struct TestFlightProgram {
     var apps: [App]
-    var testers: [BetaTester]
-    var groups: [BetaGroup]
+    var betaGroups: [BetaGroup]
+    var betaTesters: [BetaTester]
 }
 
 extension TestFlightProgram {
@@ -24,15 +24,19 @@ extension TestFlightProgram {
 
             for betaTester in appConfiguration.betaTesters {
                 var tester = testers[betaTester.email] ?? BetaTester(betaTester: betaTester)
-                tester.apps.append(app)
-                tester.betaGroups += appConfiguration.betaGroups
+                tester.betaGroups = appConfiguration
+                    .betaGroups
                     .filter { $0.testers.contains(betaTester.email) }
                     .map(betaGroupModel)
                 testers[betaTester.email] = tester
             }
         }
 
-        self.init(apps: apps, testers: Array(testers.values), groups: groups)
+        self.init(
+            apps: apps,
+            betaGroups: groups,
+            betaTesters: Array(testers.values)
+        )
     }
 }
 
@@ -55,8 +59,7 @@ private extension BetaTester {
             firstName: betaTester.firstName,
             lastName: betaTester.lastName,
             inviteType: nil,
-            betaGroups: [],
-            apps: []
+            betaGroups: nil
         )
     }
 }

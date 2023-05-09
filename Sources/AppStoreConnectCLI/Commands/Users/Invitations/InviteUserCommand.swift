@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct InviteUserCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -30,40 +29,89 @@ struct InviteUserCommand: CommonParsableCommand {
     @OptionGroup()
     var userInfo: UserInfoArguments
 
-    public func run() throws {
-        let service = try makeService()
-
-        if userInfo.allAppsVisible {
-            try inviteUserToTeam(by: service)
-            return
+    func validate() throws {
+        if userInfo.allAppsVisible == false, userInfo.bundleIds.isEmpty {
+            throw ValidationError("If you set allAppsVisible to false, you must provide at least one value for the visibleApps relationship.")
         }
-
-        if userInfo.bundleIds.isNotEmpty {
-            let resourceIds = try service
-                .getAppResourceIdsFrom(bundleIds: userInfo.bundleIds)
-                .await()
-
-            try inviteUserToTeam(with: resourceIds, by: service)
-        }
-
-        fatalError("Invalid Input: If you set allAppsVisible to false, you must provide at least one value for the visibleApps relationship.")
     }
 
-    func inviteUserToTeam(with appsVisibleIds: [String] = [], by service: AppStoreConnectService) throws {
-        let request = APIEndpoint.invite(
-            userWithEmail: email,
-            firstName: firstName,
-            lastName: lastName,
-            roles: userInfo.roles,
-            allAppsVisible: userInfo.allAppsVisible,
-            provisioningAllowed: userInfo.provisioningAllowed,
-            appsVisibleIds: appsVisibleIds
-        ) // appsVisibleIds should be empty when allAppsVisible is true
+    public func run() async throws {
+        let service = try makeService()
+        let invitation: UserInvitation
 
-        let invitation = try service.request(request)
-            .map(\.data)
-            .await()
+        if userInfo.allAppsVisible {
+            invitation = try await service.inviteUserToTeam(
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                roles: userInfo.roles,
+                allAppsVisible: userInfo.allAppsVisible,
+                provisioningAllowed: userInfo.provisioningAllowed
+            )
+        } else {
+            let resourceIds = try await service
+                .appResourceIdsForBundleIds(userInfo.bundleIds)
+
+            guard resourceIds.isEmpty == false else {
+                throw Error.appNotFound(bundleIds: userInfo.bundleIds)
+            }
+
+            invitation = try await service.inviteUserToTeam(
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                roles: userInfo.roles,
+                allAppsVisible: userInfo.allAppsVisible,
+                provisioningAllowed: userInfo.provisioningAllowed,
+                appsVisibleIds: resourceIds
+            )
+        }
 
         try invitation.render(options: common.outputOptions)
+    }
+
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case appNotFound(bundleIds: [String])
+
+        var description: String {
+            switch self {
+            case let .appNotFound(bundleIds):
+                return "No apps were found matching \(bundleIds)."
+            }
+        }
+    }
+}
+
+private extension BagbutikServiceProtocol {
+    func inviteUserToTeam(
+        email: String,
+        firstName: String,
+        lastName: String,
+        roles: [UserRole],
+        allAppsVisible: Bool,
+        provisioningAllowed: Bool,
+        appsVisibleIds: [String] = []
+    ) async throws -> UserInvitation {
+        // appsVisibleIds should be empty when allAppsVisible is true
+        precondition(allAppsVisible && appsVisibleIds.isEmpty)
+
+        let invitation = try await request(
+            .createUserInvitationV1(
+                requestBody: .init(
+                    data: .init(
+                        attributes: .init(
+                            allAppsVisible: allAppsVisible,
+                            email: email,
+                            firstName: firstName,
+                            lastName: lastName,
+                            provisioningAllowed: provisioningAllowed,
+                            roles: roles
+                        )
+                    )
+                )
+            )
+        ).data
+
+        return .init(invitation)
     }
 }

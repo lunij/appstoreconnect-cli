@@ -32,4 +32,5 @@ opt_in_rules:
   - multiline_arguments
   - operator_usage_whitespace
   - overridden_super_call
+large_tuple: 3
 type_body_length: 300

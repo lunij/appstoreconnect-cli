@@ -1,25 +1,16 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct DeleteBetaTestersOperation: APIOperation {
     struct Options {
         let ids: [String]
     }
 
-    private let endpoints: [APIEndpoint<Void>]
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        endpoints = options.ids.map {
-            APIEndpoint.delete(betaTesterWithId: $0)
+    func execute() async throws {
+        for id in options.ids {
+            try await service.request(.deleteBetaTesterV1(id: id))
         }
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        Publishers
-            .ConcatenateMany(endpoints.map(requestor.request))
-            .eraseToAnyPublisher()
     }
 }

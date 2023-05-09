@@ -1,6 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
+import Bagbutik_Models
 
 struct ReadPreReleaseVersionCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -22,10 +23,30 @@ struct ReadPreReleaseVersionCommand: CommonParsableCommand {
     )
     var version: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let prereleaseVersion = try service.readPreReleaseVersion(filterIdentifier: appLookupArgument.identifier, filterVersion: version)
-        try prereleaseVersion.render(options: common.outputOptions)
+        var filterAppId = ""
+
+        switch appLookupArgument.identifier {
+        case let .appId(appId):
+            filterAppId = appId
+        case let .bundleId(bundleId):
+            filterAppId = try await GetAppOperation(
+                service: service,
+                options: .init(bundleId: bundleId)
+            )
+            .execute()
+            .id
+        }
+
+        let output = try await ReadPreReleaseVersionOperation(
+            service: service,
+            options: .init(filterAppId: filterAppId, filterVersion: version)
+        )
+        .execute()
+
+        try PreReleaseVersion(output.preReleaseVersion, output.includes)
+            .render(options: common.outputOptions)
     }
 }

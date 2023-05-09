@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 
 struct RevokeCertificatesCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -21,9 +20,23 @@ struct RevokeCertificatesCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-        _ = try service.revokeCertificates(serials: serials)
+
+        let certificatesIds = try await serials.asyncMap {
+            try await ReadCertificateOperation(
+                service: service,
+                options: .init(serial: $0)
+            )
+            .execute()
+            .id
+        }
+
+        _ = try await RevokeCertificatesOperation(
+            service: service,
+            options: .init(ids: certificatesIds)
+        )
+        .execute()
 
         // Only print if the `PrintLevel` is set to verbose.
         if common.outputOptions.printLevel == .verbose {

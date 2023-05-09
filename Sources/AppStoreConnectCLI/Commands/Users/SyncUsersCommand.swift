@@ -1,13 +1,12 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Core
+import Bagbutik_Models
+
+private typealias UserChange = CollectionDifference<User>.Change
 
 struct SyncUsersCommand: CommonParsableCommand {
-    typealias UserChange = CollectionDifference<User>.Change
-
     static var configuration = CommandConfiguration(
         commandName: "sync",
         abstract: "Sync information about users on your team with provided configuration file."
@@ -25,65 +24,26 @@ struct SyncUsersCommand: CommonParsableCommand {
     @Flag(help: "Perform a dry run.")
     var dryRun = false
 
-    func run() throws {
-        // Only print if the `PrintLevel` is set to verbose.
+    func run() async throws {
         if common.outputOptions.printLevel == .verbose {
             print("## Dry run ##")
         }
 
         let usersInFile = Readers.FileReader<[User]>(format: inputFormat).read(filePath: config)
 
-        let client = try makeService()
+        let service = try makeService()
 
-        let change = try usersInAppStoreConnect(client)
-            .flatMap { users -> AnyPublisher<UserChange, Error> in
-                let changes = usersInFile.difference(from: users) { lhs, rhs -> Bool in
-                    lhs.username == rhs.username
-                }
+        let users = try await service.usersInAppStoreConnect()
 
-                if self.dryRun {
-                    return Publishers.Sequence(sequence: changes)
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
-                } else {
-                    return self.sync(users: changes, client: client)
-                        .eraseToAnyPublisher()
-                }
-            }
-            .await()
+        let changes = usersInFile.difference(from: users) { lhs, rhs -> Bool in
+            lhs.username == rhs.username
+        }
 
-        Renderers.UserChangesRenderer(dryRun: dryRun).render(change)
-    }
+        if !dryRun {
+            try await service.sync(changes: changes)
+        }
 
-    private func sync(users changes: CollectionDifference<User>, client: AppStoreConnectService) -> AnyPublisher<UserChange, Error> {
-        let requests = changes
-            .compactMap { change -> AnyPublisher<UserChange, Error>? in
-                switch change {
-                case let .insert(_, user, _):
-                    return client
-                        .request(APIEndpoint.invite(user: user))
-                        .map { _ in change }
-                        .eraseToAnyPublisher()
-
-                case let .remove(_, user, _):
-                    let removeUser = { client.request(APIEndpoint.remove(userWithId: $0)) }
-
-                    return client
-                        .userIdentifier(matching: user.username)
-                        .flatMap(removeUser)
-                        .map { _ in change }
-                        .eraseToAnyPublisher()
-                }
-            }
-
-        return Publishers.ConcatenateMany(requests).eraseToAnyPublisher()
-    }
-
-    private func usersInAppStoreConnect(_ client: AppStoreConnectService) -> AnyPublisher<[User], Error> {
-        client
-            .request(.users())
-            .map(User.fromAPIResponse)
-            .eraseToAnyPublisher()
+        Renderers.UserChangesRenderer(dryRun: dryRun).render(changes)
     }
 }
 
@@ -91,13 +51,65 @@ private extension Renderers {
     struct UserChangesRenderer: Renderer {
         let dryRun: Bool
 
-        func render(_ input: SyncUsersCommand.UserChange) {
-            switch input {
-            case let .insert(_, user, _):
-                print("+\(user.username)")
-            case let .remove(_, user, _):
-                print("-\(user.username)")
+        func render(_ input: CollectionDifference<User>) {
+            for change in input {
+                switch change {
+                case let .insert(_, user, _):
+                    print("+\(user.username)")
+                case let .remove(_, user, _):
+                    print("-\(user.username)")
+                }
             }
         }
+    }
+}
+
+extension Request<UserInvitationResponse, ErrorResponse> {
+    static func invite(user: User) -> Self {
+        .createUserInvitationV1(requestBody: .init(data: .init(
+            attributes: .init(
+                allAppsVisible: user.allAppsVisible,
+                email: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                provisioningAllowed: user.provisioningAllowed,
+                roles: user.roles.compactMap(UserRole.init(rawValue:))
+            ),
+            relationships: .init(visibleApps: .init(data: user.allAppsVisible ? [] : user.visibleApps?.map { .init(id: $0) }))
+        )))
+    }
+}
+
+private extension BagbutikServiceProtocol {
+    func usersInAppStoreConnect() async throws -> [User] {
+        let response = try await request(.listUsersV1())
+        return User.fromAPIResponse(response)
+    }
+
+    func sync(changes: CollectionDifference<User>) async throws {
+        for change in changes {
+            switch change {
+            case let .insert(_, user, _):
+                _ = try await request(.invite(user: user))
+            case let .remove(_, user, _):
+                let userId = try await userIdentifier(matching: user.username)
+                try await request(.deleteUserV1(id: userId))
+            }
+        }
+    }
+
+    /// Find the opaque internal identifier for this user; search by email address.
+    ///
+    /// This is an App Store Connect internal identifier
+    func userIdentifier(matching email: String) async throws -> String {
+        let users = try await request(.listUsersV1(filters: [.username([email])]))
+            .data
+            .filter { $0.attributes?.username == email }
+
+        guard let user = users.first else {
+            fatalError("User with email address '\(email)' not unique or not found")
+        }
+
+        return user.id
     }
 }

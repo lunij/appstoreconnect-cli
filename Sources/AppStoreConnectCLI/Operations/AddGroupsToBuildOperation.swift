@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_TestFlight
 
 struct AddGroupsToBuildOperation: APIOperation {
     struct Options {
@@ -10,19 +8,13 @@ struct AddGroupsToBuildOperation: APIOperation {
         let buildId: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    var endpoint: APIEndpoint<Void> {
-        .add(accessForBetaGroupsWithIds: options.groupIds, toBuildWithId: options.buildId)
-    }
-
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        requestor
-            .request(endpoint)
-            .eraseToAnyPublisher()
+    func execute() async throws {
+        try await service.request(.createBetaGroupsForBuildV1(
+            id: options.buildId,
+            requestBody: .init(data: options.groupIds.map { .init(id: $0) })
+        ))
     }
 }

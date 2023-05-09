@@ -24,17 +24,26 @@ struct CreateBuildLocalizationsCommand: CommonParsableCommand, CreateUpdateBuild
         try validateWhatsNewInput()
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let buildLocalization = try service.createBuildLocalization(
+        let buildId = try await service.buildIdFrom(
             bundleId: build.bundleId,
             buildNumber: build.buildNumber,
-            preReleaseVersion: build.preReleaseVersion,
-            locale: localization.locale,
-            whatsNew: readWhatsNew()
+            preReleaseVersion: build.preReleaseVersion
         )
 
-        try [buildLocalization].render(options: common.outputOptions)
+        let buildLocalization = try await CreateBuildLocalizationOperation(
+            service: service,
+            options: .init(
+                buildId: buildId,
+                locale: localization.locale,
+                whatsNew: readWhatsNew()
+            )
+        )
+        .execute()
+
+        try [BuildLocalization(buildLocalization)]
+            .render(options: common.outputOptions)
     }
 }

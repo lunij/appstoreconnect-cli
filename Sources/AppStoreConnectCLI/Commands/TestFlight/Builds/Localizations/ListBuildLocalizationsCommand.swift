@@ -17,16 +17,21 @@ struct ListBuildLocalizationsCommand: CommonParsableCommand {
     @Option(help: "Limit the number of resources to return.")
     var limit: Int?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let localizations = try service.listBuildsLocalizations(
+        let buildId = try await service.buildIdFrom(
             bundleId: build.bundleId,
             buildNumber: build.buildNumber,
-            preReleaseVersion: build.preReleaseVersion,
-            limit: limit
+            preReleaseVersion: build.preReleaseVersion
         )
 
-        try localizations.render(options: common.outputOptions)
+        return try await ListBuildLocalizationOperation(
+            service: service,
+            options: .init(id: buildId, limit: limit)
+        )
+        .execute()
+        .map(BuildLocalization.init)
+        .render(options: common.outputOptions)
     }
 }

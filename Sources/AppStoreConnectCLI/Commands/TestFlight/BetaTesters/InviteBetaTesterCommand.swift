@@ -23,8 +23,10 @@ struct InviteBetaTesterCommand: CommonParsableCommand {
     @Argument(help: "The bundle ID of an application. (eg. com.example.app)")
     var bundleId: String
 
-    @Option(parsing: .upToNextOption,
-            help: "Names of TestFlight beta tester group that the tester will be assigned to.")
+    @Option(
+        parsing: .upToNextOption,
+        help: "Names of TestFlight beta tester group that the tester will be assigned to."
+    )
     var groups: [String]
 
     func validate() throws {
@@ -33,17 +35,20 @@ struct InviteBetaTesterCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let betaTester = try service.inviteBetaTesterToGroups(
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            bundleId: bundleId,
-            groupNames: groups
+        let betaTester = try await InviteTesterOperation(
+            service: service,
+            options: .init(
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                identifers: .bundleIdWithGroupNames(bundleId: bundleId, groupNames: groups)
+            )
         )
+        .execute()
 
-        try betaTester.render(options: common.outputOptions)
+        try BetaTester(betaTester)
+            .render(options: common.outputOptions)
     }
 }

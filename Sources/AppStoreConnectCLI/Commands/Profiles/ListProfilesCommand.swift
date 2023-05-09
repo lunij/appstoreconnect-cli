@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Provisioning
 
 struct ListProfilesCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -19,11 +18,12 @@ struct ListProfilesCommand: CommonParsableCommand {
     @Option(
         parsing: .unconditional,
         help: ArgumentHelp(
-            "Sort the results using the provided key \(Profiles.Sort.allCases).",
+            "Sort the results using one or more of the following values: \(ListProfilesV1.Sort.allValueStringsFormatted).",
             discussion: "The `-` prefix indicates descending order."
-        )
+        ),
+        transform: { $0.components(separatedBy: ",").compactMap(ListProfilesV1.Sort.init(argument:)) }
     )
-    var sort: Profiles.Sort?
+    var sorts: [ListProfilesV1.Sort] = []
 
     @Option(
         parsing: .upToNextOption,
@@ -42,7 +42,7 @@ struct ListProfilesCommand: CommonParsableCommand {
 
     @Option(
         help: ArgumentHelp(
-            "Filter the results by the specified prfile state \(ProfileState.allCases).",
+            "Filter the results by profile state: \(ProfileState.allValueStringsFormatted).",
             valueName: "state"
         )
     )
@@ -51,11 +51,11 @@ struct ListProfilesCommand: CommonParsableCommand {
     @Option(
         parsing: .upToNextOption,
         help: ArgumentHelp(
-            "Filter the results by the specified profile types \(ProfileType.allCases).",
+            "Filter the results by profile types: \(ProfileType.allValueStringsFormatted)",
             valueName: "type"
         )
     )
-    var filterProfileType: [ProfileType] = []
+    var filterProfileTypes: [ProfileType] = []
 
     @Option(help:
         ArgumentHelp(
@@ -66,27 +66,29 @@ struct ListProfilesCommand: CommonParsableCommand {
     )
     var downloadPath: String?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let profiles = try service.listProfiles(
-            ids: filterId,
-            filterName: filterName,
-            filterProfileState: filterProfileState,
-            filterProfileType: filterProfileType,
-            sort: sort,
-            limit: limit
+        let profiles = try await ListProfilesOperation(
+            service: service,
+            options: .init(
+                ids: filterId,
+                filterName: filterName,
+                filterProfileState: filterProfileState,
+                filterProfileTypes: filterProfileTypes,
+                sorts: sorts,
+                limit: limit
+            )
         )
+        .execute()
 
         if let path = downloadPath {
             let processor = ProfileProcessor(path: .folder(path: path))
 
-            try profiles.forEach {
-                let file = try processor.write($0)
+            for profile in profiles {
+                let file = try processor.write(profile)
 
-                // Only print if the `PrintLevel` is set to verbose.
                 if common.outputOptions.printLevel == .verbose {
-                    print("📥 Profile '\($0.name ?? "")' downloaded to: \(file.path)")
+                    print("📥 Profile '\(profile.name ?? "")' downloaded to: \(file.path)")
                 }
             }
         }
@@ -94,3 +96,5 @@ struct ListProfilesCommand: CommonParsableCommand {
         try profiles.render(options: common.outputOptions)
     }
 }
+
+extension ListProfilesV1.Sort: ExpressibleByArgument {}

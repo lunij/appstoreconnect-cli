@@ -22,10 +22,10 @@ struct ListBetaTesterByGroupCommand: CommonParsableCommand {
     )
     var groupName: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let betaTesters = try service.listBetaTestersForGroup(identifier: appLookupArgument.identifier, groupName: groupName)
+        let useCase = ListBetaTestersForGroupUseCase(service: service)
+        let betaTesters = try await useCase.listBetaTestersForGroup(identifier: appLookupArgument.identifier, groupName: groupName)
         try betaTesters.render(options: common.outputOptions)
     }
 }

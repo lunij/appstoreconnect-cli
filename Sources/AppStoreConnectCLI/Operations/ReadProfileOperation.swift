@@ -1,24 +1,21 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-
 struct ReadProfileOperation: APIOperation {
     struct Options {
         let id: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.Profile, Swift.Error> {
-        requestor.request(
-            .readProfileInformation(id: options.id)
+    func execute() async throws -> Profile {
+        let response = try await service.request(
+            .getProfileV1(
+                id: options.id,
+                includes: [.bundleId, .certificates, .devices]
+            )
         )
-        .map(\.data)
-        .eraseToAnyPublisher()
+
+        return Profile(response.data, includes: response.included ?? [])
     }
 }

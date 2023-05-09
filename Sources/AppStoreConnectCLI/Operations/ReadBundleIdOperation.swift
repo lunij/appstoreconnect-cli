@@ -1,53 +1,44 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ReadBundleIdOperation: APIOperation {
     struct Options {
         let bundleId: String
     }
 
-    enum Error: LocalizedError {
-        case couldNotFindBundleId(String)
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case bundleIdNotFound(String)
         case bundleIdNotUnique(String)
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
-            case let .couldNotFindBundleId(bundleId):
-                return "Couldn't find Bundle ID: '\(bundleId)'."
+            case let .bundleIdNotFound(bundleId):
+                return "Bundle ID not found: \(bundleId)"
             case let .bundleIdNotUnique(bundleId):
-                return "The Bundle ID you provided '\(bundleId)' is not unique."
+                return "Bundle ID is not unique: \(bundleId)"
             }
         }
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.BundleId, Swift.Error> {
-        requestor.request(
-            .listBundleIds(
-                filter: [.identifier([options.bundleId])]
-            )
+    func execute() async throws -> Bagbutik_Models.BundleId {
+        let bundleIds = try await service.request(
+            .listBundleIdsV1(filters: [.identifier([options.bundleId])])
         )
-        .tryMap {
-            let data = $0.data.filter { $0.attributes?.identifier == self.options.bundleId }
+        .data
+        .filter { $0.attributes?.identifier == options.bundleId }
 
-            if data.count > 1 {
-                throw Error.bundleIdNotUnique(self.options.bundleId)
-            }
-
-            guard let bundleId = data.first else {
-                throw Error.couldNotFindBundleId(self.options.bundleId)
-            }
-
-            return bundleId
+        if bundleIds.count > 1 {
+            throw Error.bundleIdNotUnique(options.bundleId)
         }
-        .eraseToAnyPublisher()
+
+        guard let bundleId = bundleIds.first else {
+            throw Error.bundleIdNotFound(options.bundleId)
+        }
+
+        return bundleId
     }
 }

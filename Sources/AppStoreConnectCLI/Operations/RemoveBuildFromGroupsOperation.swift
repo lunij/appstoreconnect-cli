@@ -1,31 +1,18 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct RemoveBuildFromGroupsOperation: APIOperation {
     struct Options {
         let buildId: String
         let groupIds: [String]
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    var endpoint: APIEndpoint<Void> {
-        .remove(
-            accessForBetaGroupsWithIds: options.groupIds,
-            toBuildWithId: options.buildId
-        )
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        requestor
-            .request(endpoint)
-            .eraseToAnyPublisher()
+    func execute() async throws {
+        try await service.request(.deleteBetaGroupsForBuildV1(
+            id: options.buildId,
+            requestBody: .init(data: options.groupIds.map { .init(id: $0) })
+        ))
     }
 }

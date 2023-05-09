@@ -1,20 +1,22 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import CollectionConcurrencyKit
 
 struct InviteTesterOperation: APIOperation {
-    private enum InviteTesterError: LocalizedError {
+    enum Error: Swift.Error, CustomStringConvertible {
         case noGroupsExist(groupNames: [String], bundleId: String)
         case noAppExist
+        case betaTesterInvitationFailed
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
             case let .noGroupsExist(groupNames, bundleId):
                 return "One or more of beta groups \"\(groupNames)\" don't exist or don't belong to application with bundle ID \"\(bundleId)\"."
             case .noAppExist:
                 return "App with provided bundleId doesn't exist."
+            case .betaTesterInvitationFailed:
+                return "The beta tester invitation failed"
             }
         }
     }
@@ -31,37 +33,29 @@ struct InviteTesterOperation: APIOperation {
         }
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<AppStoreConnect_Swift_SDK.BetaTester, Error> {
+    func execute() async throws -> Bagbutik_Models.BetaTester {
         let groupIds: [String]
 
         switch options.identifers {
         case let .bundleIdWithGroupNames(bundleId, groupNames):
-            let appIds = try GetAppsOperation(
-                options: .init(bundleIds: [bundleId])
+            let appId = try await GetAppOperation(
+                service: service,
+                options: .init(bundleId: bundleId)
             )
-            .execute(with: requestor)
-            .await()
-            .map(\.id)
+            .execute()
+            .id
 
-            guard let appId = appIds.first else {
-                throw InviteTesterError.noAppExist
-            }
-
-            let betaGroups = try requestor
-                .request(.betaGroups(forAppWithId: appId))
-                .await()
+            let betaGroups = try await service
+                .request(.listBetaGroupsForAppV1(id: appId))
                 .data
 
-            guard Set(groupNames).isSubset(of:
-                Set(betaGroups.compactMap { $0.attributes?.name }))
-            else {
-                throw InviteTesterError.noGroupsExist(
+            let betaGroupNamesForApp = betaGroups.compactMap { $0.attributes?.name }
+
+            guard Set(groupNames).isSubset(of: Set(betaGroupNamesForApp)) else {
+                throw Error.noGroupsExist(
                     groupNames: groupNames,
                     bundleId: bundleId
                 )
@@ -72,34 +66,33 @@ struct InviteTesterOperation: APIOperation {
             groupIds = identifiers
         }
 
-        let requests = groupIds.map { (identifier: String) -> AnyPublisher<BetaTesterResponse, Error> in
-            let endpoint = APIEndpoint.create(
-                betaTesterWithEmail: options.email,
-                firstName: options.firstName,
-                lastName: options.lastName,
-                betaGroupIds: [identifier]
-            )
-
-            return requestor
-                .request(endpoint)
-                .eraseToAnyPublisher()
+        let betaTesters = try await groupIds.asyncMap { betaGroupId in
+            try await service
+                .request(.createBetaTesterV1(requestBody: .init(data: .init(attributes: .init(
+                    email: options.email,
+                    firstName: options.firstName,
+                    lastName: options.lastName
+                ), relationships: .init(
+                    betaGroups: .init(data: [.init(id: betaGroupId)])
+                )))))
+                .data
         }
 
-        return Publishers.ConcatenateMany(requests)
-            .last()
-            .map(\.data)
-            .eraseToAnyPublisher()
+        guard let betaTester = betaTesters.first else {
+            throw Error.betaTesterInvitationFailed
+        }
+
+        return betaTester
     }
 
-    func getGroupIds(
-        in betaGroups: [AppStoreConnect_Swift_SDK.BetaGroup],
+    private func getGroupIds(
+        in betaGroups: [Bagbutik_Models.BetaGroup],
         matching names: [String]
     ) -> [String] {
-        betaGroups.filter { (betaGroup: AppStoreConnect_Swift_SDK.BetaGroup) in
+        betaGroups.filter { betaGroup in
             guard let name = betaGroup.attributes?.name else {
                 return false
             }
-
             return names.contains(name)
         }
         .map(\.id)

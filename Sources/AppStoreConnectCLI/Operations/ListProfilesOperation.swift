@@ -1,47 +1,41 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
+import Bagbutik_Provisioning
 
 struct ListProfilesOperation: APIOperation {
     struct Options {
-        let ids: [String]
-        let filterName: [String]
-        let filterProfileState: ProfileState?
-        let filterProfileType: [ProfileType]
-        let sort: Profiles.Sort?
-        let limit: Int?
+        var ids: [String] = []
+        var filterName: [String] = []
+        var filterProfileState: ProfileState?
+        var filterProfileTypes: [ProfileType] = []
+        var sorts: [ListProfilesV1.Sort] = []
+        var limit: Int?
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<[AppStoreConnect_Swift_SDK.Profile], Error> {
-        var filters = [Profiles.Filter]()
+    func execute() async throws -> [Profile] {
+        var filters: [ListProfilesV1.Filter] = []
 
         if options.filterName.isNotEmpty { filters.append(.name(options.filterName)) }
-        if options.filterProfileType.isNotEmpty { filters.append(.profileType(options.filterProfileType)) }
+        if options.filterProfileTypes.isNotEmpty { filters.append(.profileType(options.filterProfileTypes)) }
         if let filterProfileState = options.filterProfileState { filters.append(.profileState([filterProfileState])) }
         if options.ids.isNotEmpty { filters.append(.id(options.ids)) }
 
-        let sort = [options.sort].compactMap { $0 }
+        let responses = try await service.requestAllPages(.listProfilesV1(
+            filters: filters,
+            includes: [.bundleId, .certificates, .devices],
+            sorts: options.sorts.nilIfEmpty,
+            limits: options.limit.map { [.limit($0)] }
+        ))
+        .responses
 
-        return requestor
-            .requestAllPages {
-                .listProfiles(
-                    filter: filters,
-                    include: [.bundleId, .certificates, .devices],
-                    sort: sort,
-                    limit: options.limit.map { [.profiles($0)] },
-                    next: $0
-                )
+        return responses.flatMap { response in
+            response.data.map {
+                Profile($0, includes: response.included ?? [])
             }
-            .map { $0.flatMap(\.data) }
-            .eraseToAnyPublisher()
+        }
     }
 }
-
-extension ProfilesResponse: PaginatedResponse {}

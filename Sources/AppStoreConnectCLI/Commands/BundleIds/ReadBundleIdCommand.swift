@@ -1,9 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
 
 struct ReadBundleIdCommand: CommonParsableCommand {
     public static var configuration = CommandConfiguration(
@@ -17,11 +14,15 @@ struct ReadBundleIdCommand: CommonParsableCommand {
     @Argument(help: "The reverse-DNS bundle ID identifier to read. Must be unique. (eg. com.example.app)")
     var identifier: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let bundleId = try await ReadBundleIdOperation(
+            service: service,
+            options: .init(bundleId: identifier)
+        )
+        .execute()
 
-        let bundleId = try service.readBundleIdInformation(bundleId: identifier)
-
-        try bundleId.render(options: common.outputOptions)
+        try BundleId(bundleId)
+            .render(options: common.outputOptions)
     }
 }

@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ModifyUserOperation: APIOperation {
     struct Options {
@@ -13,23 +11,19 @@ struct ModifyUserOperation: APIOperation {
         let appsVisibleIds: [String]
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<AppStoreConnect_Swift_SDK.User, Error> {
-        let buildModifyEndpoint = APIEndpoint.modify(
-            userWithId: options.userId,
-            allAppsVisible: options.allAppsVisible,
-            provisioningAllowed: options.provisioningAllowed,
-            roles: options.roles,
-            appsVisibleIds: options.appsVisibleIds
-        )
-
-        return requestor.request(buildModifyEndpoint)
-            .map(\.data)
-            .eraseToAnyPublisher()
+    func execute() async throws -> Bagbutik_Models.User {
+        try await service.request(.updateUserV1(id: options.userId, requestBody: .init(data: .init(
+            id: options.userId,
+            attributes: .init(
+                allAppsVisible: options.allAppsVisible,
+                provisioningAllowed: options.provisioningAllowed,
+                roles: options.roles
+            ),
+            relationships: .init(visibleApps: .init(data: options.appsVisibleIds.map { .init(id: $0) }))
+        ))))
+        .data
     }
 }

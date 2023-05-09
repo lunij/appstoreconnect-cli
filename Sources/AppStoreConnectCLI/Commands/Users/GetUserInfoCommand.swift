@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
 
 struct GetUserInfoCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -19,14 +17,19 @@ struct GetUserInfoCommand: CommonParsableCommand {
     @Flag(help: "Include visible apps in results.")
     var includeVisibleApps = false
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let user = try service.getUserInfo(
-            with: email,
-            includeVisibleApps: includeVisibleApps
+        let user = try await GetUserInfoOperation(
+            service: service,
+            options: .init(
+                email: email,
+                includeVisibleApps: includeVisibleApps
+            )
         )
+        .execute()
 
-        try user.render(options: common.outputOptions)
+        try User(user, visibleApps: [])
+            .render(options: common.outputOptions)
     }
 }

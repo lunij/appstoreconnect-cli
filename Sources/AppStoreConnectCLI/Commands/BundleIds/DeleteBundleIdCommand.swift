@@ -1,12 +1,9 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
 
 struct DeleteBundleIdCommand: CommonParsableCommand {
-    public static var configuration = CommandConfiguration(
+    static var configuration = CommandConfiguration(
         commandName: "delete",
         abstract: "Delete a bundle ID that is used for app development."
     )
@@ -17,9 +14,18 @@ struct DeleteBundleIdCommand: CommonParsableCommand {
     @Argument(help: "The reverse-DNS bundle ID identifier to delete. Must be unique. (eg. com.example.app)")
     var identifier: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let bundleId = try await ReadBundleIdOperation(
+            service: service,
+            options: .init(bundleId: identifier)
+        )
+        .execute()
 
-        try service.deleteBundleId(bundleId: identifier)
+        try await DeleteBundleIdOperation(
+            service: service,
+            options: .init(resourceId: bundleId.id)
+        )
+        .execute()
     }
 }

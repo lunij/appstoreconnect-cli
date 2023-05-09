@@ -1,7 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
+import Bagbutik_TestFlight
 
 struct ListBetaGroupsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -31,27 +31,54 @@ struct ListBetaGroupsCommand: CommonParsableCommand {
     @Option(
         parsing: .unconditional,
         help: ArgumentHelp(
-            "Sort the results using the provided key \(ListBetaGroups.Sort.allCases).",
+            "Sort the results using one or more of: \(ListBetaGroupsV1.Sort.allValueStringsFormatted).",
             discussion: "The `-` prefix indicates descending order."
-        )
+        ),
+        transform: { $0.components(separatedBy: ",").compactMap(ListBetaGroupsV1.Sort.init(argument:)) }
     )
-    var sort: ListBetaGroups.Sort?
+    var sorts: [ListBetaGroupsV1.Sort] = []
 
     @Flag(
         help: "Exclude apple store connect internal beta groups."
     )
     var excludeInternal = false
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let betaGroups = try service.listBetaGroups(
-            filterIdentifiers: appLookupOptions.filterIdentifiers,
-            names: filterNames,
-            sort: sort,
-            excludeInternal: excludeInternal
-        )
+        var filterAppIds: [String] = []
+        var filterBundleIds: [String] = []
 
-        try betaGroups.render(options: common.outputOptions)
+        appLookupOptions.filterIdentifiers.forEach { identifier in
+            switch identifier {
+            case let .appId(filterAppId):
+                filterAppIds.append(filterAppId)
+            case let .bundleId(filterBundleId):
+                filterBundleIds.append(filterBundleId)
+            }
+        }
+
+        if filterBundleIds.isNotEmpty {
+            filterAppIds += try await GetAppsOperation(
+                service: service,
+                options: .init(bundleIds: filterBundleIds)
+            )
+            .execute().map(\.id)
+        }
+
+        try await ListBetaGroupsOperation(
+            service: service,
+            options: .init(
+                appIds: filterAppIds,
+                names: filterNames,
+                sorts: sorts,
+                excludeInternal: excludeInternal
+            )
+        )
+        .execute()
+        .map(BetaGroup.init)
+        .render(options: common.outputOptions)
     }
 }
+
+extension ListBetaGroupsV1.Sort: ExpressibleByArgument {}

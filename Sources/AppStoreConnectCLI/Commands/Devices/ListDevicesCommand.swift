@@ -1,7 +1,8 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
+import Bagbutik_Models
+import Bagbutik_Provisioning
 
 struct ListDevicesCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -18,11 +19,12 @@ struct ListDevicesCommand: CommonParsableCommand {
     @Option(
         parsing: .unconditional,
         help: ArgumentHelp(
-            "Sort the results using the provided key \(Devices.Sort.allCases).",
+            "Sort the results using one or more of the following values: \(ListDevicesV1.Sort.allValueStringsFormatted)",
             discussion: "The `-` prefix indicates descending order."
-        )
+        ),
+        transform: { $0.components(separatedBy: ",").compactMap(ListDevicesV1.Sort.init(argument:)) }
     )
-    var sort: Devices.Sort?
+    var sort: [ListDevicesV1.Sort] = []
 
     @Option(
         parsing: .upToNextOption,
@@ -37,15 +39,15 @@ struct ListDevicesCommand: CommonParsableCommand {
     @Option(
         parsing: .upToNextOption,
         help: ArgumentHelp(
-            "Filter the results by the specified device platform \(Platform.allCases).",
+            "Filter the results by the following platforms: \(BundleIdPlatform.allValueStringsFormatted)",
             valueName: "platform"
         )
     )
-    var filterPlatform: [Platform] = []
+    var filterPlatform: [BundleIdPlatform] = []
 
     @Option(
         help: ArgumentHelp(
-            "Filter the results by the specified device status \(DeviceStatus.allCases).",
+            "Filter the results by device status: \(DeviceStatus.allValueStringsFormatted).",
             valueName: "status"
         )
     )
@@ -61,18 +63,24 @@ struct ListDevicesCommand: CommonParsableCommand {
     )
     var filterUDID: [String] = []
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let devices = try service.listDevices(
-            filterName: filterName,
-            filterPlatform: filterPlatform,
-            filterUDID: filterUDID,
-            filterStatus: filterStatus,
-            sort: sort,
-            limit: limit
+        let devices = try await ListDevicesOperation(
+            service: service,
+            options: .init(
+                filterName: filterName,
+                filterPlatform: filterPlatform,
+                filterUDID: filterUDID,
+                filterStatus: filterStatus,
+                sorts: sort.nilIfEmpty,
+                limit: limit
+            )
         )
+        .execute()
+        .map(Device.init)
 
         try devices.render(options: common.outputOptions)
     }
 }
+
+extension ListDevicesV1.Sort: ExpressibleByArgument {}
