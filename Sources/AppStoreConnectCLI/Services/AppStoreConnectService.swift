@@ -28,7 +28,7 @@ class AppStoreConnectService {
 
         let output = try operation.execute(with: requestor).await()
 
-        return output.map(App.init)
+        return try output.map(App.init)
     }
 
     func listBundleIds(
@@ -203,7 +203,7 @@ class AppStoreConnectService {
         .execute(with: requestor)
         .await()
 
-        return BetaTester(output)
+        return try BetaTester(output)
     }
 
     func addTestersToGroup(
@@ -287,7 +287,7 @@ class AppStoreConnectService {
 
         let output = try operation.execute(with: requestor).await()
 
-        return BetaTester(output)
+        return try BetaTester(output)
     }
 
     func deleteBetaTesters(emails: [String]) throws -> [Void] {
@@ -365,7 +365,7 @@ class AppStoreConnectService {
             }
         }
 
-        return betaTesters.map(BetaTester.init)
+        return try betaTesters.map(BetaTester.init)
     }
 
     func listBetaTestersForGroup(
@@ -383,14 +383,14 @@ class AppStoreConnectService {
         let operation = ListBetaTestersByGroupOperation(options: .init(groupId: betaGroup.id))
         let output = try operation.execute(with: requestor).await()
 
-        return output.map { apiBetaTester -> BetaTester in
+        return try output.map { apiBetaTester -> BetaTester in
             BetaTester(
                 email: apiBetaTester.attributes?.email,
                 firstName: apiBetaTester.attributes?.firstName,
                 lastName: apiBetaTester.attributes?.lastName,
                 inviteType: (apiBetaTester.attributes?.inviteType).map(\.rawValue),
-                betaGroups: [BetaGroup(app, betaGroup)],
-                apps: [App(app)]
+                betaGroups: [try BetaGroup(app, betaGroup)],
+                apps: [try App(app)]
             )
         }
     }
@@ -457,7 +457,7 @@ class AppStoreConnectService {
             .execute(with: requestor)
             .await()
 
-        return BetaGroup(app, betaGroup)
+        return try BetaGroup(app, betaGroup)
     }
 
     func createBetaGroup(
@@ -479,7 +479,7 @@ class AppStoreConnectService {
         )
 
         let betaGroupResponse = createBetaGroupOperation.execute(with: requestor)
-        return try betaGroupResponse.map(BetaGroup.init).await()
+        return try betaGroupResponse.tryMap(BetaGroup.init).await()
     }
 
     func deleteBetaGroup(appBundleId: String, betaGroupName: String) throws {
@@ -555,7 +555,7 @@ class AppStoreConnectService {
         let modifyBetaGroupOperation = ModifyBetaGroupOperation(options: modifyBetaGroupOptions)
         let modifiedBetaGroup = try modifyBetaGroupOperation.execute(with: requestor).await()
 
-        return BetaGroup(app, modifiedBetaGroup)
+        return try BetaGroup(app, modifiedBetaGroup)
     }
 
     func readBuild(bundleId: String, buildNumber: String, preReleaseVersion: String) throws -> Build {
@@ -565,7 +565,7 @@ class AppStoreConnectService {
         let readBuildOperation = ReadBuildOperation(options: .init(appId: appId, buildNumber: buildNumber, preReleaseVersion: preReleaseVersion))
 
         let output = try readBuildOperation.execute(with: requestor).await()
-        return Build(output.build, output.relationships)
+        return try Build(output.build, output.relationships)
     }
 
     func expireBuild(bundleId: String, buildNumber: String, preReleaseVersion: String) throws {
@@ -608,7 +608,7 @@ class AppStoreConnectService {
         )
 
         let output = try listBuildsOperation.execute(with: requestor).await()
-        return output.map(Build.init)
+        return try output.map(Build.init)
     }
 
     func removeBuildFromGroups(
@@ -652,7 +652,7 @@ class AppStoreConnectService {
             .execute(with: requestor)
             .await()
 
-        return App(sdkApp)
+        return try App(sdkApp)
     }
 
     func listPreReleaseVersions(
@@ -688,7 +688,7 @@ class AppStoreConnectService {
         )
 
         let output = try listpreReleaseVersionsOperation.execute(with: requestor).await()
-        return output.map(PreReleaseVersion.init)
+        return try output.map(PreReleaseVersion.init)
     }
 
     func readPreReleaseVersion(filterIdentifier: AppLookupIdentifier, filterVersion: String) throws -> PreReleaseVersion {
@@ -704,7 +704,7 @@ class AppStoreConnectService {
 
         let readPreReleaseVersionOperation = ReadPreReleaseVersionOperation(options: .init(filterAppId: filterAppId, filterVersion: filterVersion))
         let output = try readPreReleaseVersionOperation.execute(with: requestor).await()
-        return PreReleaseVersion(output.preReleaseVersion, output.relationships)
+        return try PreReleaseVersion(output.preReleaseVersion, output.relationships)
     }
 
     func listDevices(
@@ -1107,10 +1107,10 @@ class AppStoreConnectService {
             .zip(betaGroupsOperation.execute(with: requestor))
             .await()
 
-        let betagroups = groups.map(BetaGroup.init)
+        let betagroups = try groups.map(BetaGroup.init)
 
         // Using beta groups from API to update beta groups in testers, for adding extra informations like app info in a group
-        let betatesters = testers.map(BetaTester.init).map { tester -> BetaTester in
+        let betatesters = try testers.map(BetaTester.init).map { tester -> BetaTester in
             var updatedTester = tester
 
             updatedTester.betaGroups = tester.betaGroups.map { betagroupInTester in
@@ -1125,7 +1125,7 @@ class AppStoreConnectService {
         }
 
         return TestFlightProgram(
-            apps: apps.map(App.init),
+            apps: try apps.map(App.init),
             testers: betatesters,
             groups: betagroups
         )

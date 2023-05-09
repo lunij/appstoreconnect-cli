@@ -34,9 +34,7 @@ struct TestFlightConfigurationProcessor {
         }
 
         try configuration.appConfigurations.forEach { config in
-            guard let bundleId = config.app.bundleId else {
-                throw Error.bundleIdMissing
-            }
+            let bundleId = config.app.bundleId
             let appFolder = try appsFolder.createSubfolder(named: bundleId)
 
             let appFile = try appFolder.createFile(named: Self.appYAMLName)
@@ -60,13 +58,10 @@ struct TestFlightConfigurationProcessor {
     }
 
     enum Error: LocalizedError {
-        case bundleIdMissing
         case testerNotInTestersList(email: String, betaGroup: BetaGroup2, app: App)
 
         var errorDescription: String? {
             switch self {
-            case .bundleIdMissing:
-                return "Bundle ID is missing"
             case let .testerNotInTestersList(email, betaGroup, app):
                 return "Tester with email: \(email) in beta group named: \(betaGroup.groupName) " +
                     "for app: \(app.bundleId) is not included in the \(betaTestersCSVName) file"

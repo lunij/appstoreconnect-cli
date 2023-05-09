@@ -16,7 +16,7 @@ extension PreReleaseVersion {
     init(
         _ preReleaseVersion: AppStoreConnect_Swift_SDK.PrereleaseVersion,
         _ includes: [AppStoreConnect_Swift_SDK.PreReleaseVersionRelationship]?
-    ) {
+    ) throws {
         let relationships = preReleaseVersion.relationships
 
         let includedApps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
@@ -27,7 +27,7 @@ extension PreReleaseVersion {
         }
 
         let appDetails = includedApps?.first(where: { relationships?.app?.data?.id == $0.id })
-        let app = appDetails.map(App.init)
+        let app = try appDetails.map(App.init)
 
         self.init(
             app: app,

@@ -31,7 +31,7 @@ struct TestFlightProgramDifference {
             case let .addBetaTesterToApps(betaTester, apps),
                  let .removeBetaTesterFromApps(betaTester, apps):
                 let email = betaTester.email ?? ""
-                let bundleIds = apps.compactMap(\.bundleId).joined(separator: ", ")
+                let bundleIds = apps.map(\.bundleId).joined(separator: ", ")
 
                 return "Beta Tester with email: \(email) " +
                     "will be \(operation) apps: \(bundleIds)"

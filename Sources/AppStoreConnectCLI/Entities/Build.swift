@@ -24,7 +24,7 @@ struct Build: Codable, Equatable {
 // MARK: - Extensions
 
 extension Build {
-    init(_ build: AppStoreConnect_Swift_SDK.Build, _ includes: [AppStoreConnect_Swift_SDK.BuildRelationship]?) {
+    init(_ build: AppStoreConnect_Swift_SDK.Build, _ includes: [AppStoreConnect_Swift_SDK.BuildRelationship]?) throws {
         let relationships = build.relationships
 
         let includedApps = includes?.compactMap { relationship -> AppStoreConnect_Swift_SDK.App? in
@@ -60,7 +60,7 @@ extension Build {
         let buildBetaDetail = includedBuildBetaDetails?.first { relationships?.buildBetaDetail?.data?.id == $0.id }
         let betaAppReviewSubmission = includedBetaAppReviewSubmissions?.first { relationships?.betaAppReviewSubmission?.data?.id == $0.id }
 
-        let app = appDetails.map(App.init)
+        let app = try appDetails.map(App.init)
 
         self.init(
             app: app,
