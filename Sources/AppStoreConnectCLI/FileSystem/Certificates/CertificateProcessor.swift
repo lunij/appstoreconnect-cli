@@ -3,20 +3,16 @@
 import Files
 import Foundation
 
-public struct CertificateProcessor: ResourceWriter {
+struct CertificateProcessor: ResourceWriter {
     let path: ResourcePath
 
-    public init(path: ResourcePath) {
-        self.path = path
-    }
-
     @discardableResult
-    public func write(_ certificate: Certificate) throws -> File {
+    func write(_ certificate: Certificate) throws -> File {
         try writeFile(certificate)
     }
 
     @discardableResult
-    public func write(_ certificates: [Certificate]) throws -> [File] {
+    func write(_ certificates: [Certificate]) throws -> [File] {
         try certificates.map { try write($0) }
     }
 }

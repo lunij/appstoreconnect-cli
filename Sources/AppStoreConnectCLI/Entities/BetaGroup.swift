@@ -5,38 +5,16 @@ import Combine
 import Foundation
 import SwiftyTextTable
 
-public struct BetaGroup: Codable, Equatable {
-    public let id: String?
-    public let app: App?
-    public let groupName: String?
-    public let isInternal: Bool?
-    public let publicLink: String?
-    public let publicLinkEnabled: Bool?
-    public let publicLinkLimit: Int?
-    public let publicLinkLimitEnabled: Bool?
-    public let creationDate: String?
-
-    public init(
-        id: String?,
-        app: App?,
-        groupName: String?,
-        isInternal: Bool?,
-        publicLink: String?,
-        publicLinkEnabled: Bool?,
-        publicLinkLimit: Int?,
-        publicLinkLimitEnabled: Bool?,
-        creationDate: String?
-    ) {
-        self.id = id
-        self.app = app
-        self.groupName = groupName
-        self.isInternal = isInternal
-        self.publicLink = publicLink
-        self.publicLinkEnabled = publicLinkEnabled
-        self.publicLinkLimit = publicLinkLimit
-        self.publicLinkLimitEnabled = publicLinkLimitEnabled
-        self.creationDate = creationDate
-    }
+struct BetaGroup: Codable, Equatable {
+    let id: String?
+    let app: App?
+    let groupName: String?
+    let isInternal: Bool?
+    let publicLink: String?
+    let publicLinkEnabled: Bool?
+    let publicLinkLimit: Int?
+    let publicLinkLimitEnabled: Bool?
+    let creationDate: String?
 }
 
 // MARK: - Extensions

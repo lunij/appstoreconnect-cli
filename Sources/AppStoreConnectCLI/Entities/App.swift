@@ -5,26 +5,12 @@ import Combine
 import Foundation
 import SwiftyTextTable
 
-public struct App: Codable, Equatable {
-    public let id: String
-    public var bundleId: String?
-    public var name: String?
-    public var primaryLocale: String?
-    public var sku: String?
-
-    public init(
-        id: String,
-        bundleId: String?,
-        name: String?,
-        primaryLocale: String?,
-        sku: String?
-    ) {
-        self.id = id
-        self.bundleId = bundleId
-        self.name = name
-        self.primaryLocale = primaryLocale
-        self.sku = sku
-    }
+struct App: Codable, Equatable {
+    let id: String
+    var bundleId: String?
+    var name: String?
+    var primaryLocale: String?
+    var sku: String?
 }
 
 // MARK: - Extensions

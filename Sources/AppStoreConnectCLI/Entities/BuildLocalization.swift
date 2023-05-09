@@ -3,17 +3,9 @@
 import AppStoreConnect_Swift_SDK
 import SwiftyTextTable
 
-public struct BuildLocalization: Codable, Equatable {
-    public let locale: String?
-    public let whatsNew: String?
-
-    public init(
-        locale: String?,
-        whatsNew: String?
-    ) {
-        self.locale = locale
-        self.whatsNew = whatsNew
-    }
+struct BuildLocalization: Codable, Equatable {
+    let locale: String?
+    let whatsNew: String?
 }
 
 // MARK: - Extensions

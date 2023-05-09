@@ -5,23 +5,11 @@ import Combine
 import Foundation
 import SwiftyTextTable
 
-public struct BundleId: Codable, Equatable {
-    public let identifier: String?
-    public let name: String?
-    public let platform: String?
-    public let seedId: String?
-
-    public init(
-        identifier: String?,
-        name: String?,
-        platform: String?,
-        seedId: String?
-    ) {
-        self.identifier = identifier
-        self.name = name
-        self.platform = platform
-        self.seedId = seedId
-    }
+struct BundleId: Codable, Equatable {
+    let identifier: String?
+    let name: String?
+    let platform: String?
+    let seedId: String?
 }
 
 // MARK: - Extensions
