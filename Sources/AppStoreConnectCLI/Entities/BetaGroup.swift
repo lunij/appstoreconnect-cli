@@ -57,10 +57,10 @@ extension BetaGroup {
     init(
         _ apiApp: AppStoreConnect_Swift_SDK.App?,
         _ apiBetaGroup: AppStoreConnect_Swift_SDK.BetaGroup
-    ) {
+    ) throws {
         self.init(
             id: apiBetaGroup.id,
-            app: apiApp.map(App.init),
+            app: try apiApp.map(App.init),
             groupName: apiBetaGroup.attributes?.name,
             isInternal: apiBetaGroup.attributes?.isInternalGroup,
             publicLink: apiBetaGroup.attributes?.publicLink,

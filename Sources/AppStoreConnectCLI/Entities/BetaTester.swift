@@ -17,7 +17,7 @@ struct BetaTester: Codable, Equatable {
 // MARK: - Extensions
 
 extension BetaTester {
-    init(_ output: GetBetaTesterOperation.Output) {
+    init(_ output: GetBetaTesterOperation.Output) throws {
         let betaTester = output.betaTester
         let appRelationships = (betaTester.relationships?.apps?.data) ?? []
         let betaGroupRelationships = (betaTester.relationships?.betaGroups?.data) ?? []
@@ -35,8 +35,8 @@ extension BetaTester {
             firstName: betaTester.attributes?.firstName,
             lastName: betaTester.attributes?.lastName,
             inviteType: betaTester.attributes?.inviteType?.rawValue,
-            betaGroups: betaGroups.map { BetaGroup(nil, $0) },
-            apps: apps.map(App.init)
+            betaGroups: try betaGroups.map { try BetaGroup(nil, $0) },
+            apps: try apps.map(App.init)
         )
     }
 }
@@ -62,7 +62,7 @@ extension BetaTester: TableInfoProvider {
             lastName ?? "",
             inviteType ?? "",
             betaGroups.compactMap(\.groupName).joined(separator: ", "),
-            apps.compactMap(\.bundleId).joined(separator: ", ")
+            apps.map(\.bundleId).joined(separator: ", ")
         ]
     }
 }

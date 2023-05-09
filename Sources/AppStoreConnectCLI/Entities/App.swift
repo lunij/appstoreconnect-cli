@@ -7,20 +7,36 @@ import SwiftyTextTable
 
 struct App: Codable, Equatable {
     let id: String
-    var bundleId: String?
+    var bundleId: String
     var name: String?
     var primaryLocale: String?
     var sku: String?
+
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case bundleIdMissing(id: String)
+
+        var description: String {
+            switch self {
+            case let .bundleIdMissing(id):
+                return "The app with the id '\(id)' is missing the bundle identifier"
+            }
+        }
+    }
 }
 
 // MARK: - Extensions
 
 extension App {
-    init(_ apiApp: AppStoreConnect_Swift_SDK.App) {
+    init(_ apiApp: AppStoreConnect_Swift_SDK.App) throws {
         let attributes = apiApp.attributes
+
+        guard let bundleId = attributes?.bundleId else {
+            throw Error.bundleIdMissing(id: apiApp.id)
+        }
+
         self.init(
             id: apiApp.id,
-            bundleId: attributes?.bundleId,
+            bundleId: bundleId,
             name: attributes?.name,
             primaryLocale: attributes?.primaryLocale,
             sku: attributes?.sku
@@ -44,7 +60,7 @@ extension App: TableInfoProvider {
     var tableRow: [CustomStringConvertible] {
         [
             id,
-            bundleId ?? "",
+            bundleId,
             name ?? "",
             primaryLocale ?? "",
             sku ?? ""
