@@ -1,23 +1,14 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-
 struct DeleteBuildLocalizationOperation: APIOperation {
     struct Options {
         let localizationId: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        requestor.request(
-            .delete(betaBuildLocalizationWithId: options.localizationId)
-        )
-        .eraseToAnyPublisher()
+    func execute() async throws {
+        try await service.request(.deleteBetaBuildLocalizationV1(id: options.localizationId))
     }
 }

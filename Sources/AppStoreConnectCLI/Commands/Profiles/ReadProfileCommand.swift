@@ -5,7 +5,7 @@ import ArgumentParser
 struct ReadProfileCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "read",
-        abstract: "Find and read a provisioning profile and download it data."
+        abstract: "Find and read a provisioning profile and download its data."
     )
 
     @OptionGroup()
@@ -16,25 +16,18 @@ struct ReadProfileCommand: CommonParsableCommand {
 
     @Option(
         help: ArgumentHelp(
-            "If set, the provisioning profiles will be saved as files to this path.",
-            discussion: "Profiles will be saved to files with names of the pattern '<UUID>.\(ProfileProcessor.profileExtension)'.",
+            "If set, the provisioning profile will be saved as file to this path.",
             valueName: "path"
         )
     )
     var downloadPath: String?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let profile = try service.readProfile(id: id)
-
-        if let path = downloadPath {
-            let processor = ProfileProcessor(path: .folder(path: path))
-            let file = try processor.write(profile)
-
-            print("📥 Profile '\(profile.name ?? "")' downloaded to: \(file.path)")
-        }
-
-        try [profile].render(options: common.outputOptions)
+        try await ReadProfileUseCase(service: service).readProfile(
+            id: id,
+            downloadPath: downloadPath,
+            outputOptions: common.outputOptions
+        )
     }
 }

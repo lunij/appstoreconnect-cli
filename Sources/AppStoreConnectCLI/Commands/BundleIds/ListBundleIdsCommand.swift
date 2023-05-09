@@ -1,7 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
+import Bagbutik_Models
 
 struct ListBundleIdsCommand: CommonParsableCommand {
     public static var configuration = CommandConfiguration(
@@ -26,24 +26,28 @@ struct ListBundleIdsCommand: CommonParsableCommand {
 
     @Option(
         parsing: .upToNextOption,
-        help: "Filter the results by platform (\(Platform.allCases.description))."
+        help: "Filter the results by platform: \(BundleIdPlatform.allValueStringsFormatted)",
+        completion: .list(BundleIdPlatform.allValueStrings)
     )
-    var filterPlatform: [String] = []
+    var filterPlatform: [BundleIdPlatform] = []
 
     @Option(parsing: .upToNextOption, help: "Filter the results by seed ID")
     var filterSeedId: [String] = []
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let bundleIds = try service.listBundleIds(
-            identifiers: filterIdentifier,
-            names: filterName,
-            platforms: filterPlatform,
-            seedIds: filterSeedId,
-            limit: limit
+        try await ListBundleIdsOperation(
+            service: service,
+            options: .init(
+                identifiers: filterIdentifier,
+                names: filterName,
+                platforms: filterPlatform,
+                seedIds: filterSeedId,
+                limit: limit
+            )
         )
-
-        try bundleIds.render(options: common.outputOptions)
+        .execute()
+        .map { BundleId($0) }
+        .render(options: common.outputOptions)
     }
 }

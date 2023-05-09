@@ -1,17 +1,14 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_Users
 
-public struct ListUsersCommand: CommonParsableCommand {
-    public static var configuration = CommandConfiguration(
+struct ListUsersCommand: CommonParsableCommand {
+    static var configuration = CommandConfiguration(
         commandName: "list",
         abstract: "Get a list of the users on your team."
     )
-
-    public init() {}
 
     @OptionGroup()
     var common: CommonOptions
@@ -23,10 +20,14 @@ public struct ListUsersCommand: CommonParsableCommand {
     var limitUsers: Int?
 
     @Option(
-        parsing: SingleValueParsingStrategy.unconditional,
-        help: "Sort the results using the provided key (\(ListUsers.Sort.allCases.map(\.rawValue).joined(separator: ", "))).\nThe `-` prefix indicates descending order."
+        parsing: .unconditional,
+        help: ArgumentHelp(
+            "Sort the results using one or more of the following values: \(ListUsersV1.Sort.allValueStringsFormatted)",
+            discussion: "The `-` prefix indicates descending order."
+        ),
+        transform: { $0.components(separatedBy: ",").compactMap(ListUsersV1.Sort.init(argument:)) }
     )
-    var sort: ListUsers.Sort?
+    var sorts: [ListUsersV1.Sort] = []
 
     @Option(
         parsing: .upToNextOption,
@@ -37,9 +38,9 @@ public struct ListUsersCommand: CommonParsableCommand {
 
     @Option(
         parsing: .upToNextOption,
-        help: ArgumentHelp(stringLiteral: "Filter the results by the specified roles (\(UserRole.allCases.map { $0.rawValue.lowercased() }.joined(separator: ", "))).")
+        help: "Filter the results by specified roles: \(UserRole.allValueStringsFormatted)"
     )
-    var filterRole: [UserRole] = []
+    var filterRoles: [UserRole] = []
 
     @Option(
         parsing: .upToNextOption,
@@ -56,20 +57,36 @@ public struct ListUsersCommand: CommonParsableCommand {
     @Flag(help: "Include visible apps in results.")
     var includeVisibleApps = false
 
-    public func run() throws {
+    public func run() async throws {
         let service = try makeService()
 
-        let users = try service
-            .listUsers(
+        let appIds = try await filterVisibleApps.asyncMap { identifier -> String in
+            switch identifier {
+            case let .appId(appid):
+                return appid
+            case let .bundleId(bundleId):
+                return try await ReadAppOperation(service: service, options: .init(identifier: .bundleId(bundleId)))
+                    .execute()
+                    .id
+            }
+        }
+
+        try await ListUsersOperation(
+            service: service,
+            options: .init(
                 limitVisibleApps: limitVisibleApps,
                 limitUsers: limitUsers,
-                sort: sort,
                 filterUsername: filterUsername,
-                filterRole: filterRole,
-                filterVisibleApps: filterVisibleApps,
-                includeVisibleApps: includeVisibleApps
+                filterRoles: filterRoles,
+                filterVisibleApps: appIds,
+                includeVisibleApps: includeVisibleApps,
+                sorts: sorts
             )
-
-        try users.render(options: common.outputOptions)
+        )
+        .execute()
+        .map(User.init)
+        .render(options: common.outputOptions)
     }
 }
+
+extension ListUsersV1.Sort: ExpressibleByArgument {}

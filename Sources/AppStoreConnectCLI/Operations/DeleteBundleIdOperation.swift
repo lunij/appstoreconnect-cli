@@ -1,29 +1,14 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct DeleteBundleIdOperation: APIOperation {
     struct Options {
         let resourceId: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    var endpoint: APIEndpoint<Void> {
-        .delete(
-            bundleWithId: options.resourceId
-        )
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        requestor
-            .request(endpoint)
-            .eraseToAnyPublisher()
+    func execute() async throws {
+        try await service.request(.deleteBundleIdV1(id: options.resourceId))
     }
 }

@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct RegisterDeviceCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -20,16 +18,17 @@ struct RegisterDeviceCommand: CommonParsableCommand {
     @Argument(help: "The name of the device to register.")
     var name: String
 
-    @Argument(help: "The platform of the device to register \(Platform.allCases).")
-    var platform: Platform
+    @Argument(help: "The platform of the device to register: \(BundleIdPlatform.allValueStringsFormatted)")
+    var platform: BundleIdPlatform
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let device = try service.request(APIEndpoint.registerNewDevice(name: name, platform: platform, udid: udid))
-            .map(Device.init)
-            .await()
+        let device = try await service.request(.createDeviceV1(requestBody: .init(data: .init(
+            attributes: .init(name: name, platform: platform, udid: udid)
+        ))))
+        .data
 
-        try device.render(options: common.outputOptions)
+        try Device(device).render(options: common.outputOptions)
     }
 }

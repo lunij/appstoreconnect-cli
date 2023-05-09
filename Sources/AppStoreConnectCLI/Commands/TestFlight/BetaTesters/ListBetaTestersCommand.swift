@@ -1,8 +1,8 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ListBetaTestersCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -18,31 +18,35 @@ struct ListBetaTestersCommand: CommonParsableCommand {
             "Beta tester's email.",
             valueName: "email"
         )
-    ) var filterEmail: String?
+    )
+    var filterEmail: String?
 
     @Option(
         help: ArgumentHelp(
             "Beta tester's first name.",
             valueName: "first-name"
         )
-    ) var filterFirstName: String?
+    )
+    var filterFirstName: String?
 
     @Option(
         help: ArgumentHelp(
             "Beta tester's last name.",
             valueName: "last-name"
         )
-    ) var filterLastName: String?
+    )
+    var filterLastName: String?
 
     @Option(
         help: ArgumentHelp(
             """
-            An invite type that indicates if a beta tester was invited by an email invite or used a TestFlight public link to join a beta test. \n
-            Possible values \(BetaInviteType.allCases).
+            An invite type that indicates if a beta tester was invited by email or by hyperlink.
+            Possible values: \(BetaInviteType.allValueStringsFormatted)
             """,
             valueName: "invite-type"
         )
-    ) var filterInviteType: BetaInviteType?
+    )
+    var filterInviteType: BetaInviteType?
 
     @OptionGroup()
     var appLookupOptions: AppLookupOptions
@@ -62,11 +66,12 @@ struct ListBetaTestersCommand: CommonParsableCommand {
     @Option(
         parsing: .unconditional,
         help: ArgumentHelp(
-            "Sort the results using the provided key \(ListBetaTesters.Sort.allCases).",
+            "Sort the results using one or more of: \(ListBetaTestersV1.Sort.allValueStringsFormatted)",
             discussion: "The `-` prefix indicates descending order."
-        )
+        ),
+        transform: { $0.components(separatedBy: ",").compactMap(ListBetaTestersV1.Sort.init(argument:)) }
     )
-    var sort: ListBetaTesters.Sort?
+    var sorts: [ListBetaTestersV1.Sort] = []
 
     @Option(help: "Number of included related resources to return.")
     var relatedResourcesLimit: Int?
@@ -77,21 +82,23 @@ struct ListBetaTestersCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let useCase = ListBetaTestersUseCase(service: service)
 
-        let betaTesters = try service.listBetaTesters(
+        try await useCase.listBetaTesters(
             email: filterEmail,
             firstName: filterFirstName,
             lastName: filterLastName,
             inviteType: filterInviteType,
             filterIdentifiers: appLookupOptions.filterIdentifiers,
             groupNames: filterGroupNames,
-            sort: sort,
+            sorts: sorts,
             limit: limit,
             relatedResourcesLimit: relatedResourcesLimit
         )
-
-        try betaTesters.render(options: common.outputOptions)
+        .render(options: common.outputOptions)
     }
 }
+
+extension ListBetaTestersV1.Sort: ExpressibleByArgument {}

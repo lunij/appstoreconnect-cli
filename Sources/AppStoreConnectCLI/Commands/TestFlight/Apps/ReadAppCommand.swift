@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
 
 struct ReadAppCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -16,11 +14,14 @@ struct ReadAppCommand: CommonParsableCommand {
     @OptionGroup()
     var appLookupArgument: AppLookupArgument
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let app = try await ReadAppOperation(
+            service: service,
+            options: .init(identifier: appLookupArgument.identifier)
+        )
+        .execute()
 
-        let app = try service.readApp(identifier: appLookupArgument.identifier)
-
-        try app.render(options: common.outputOptions)
+        try App(app).render(options: common.outputOptions)
     }
 }

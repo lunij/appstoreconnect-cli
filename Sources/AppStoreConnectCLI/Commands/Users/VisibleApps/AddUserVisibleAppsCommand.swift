@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
 
 struct AddUserVisibleAppsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(

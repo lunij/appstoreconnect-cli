@@ -1,9 +1,5 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct AddTesterToGroupOperation: APIOperation {
     struct Options {
         enum AddStrategy {
@@ -14,24 +10,15 @@ struct AddTesterToGroupOperation: APIOperation {
         let addStrategy: AddStrategy
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    var endpoint: APIEndpoint<Void> {
+    func execute() async throws {
         switch options.addStrategy {
         case let .addTestersToGroup(testerIds, groupId):
-            return .add(betaTestersWithIds: testerIds, toBetaGroupWithId: groupId)
+            try await service.request(.createBetaTestersForBetaGroupV1(id: groupId, requestBody: .init(data: testerIds.map { .init(id: $0) })))
         case let .addTesterToGroups(testerId, groupIds):
-            return .add(betaTesterWithId: testerId, toBetaGroupsWithIds: groupIds)
+            try await service.request(.createBetaGroupsForBetaTesterV1(id: testerId, requestBody: .init(data: groupIds.map { .init(id: $0) })))
         }
-    }
-
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        requestor
-            .request(endpoint)
-            .eraseToAnyPublisher()
     }
 }

@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
 import Foundation
 
 struct CreateCertificateOperation: APIOperation {
@@ -10,19 +9,19 @@ struct CreateCertificateOperation: APIOperation {
         let csrContent: String
     }
 
-    private let endpoint: APIEndpoint<CertificateResponse>
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        endpoint = APIEndpoint.create(
-            certificateWithCertificateType: options.certificateType,
-            csrContent: options.csrContent
+    func execute() async throws -> Bagbutik_Models.Certificate {
+        let body = CertificateCreateRequest(
+            data: .init(
+                attributes: .init(
+                    certificateType: options.certificateType,
+                    csrContent: options.csrContent
+                )
+            )
         )
-    }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Certificate, Error> {
-        requestor
-            .request(endpoint)
-            .map { Certificate($0.data) }
-            .eraseToAnyPublisher()
+        return try await service.request(.createCertificateV1(requestBody: body)).data
     }
 }

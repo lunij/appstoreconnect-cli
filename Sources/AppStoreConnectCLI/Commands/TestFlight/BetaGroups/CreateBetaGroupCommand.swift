@@ -1,7 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct CreateBetaGroupCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -17,7 +17,8 @@ struct CreateBetaGroupCommand: CommonParsableCommand {
         The reverse-DNS bundle ID of the app which the group should be associated with. \
         Must be unique. (eg. com.example.app)
         """
-    ) var appBundleId: String
+    )
+    var bundleId: String
 
     @Argument(help: "The name for the beta group")
     var groupName: String
@@ -32,23 +33,35 @@ struct CreateBetaGroupCommand: CommonParsableCommand {
         on their devices in TestFlight and share the link with others. \
         Defaults to false.
         """
-    ) var publicLinkEnabled: Bool
+    )
+    var publicLinkEnabled: Bool
 
     @Option(help: """
         The maximum number of testers that can join this beta group using the public link. \
         Values must be between 1 and 10,000. Optional.
         """
-    ) var publicLinkLimit: Int?
+    )
+    var publicLinkLimit: Int?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let betaGroup = try service.createBetaGroup(
-            appBundleId: appBundleId,
-            groupName: groupName,
-            publicLinkEnabled: publicLinkEnabled,
-            publicLinkLimit: publicLinkLimit
+        let app = try await GetAppOperation(
+            service: service,
+            options: .init(bundleId: bundleId)
         )
+        .execute()
+
+        let betaGroup = try await CreateBetaGroupOperation(
+            service: service,
+            options: .init(
+                app: app,
+                groupName: groupName,
+                publicLinkEnabled: publicLinkEnabled,
+                publicLinkLimit: publicLinkLimit
+            )
+        )
+        .execute()
 
         try betaGroup.render(options: common.outputOptions)
     }

@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct CreateCertificateCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -14,22 +12,22 @@ struct CreateCertificateCommand: CommonParsableCommand {
     @OptionGroup()
     var common: CommonOptions
 
-    @Argument(help: "The type of certificate to create \(CertificateType.allCases).")
+    @Argument(help: "The type of certificate to create: \(CertificateType.allValueStringsFormatted)")
     var certificateType: CertificateType
 
     @Argument(help: "The Certificate Signing Request (CSR) file path.")
     var csrFile: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
         let csrContent = try String(contentsOfFile: csrFile, encoding: .utf8)
 
-        let certificate = try service.createCertificate(
-            certificateType: certificateType,
-            csrContent: csrContent
+        let certificate = try await CreateCertificateOperation(
+            service: service,
+            options: .init(certificateType: certificateType, csrContent: csrContent)
         )
+        .execute()
 
-        try certificate.render(options: common.outputOptions)
+        try Certificate(certificate).render(options: common.outputOptions)
     }
 }

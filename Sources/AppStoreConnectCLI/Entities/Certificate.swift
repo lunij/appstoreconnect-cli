@@ -1,10 +1,11 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
+import Bagbutik_Models
 import Foundation
 import SwiftyTextTable
 
 struct Certificate: Codable, Equatable {
+    let id: String
     let name: String?
     let type: String?
     let content: String?
@@ -16,18 +17,29 @@ struct Certificate: Codable, Equatable {
 // MARK: - Extensions
 
 extension Certificate {
-    init(_ certificate: AppStoreConnect_Swift_SDK.Certificate) {
-        self.init(certificate.attributes)
+    init(_ certificate: Bagbutik_Models.Certificate) {
+        let attributes = certificate.attributes
+        self.init(
+            id: certificate.id,
+            name: attributes?.name,
+            type: attributes?.certificateType?.rawValue,
+            content: attributes?.certificateContent,
+            platform: attributes?.platform?.rawValue,
+            expirationDate: attributes?.expirationDate,
+            serialNumber: attributes?.serialNumber
+        )
     }
 
-    init(_ attributes: AppStoreConnect_Swift_SDK.Certificate.Attributes) {
+    init(_ certificate: LossyCertificate) {
+        let attributes = certificate.attributes
         self.init(
-            name: attributes.name,
-            type: attributes.certificateType?.rawValue,
-            content: attributes.certificateContent,
-            platform: attributes.platform?.rawValue,
-            expirationDate: attributes.expirationDate,
-            serialNumber: attributes.serialNumber
+            id: certificate.id,
+            name: attributes?.name,
+            type: attributes?.certificateType?.rawValue,
+            content: attributes?.certificateContent,
+            platform: attributes?.platform?.rawValue,
+            expirationDate: attributes?.expirationDate,
+            serialNumber: attributes?.serialNumber
         )
     }
 }

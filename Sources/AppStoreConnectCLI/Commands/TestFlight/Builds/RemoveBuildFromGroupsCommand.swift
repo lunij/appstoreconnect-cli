@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct RemoveBuildFromGroupsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -32,14 +30,20 @@ struct RemoveBuildFromGroupsCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        try service.removeBuildFromGroups(
+        let (buildId, groupIds) = try await service.buildIdAndGroupIdsFrom(
             bundleId: bundleId,
             version: preReleaseVersion,
             buildNumber: buildNumber,
             groupNames: groupNames
         )
+
+        try await RemoveBuildFromGroupsOperation(
+            service: service,
+            options: .init(buildId: buildId, groupIds: groupIds)
+        )
+        .execute()
     }
 }

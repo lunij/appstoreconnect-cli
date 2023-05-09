@@ -1,35 +1,27 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
 import XCTest
 @testable import AppStoreConnectCLI
 
 final class GetUserInfoOperationTests: XCTestCase {
-    typealias Options = GetUserInfoOperation.Options
-    typealias OperationError = GetUserInfoOperation.Error
-
-    let noUsersRequestor = OneEndpointTestRequestor(
-        response: { _ in Future { $0(.success(noUsersResponse)) } }
-    )
-
-    func testCouldNotFindUserError() {
-        let email = "bob@bob.com"
-        let options = Options(email: email, includeVisibleApps: false)
-        let operation = GetUserInfoOperation(options: options)
-
-        let result = Result {
-            try operation.execute(with: noUsersRequestor).await()
+    func test_getUser_userNotFound() async throws {
+        let service = BagbutikServiceMock { _, _ in
+            (try Fixture(named: "v1/users/no_user").data, HTTPURLResponse.fake())
         }
 
-        switch result {
-        case .failure(OperationError.couldNotFindUser(email)):
-            break
-        default:
-            XCTFail("Expected failure with: \(OperationError.couldNotFindUser(email: email)), got: \(result)")
+        let error: GetUserInfoOperation.Error? = try await catchError {
+            _ = try await GetUserInfoOperation(service: service, options: .fake()).execute()
         }
+
+        XCTAssertEqual(error, .userNotFound(email: "fakeEmail"))
     }
+}
 
-    static let noUsersResponse: UsersResponse = jsonDecoder.decodeFixture(named: "v1/users/no_user")
+private extension GetUserInfoOperation.Options {
+    static func fake(
+        email: String = "fakeEmail",
+        includeVisibleApps: Bool = false
+    ) -> Self {
+        .init(email: email, includeVisibleApps: includeVisibleApps)
+    }
 }

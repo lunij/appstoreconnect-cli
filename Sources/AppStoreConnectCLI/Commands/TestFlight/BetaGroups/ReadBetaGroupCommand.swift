@@ -1,6 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
+import Bagbutik_Models
 
 struct ReadBetaGroupCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -16,16 +17,28 @@ struct ReadBetaGroupCommand: CommonParsableCommand {
         The reverse-DNS bundle ID of the app which the group should be associated with. \
         Must be unique. (eg. com.example.app)
         """
-    ) var appBundleId: String
+    )
+    var bundleId: String
 
     @Argument(help: "The name of the beta group.")
     var groupName: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let betaGroup = try service.readBetaGroup(bundleId: appBundleId, groupName: groupName)
+        let app = try await ReadAppOperation(
+            service: service,
+            options: .init(identifier: .bundleId(bundleId))
+        )
+        .execute()
 
-        try betaGroup.render(options: common.outputOptions)
+        let betaGroup = try await GetBetaGroupOperation(
+            service: service,
+            options: .init(appId: app.id, bundleId: bundleId, betaGroupName: groupName)
+        )
+        .execute()
+
+        try BetaGroup(betaGroup, app: app)
+            .render(options: common.outputOptions)
     }
 }

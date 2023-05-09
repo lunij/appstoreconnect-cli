@@ -1,9 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
 
 struct ModifyDeviceCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -20,20 +17,41 @@ struct ModifyDeviceCommand: CommonParsableCommand {
     @Argument(help: "The new name for the device.")
     var name: String
 
-    @Argument(help: "The new status for the device \(DeviceStatus.allCases).")
+    @Argument(help: "The new status for the device: \(DeviceStatus.allValueStringsFormatted).")
     var status: DeviceStatus
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let deviceId = try await service.deviceId(matching: udid)
+        let device = try await service
+            .request(.updateDeviceV1(id: deviceId, requestBody: .init(data: .init(
+                id: deviceId,
+                attributes: .init(name: name, status: status)
+            ))))
+            .data
 
-        let device = try service
-            .deviceUDIDResourceId(matching: udid)
-            .flatMap {
-                service.request(APIEndpoint.modifyRegisteredDevice(id: $0, name: self.name, status: self.status))
-            }
-            .map(Device.init)
-            .await()
+        try Device(device).render(options: common.outputOptions)
+    }
+}
 
-        try device.render(options: common.outputOptions)
+private extension BagbutikServiceProtocol {
+    /// Find the opaque internal resource identifier for a Device  matching `udid`. Use this for reading, modifying and deleting Device resources.
+    ///
+    /// - parameter udid: The device UDID string.
+    /// - returns: The App Store Connect API resource identifier for the Device UDID.
+    func deviceId(matching udid: String) async throws -> String {
+        let devices = try await request(.listDevicesV1(filters: [.udid([udid])]))
+            .data
+            .filter { $0.attributes?.udid == udid }
+
+        if devices.count > 1 {
+            throw DeviceError.deviceNotUnique(udid)
+        }
+
+        guard let device = devices.first else {
+            throw DeviceError.deviceNotFound(udid)
+        }
+
+        return device.id
     }
 }

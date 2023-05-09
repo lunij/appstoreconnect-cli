@@ -1,6 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
+import Bagbutik_Models
 
 struct RemoveTesterFromGroupsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -23,9 +24,31 @@ struct RemoveTesterFromGroupsCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        try service.removeTesterFromGroups(email: email, groupNames: groupNames)
+        let testerId = try await GetBetaTesterOperation(
+            service: service,
+            options: .init(identifier: .email(email))
+        )
+        .execute()
+        .id
+
+        let groupIds = try await groupNames.asyncFlatMap {
+            try await ListBetaGroupsOperation(
+                service: service,
+                options: .init(appIds: [], names: [$0], sorts: [])
+            )
+            .execute()
+            .map(\.betaGroup.id)
+        }
+
+        try await RemoveTesterOperation(
+            service: service,
+            options: .init(
+                removeStrategy: .removeTesterFromGroups(testerId: testerId, groupIds: groupIds)
+            )
+        )
+        .execute()
     }
 }

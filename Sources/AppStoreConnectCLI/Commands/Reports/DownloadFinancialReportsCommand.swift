@@ -1,6 +1,5 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
 
 struct DownloadFinancialReportsCommand: CommonParsableCommand {
@@ -12,13 +11,8 @@ struct DownloadFinancialReportsCommand: CommonParsableCommand {
     @OptionGroup()
     var common: CommonOptions
 
-    @Argument(help:
-        ArgumentHelp(
-            "You can download consolidated or separate financial reports per territory.",
-            discussion: "Possible values: (\(DownloadFinanceReports.RegionCode.allCases.map(\.rawValue).joined(separator: ", ")))"
-        )
-    )
-    var regionCode: DownloadFinanceReports.RegionCode
+    @Argument(help: "You can download consolidated or separate financial reports per territory.")
+    var regionCodes: [String]
 
     @Argument(help:
         ArgumentHelp(
@@ -34,15 +28,19 @@ struct DownloadFinancialReportsCommand: CommonParsableCommand {
     @Argument(help: "The downloaded report file name.")
     var outputFilename: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
-
-        let result = try service.downloadFinanceReports(
-            regionCode: regionCode,
-            reportDate: reportDate,
-            vendorNumber: vendorNumber
+        let data = try await DownloadFinanceReportsOperation(
+            service: service,
+            options: .init(
+                regionCodes: regionCodes,
+                reportDates: [reportDate],
+                vendorNumbers: [vendorNumber]
+            )
         )
+        .execute()
+        .data
 
-        try ReportProcessor(path: outputFilename).write(result)
+        try ReportProcessor(path: outputFilename).write(data)
     }
 }

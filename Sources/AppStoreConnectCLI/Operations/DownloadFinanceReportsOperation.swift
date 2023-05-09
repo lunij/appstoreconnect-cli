@@ -1,30 +1,24 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct DownloadFinanceReportsOperation: APIOperation {
     struct Options {
-        let regionCode: [DownloadFinanceReports.RegionCode]
-        let reportDate: String
-        let vendorNumber: String
+        let regionCodes: [String]
+        let reportDates: [String]
+        let vendorNumbers: [String]
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Data, Error> {
-        requestor.request(
-            .downloadFinanceReports(
-                regionCodes: options.regionCode,
-                reportDate: options.reportDate,
-                vendorNumber: options.vendorNumber
-            )
-        )
-        .eraseToAnyPublisher()
+    func execute() async throws -> Gzip {
+        try await service.request(.getFinanceReportsV1(
+            filters: [
+                .regionCode(options.regionCodes),
+                .reportDate(options.reportDates),
+                .vendorNumber(options.vendorNumbers)
+            ]
+        ))
     }
 }

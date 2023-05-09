@@ -1,65 +1,62 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
+import Bagbutik_Users
 
 struct ListUsersOperation: APIOperation {
-    typealias Filter = ListUsers.Filter
-    typealias Limit = ListUsers.Limit
-    typealias Include = ListUsers.Include
+    typealias Filter = ListUsersV1.Filter
+    typealias Include = ListUsersV1.Include
+    typealias Limit = ListUsersV1.Limit
+    typealias Sort = ListUsersV1.Sort
 
     struct Options {
         let limitVisibleApps: Int?
         let limitUsers: Int?
-        let sort: ListUsers.Sort?
         let filterUsername: [String]
-        let filterRole: [UserRole]
+        let filterRoles: [UserRole]
         let filterVisibleApps: [String]
         let includeVisibleApps: Bool
+        let sorts: [Sort]
     }
 
-    var limit: [Limit]? {
-        [options.limitUsers.map(Limit.users), options.limitVisibleApps.map(Limit.visibleApps)]
-            .compactMap { $0 }
-            .nilIfEmpty()
+    private var limits: [Limit]? {
+        [
+            options.limitUsers.map(Limit.limit),
+            options.limitVisibleApps.map(Limit.visibleApps)
+        ]
+        .compactMap { $0 }
+        .nilIfEmpty
     }
 
-    var include: [Include]? {
-        options.includeVisibleApps ? [ListUsers.Include.visibleApps] : nil
+    private var includes: [Include]? {
+        options.includeVisibleApps ? [.visibleApps] : nil
     }
 
-    var filter: [Filter]? {
-        let roles = options.filterRole.map(\.rawValue).nilIfEmpty().map(Filter.roles)
-        let usernames = options.filterUsername.nilIfEmpty().map(Filter.username)
-        let visibleApps = options.filterVisibleApps.nilIfEmpty().map(Filter.visibleApps)
+    private var filters: [Filter]? {
+        let roles = options.filterRoles.nilIfEmpty.map(Filter.roles)
+        let usernames = options.filterUsername.nilIfEmpty.map(Filter.username)
+        let visibleApps = options.filterVisibleApps.nilIfEmpty.map(Filter.visibleApps)
 
-        return [roles, usernames, visibleApps].compactMap { $0 }.nilIfEmpty()
+        return [roles, usernames, visibleApps].compactMap { $0 }.nilIfEmpty
     }
 
+    let service: BagbutikServiceProtocol
     let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
+    func execute() async throws -> [(Bagbutik_Models.User, [Bagbutik_Models.App])] {
+        let responses = try await service
+            .requestAllPages(.listUsersV1(
+                filters: filters,
+                includes: includes,
+                sorts: options.sorts.nilIfEmpty,
+                limits: limits
+            ))
+            .responses
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<[User], Error> {
-        let include = include
-        let limit = limit
-        let sort = options.sort.map { [$0] }
-        let filter = filter
-
-        return requestor.requestAllPages {
-            .users(
-                include: include,
-                limit: limit,
-                sort: sort,
-                filter: filter,
-                next: $0
-            )
+        return responses.flatMap { response in
+            response.data.map { user in
+                (user, response.included ?? [])
+            }
         }
-        .map { $0.flatMap(User.fromAPIResponse) }
-        .eraseToAnyPublisher()
     }
 }
-
-extension UsersResponse: PaginatedResponse {}

@@ -1,51 +1,41 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ListPreReleaseVersionsOperation: APIOperation {
     struct Options {
         var filterAppIds: [String] = []
         var filterVersions: [String] = []
-        var filterPlatforms: [String] = []
-        var sort: ListPrereleaseVersions.Sort?
+        var filterPlatforms: [Platform] = []
+        var sorts: [ListPreReleaseVersionsV1.Sort] = []
     }
 
-    typealias PreReleaseVersion = AppStoreConnect_Swift_SDK.PrereleaseVersion
-    typealias Relationships = [AppStoreConnect_Swift_SDK.PreReleaseVersionRelationship]?
-    typealias Output = [(preReleaseVersion: PreReleaseVersion, relationships: Relationships)]
+    typealias Filter = ListPreReleaseVersionsV1.Filter
+    typealias Output = [(preReleaseVersion: PrereleaseVersion, includes: [PreReleaseVersionsResponse.Included])]
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Output, Swift.Error> {
-        var filters: [ListPrereleaseVersions.Filter] = []
+    func execute() async throws -> Output {
+        var filters: [Filter] = []
 
         if options.filterAppIds.isNotEmpty { filters.append(.app(options.filterAppIds)) }
         if options.filterVersions.isNotEmpty { filters.append(.version(options.filterVersions)) }
-        if options.filterPlatforms.isNotEmpty { filters.append(.platform(options.filterPlatforms.map { .init(rawValue: $0) ?? .IOS })) }
+        if options.filterPlatforms.isNotEmpty { filters.append(.platform(options.filterPlatforms)) }
 
-        let sort = [options.sort].compactMap { $0 }
-
-        return requestor.requestAllPages {
-            .prereleaseVersions(
-                filter: filters,
-                include: [.app],
-                sort: sort,
-                next: $0
+        return try await service.requestAllPages(
+            .listPreReleaseVersionsV1(
+                filters: filters.nilIfEmpty,
+                includes: [.app],
+                sorts: options.sorts.nilIfEmpty
             )
-        }
-        .map {
-            $0.flatMap { response -> Output in
-                response.data.map { ($0, response.included) }
+        )
+        .responses
+        .flatMap { response in
+            response.data.map { preReleaseVersion in
+                (preReleaseVersion, response.included ?? [])
             }
         }
-        .eraseToAnyPublisher()
     }
 }
-
-extension PreReleaseVersionsResponse: PaginatedResponse {}

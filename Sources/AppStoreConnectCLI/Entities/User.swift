@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct User: Codable, Equatable {
@@ -18,17 +16,38 @@ struct User: Codable, Equatable {
 // MARK: - Extensions
 
 extension User {
-    static func fromAPIUser(_ apiUser: AppStoreConnect_Swift_SDK.User) -> User? {
-        guard let attributes = apiUser.attributes,
-              let username = attributes.username
+    enum Error: Swift.Error, CustomStringConvertible {
+        case usernameMissing
+
+        var description: String {
+            switch self {
+            case .usernameMissing:
+                return "The user's username is missing"
+            }
+        }
+    }
+
+    static func fromAPIResponse(_ response: Bagbutik_Models.UsersResponse) -> [User] {
+        response.data.compactMap { user in
+            let userVisibleAppIds = user.relationships?.visibleApps?.data?.map(\.id)
+            let userVisibleApps = response.included?.filter {
+                userVisibleAppIds?.contains($0.id) ?? false
+            }
+            return User(user, visibleApps: userVisibleApps)
+        }
+    }
+
+    init(_ user: Bagbutik_Models.User, visibleApps _: [String]) throws {
+        guard
+            let attributes = user.attributes,
+            let username = user.attributes?.username
         else {
-            #warning("error handling")
-            return nil
+            throw Error.usernameMissing
         }
 
-        let visibleApps = apiUser.relationships?.visibleApps?.data?.map(\.type)
+        let visibleApps = user.relationships?.visibleApps?.data?.map(\.type)
 
-        return User(
+        self.init(
             username: username,
             firstName: attributes.firstName ?? "",
             lastName: attributes.lastName ?? "",
@@ -39,29 +58,15 @@ extension User {
         )
     }
 
-    static func fromAPIResponse(_ response: UsersResponse) -> [User] {
-        let users: [AppStoreConnect_Swift_SDK.User] = response.data
-
-        return users.compactMap { (user: AppStoreConnect_Swift_SDK.User) -> User in
-            let userVisibleAppIds = user.relationships?.visibleApps?.data?.map(\.id)
-            let userVisibleApps = response.included?.filter {
-                userVisibleAppIds?.contains($0.id) ?? false
-            }
-
-            guard let attributes = user.attributes else { fatalError("Failed to init user") }
-
-            return User(attributes: attributes, visibleApps: userVisibleApps)
-        }
-    }
-
-    init(attributes: AppStoreConnect_Swift_SDK.User.Attributes, visibleApps: [AppStoreConnect_Swift_SDK.App]? = nil) {
+    init(_ user: Bagbutik_Models.User, visibleApps: [Bagbutik_Models.App]? = nil) {
+        let attributes = user.attributes
         self.init(
-            username: attributes.username ?? "",
-            firstName: attributes.firstName ?? "",
-            lastName: attributes.lastName ?? "",
-            roles: attributes.roles?.map(\.rawValue) ?? [],
-            provisioningAllowed: attributes.provisioningAllowed ?? false,
-            allAppsVisible: attributes.provisioningAllowed ?? false,
+            username: attributes?.username ?? "",
+            firstName: attributes?.firstName ?? "",
+            lastName: attributes?.lastName ?? "",
+            roles: attributes?.roles?.map(\.rawValue) ?? [],
+            provisioningAllowed: attributes?.provisioningAllowed ?? false,
+            allAppsVisible: attributes?.allAppsVisible ?? false,
             visibleApps: visibleApps?.compactMap { $0.attributes?.bundleId }
         )
     }
@@ -92,26 +97,5 @@ extension User: TableInfoProvider {
             allAppsVisible.yesNo,
             visibleApps?.joined(separator: ", ") ?? ""
         ]
-    }
-}
-
-extension AppStoreConnectService {
-    /// Find the opaque internal identifier for this user; search by email address.
-    ///
-    /// This is an App Store Connect internal identifier
-    func userIdentifier(matching email: String) -> AnyPublisher<String, Error> {
-        let endpoint = APIEndpoint.users(
-            filter: [.username([email])]
-        )
-
-        return request(endpoint)
-            .map { $0.data.filter { $0.attributes?.username == email } }
-            .compactMap { response -> String? in
-                if response.count == 1 {
-                    return response.first?.id
-                }
-                fatalError("User with email address '\(email)' not unique or not found")
-            }
-            .eraseToAnyPublisher()
     }
 }

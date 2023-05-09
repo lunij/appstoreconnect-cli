@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ReadAppOperation: APIOperation {
     struct Options {
@@ -10,11 +8,11 @@ struct ReadAppOperation: APIOperation {
         var shouldMatchExactly: Bool = true
     }
 
-    enum Error: LocalizedError {
+    enum Error: Swift.Error, CustomStringConvertible {
         case notFound(String)
         case notUnique(String)
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
             case let .notFound(identifier):
                 return "App with provided identifier '\(identifier)' doesn't exist."
@@ -24,50 +22,28 @@ struct ReadAppOperation: APIOperation {
         }
     }
 
-    typealias App = AppStoreConnect_Swift_SDK.App
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    private let options: Options
-
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<App, Swift.Error> {
-        let result: AnyPublisher<App, Swift.Error>
-
+    func execute() async throws -> Bagbutik_Models.App {
         switch options.identifier {
         case let .appId(appId):
-            result = requestor.request(.app(withId: appId))
-                .map(\.data)
-                .eraseToAnyPublisher()
+            return try await service.request(.getAppV1(id: appId)).data
+
         case let .bundleId(bundleId):
-            let endpoint: APIEndpoint = .apps(filters: [.bundleId([bundleId])])
+            let apps = try await service
+                .requestAllPages(.listAppsV1(filters: [.bundleId([bundleId])]))
+                .data
 
-            result = requestor.request(endpoint)
-                .tryMap { (response: AppsResponse) throws -> App in
-                    if response.data.count > 1 {
-                        guard options.shouldMatchExactly else {
-                            throw Error.notUnique(bundleId)
-                        }
+            if apps.count > 1, options.shouldMatchExactly {
+                throw Error.notUnique(bundleId)
+            }
 
-                        guard let match = response.data.first(where: {
-                            $0.attributes?.bundleId == bundleId
-                        }) else {
-                            throw Error.notFound(bundleId)
-                        }
+            guard let app = apps.first else {
+                throw Error.notFound(bundleId)
+            }
 
-                        return match
-                    }
-
-                    guard let app = response.data.first else {
-                        throw Error.notFound(bundleId)
-                    }
-
-                    return app
-                }
-                .eraseToAnyPublisher()
+            return app
         }
-
-        return result
     }
 }

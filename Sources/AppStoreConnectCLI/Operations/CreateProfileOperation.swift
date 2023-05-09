@@ -1,37 +1,36 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct CreateProfileOperation: APIOperation {
     struct Options {
         let name: String
-        let bundleId: String
+        let bundleIdResourceId: String
         let profileType: ProfileType
         let certificateIds: [String]
         let deviceIds: [String]
     }
 
-    private let endpoint: APIEndpoint<ProfileResponse>
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        let shouldOmitDeviceIds = [.macAppStore, .iOSAppStore, .tvOSAppStore]
+    func execute() async throws -> Profile {
+        let shouldOmitDeviceIds = [.iOSAppStore, .macAppStore, .tvOSAppStore]
             .contains(options.profileType)
 
-        endpoint = APIEndpoint.create(
-            profileWithId: options.bundleId,
-            name: options.name,
-            profileType: options.profileType,
-            certificateIds: options.certificateIds,
-            deviceIds: shouldOmitDeviceIds ? [] : options.deviceIds
-        )
-    }
+        let profile = try await service.request(.createProfileV1(
+            requestBody: .init(data: .init(
+                attributes: .init(
+                    name: options.name,
+                    profileType: options.profileType
+                ),
+                relationships: .init(
+                    bundleId: .init(data: .init(id: options.bundleIdResourceId)),
+                    certificates: .init(data: options.certificateIds.map { .init(id: $0) }),
+                    devices: shouldOmitDeviceIds ? nil : .init(data: options.deviceIds.map { .init(id: $0) })
+                )
+            ))
+        ))
+        .data
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.Profile, Error> {
-        requestor
-            .request(endpoint)
-            .map(\.data)
-            .eraseToAnyPublisher()
+        return Profile(profile)
     }
 }

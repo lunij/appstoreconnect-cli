@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ReadBuildCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -23,11 +21,22 @@ struct ReadBuildCommand: CommonParsableCommand {
     @Argument(help: "The pre-release version number of this build")
     var preReleaseVersion: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let appId = try await GetAppOperation(
+            service: service,
+            options: .init(bundleId: bundleId)
+        )
+        .execute()
+        .id
 
-        let buildDetailsInfo = try service.readBuild(bundleId: bundleId, buildNumber: buildNumber, preReleaseVersion: preReleaseVersion)
+        let output = try await ReadBuildOperation(
+            service: service,
+            options: .init(appId: appId, buildNumber: buildNumber, preReleaseVersion: preReleaseVersion)
+        )
+        .execute()
 
-        try buildDetailsInfo.render(options: common.outputOptions)
+        try Build(output.build, output.includes)
+            .render(options: common.outputOptions)
     }
 }

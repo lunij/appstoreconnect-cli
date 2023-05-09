@@ -1,9 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
 
 struct ModifyBundleIdCommand: CommonParsableCommand {
     public static var configuration = CommandConfiguration(
@@ -20,12 +17,21 @@ struct ModifyBundleIdCommand: CommonParsableCommand {
     @Argument(help: "The new name for the bundle identifier.")
     var name: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let bundleId = try await ReadBundleIdOperation(
+            service: service,
+            options: .init(bundleId: identifier)
+        )
+        .execute()
 
-        let bundleId = try service
-            .modifyBundleIdInformation(bundleId: identifier, name: name)
+        let updatedBundleId = try await ModifyBundleIdOperation(
+            service: service,
+            options: .init(resourceId: bundleId.id, name: name)
+        )
+        .execute()
 
-        try bundleId.render(options: common.outputOptions)
+        try BundleId(updatedBundleId)
+            .render(options: common.outputOptions)
     }
 }

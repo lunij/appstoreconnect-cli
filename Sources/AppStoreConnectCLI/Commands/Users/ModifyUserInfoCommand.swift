@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct ModifyUserInfoCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -25,17 +24,29 @@ struct ModifyUserInfoCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let user = try service.modifyUserInfo(
-            email: email,
-            roles: userInfo.roles,
-            allAppsVisible: userInfo.allAppsVisible,
-            provisioningAllowed: userInfo.provisioningAllowed,
-            bundleIds: userInfo.bundleIds
+        let userId = try await GetUserInfoOperation(
+            service: service,
+            options: .init(email: email, includeVisibleApps: false)
         )
+        .execute()
+        .id
 
-        try user.render(options: common.outputOptions)
+        let user = try await ModifyUserOperation(
+            service: service,
+            options: .init(
+                userId: userId,
+                allAppsVisible: userInfo.allAppsVisible,
+                provisioningAllowed: userInfo.provisioningAllowed,
+                roles: userInfo.roles,
+                appsVisibleIds: userInfo.bundleIds
+            )
+        )
+        .execute()
+
+        try User(user, visibleApps: [])
+            .render(options: common.outputOptions)
     }
 }

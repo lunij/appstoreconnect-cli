@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ReadBuildOperation: APIOperation {
     struct Options {
@@ -11,63 +10,51 @@ struct ReadBuildOperation: APIOperation {
         let preReleaseVersion: String
     }
 
-    enum ReadBuildError: LocalizedError {
-        case noBuildExist
-        case buildNotUnique
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case buildNotFound
+        case multipleBuildsFound
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
-            case .noBuildExist:
-                return "No build exists"
-            case .buildNotUnique:
-                return "More than 1 build returned"
+            case .buildNotFound:
+                return "No build found"
+            case .multipleBuildsFound:
+                return "Multiple builds found"
             }
         }
     }
 
-    struct Output {
-        let build: AppStoreConnect_Swift_SDK.Build
-        let relationships: [AppStoreConnect_Swift_SDK.BuildRelationship]?
-    }
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    private let options: Options
+    func execute() async throws -> (build: Bagbutik_Models.Build, includes: [BuildsResponse.Included]) {
+        var filters: [ListBuildsV1.Filter] = []
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Output, Error> {
-        var filters = [ListBuilds.Filter]()
-
-        if options.preReleaseVersion.isEmpty == false {
-            filters += [ListBuilds.Filter.preReleaseVersionVersion([options.preReleaseVersion])]
+        if options.preReleaseVersion.isNotEmpty {
+            filters += [.preReleaseVersion_version([options.preReleaseVersion])]
         }
 
-        if options.buildNumber.isEmpty == false {
-            filters += [ListBuilds.Filter.version([options.buildNumber])]
+        if options.buildNumber.isNotEmpty {
+            filters += [.version([options.buildNumber])]
         }
 
-        if options.appId.isEmpty == false {
-            filters += [ListBuilds.Filter.app([options.appId])]
+        if options.appId.isNotEmpty {
+            filters += [.app([options.appId])]
         }
 
-        let endpoint = APIEndpoint.builds(
-            filter: filters,
-            include: [.app, .betaAppReviewSubmission, .buildBetaDetail, .preReleaseVersion]
-        )
+        let response = try await service.request(.listBuildsV1(
+            filters: filters,
+            includes: [.app, .betaAppReviewSubmission, .buildBetaDetail, .preReleaseVersion]
+        ))
 
-        return requestor.request(endpoint)
-            .tryMap { buildResponse throws -> Output in
-                if buildResponse.data.count > 1 {
-                    throw ReadBuildError.buildNotUnique
-                }
+        if response.data.count > 1 {
+            throw Error.multipleBuildsFound
+        }
 
-                guard let build = buildResponse.data.first else {
-                    throw ReadBuildError.noBuildExist
-                }
+        guard let build = response.data.first else {
+            throw Error.buildNotFound
+        }
 
-                return Output(build: build, relationships: buildResponse.included)
-            }
-            .eraseToAnyPublisher()
+        return (build: build, includes: response.included ?? [])
     }
 }

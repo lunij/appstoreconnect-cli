@@ -1,11 +1,10 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_Reporting
 
 struct DownloadSalesOperation: APIOperation {
-    typealias Filter = DownloadSalesAndTrendsReports.Filter
+    typealias Filter = GetSalesReportsV1.Filter
 
     struct Options {
         let frequency: [Filter.Frequency]
@@ -16,25 +15,20 @@ struct DownloadSalesOperation: APIOperation {
         let version: [String]
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Data, Error> {
-        var filter: [Filter] = [
+    func execute() async throws -> Gzip {
+        var filters: [Filter] = [
             .frequency(options.frequency),
             .reportDate(options.reportDate),
             .reportSubType(options.reportSubType),
             .vendorNumber(options.vendorNumber)
         ]
 
-        if options.reportDate.isNotEmpty { filter.append(.reportType(options.reportType)) }
-        if options.version.isNotEmpty { filter.append(.version(options.version)) }
+        if options.reportDate.isNotEmpty { filters.append(.reportType(options.reportType)) }
+        if options.version.isNotEmpty { filters.append(.version(options.version)) }
 
-        return requestor
-            .request(.downloadSalesAndTrendsReports(filter: filter))
-            .eraseToAnyPublisher()
+        return try await service.request(.getSalesReportsV1(filters: filters))
     }
 }

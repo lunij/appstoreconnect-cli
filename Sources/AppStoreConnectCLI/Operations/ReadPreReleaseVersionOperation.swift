@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ReadPreReleaseVersionOperation: APIOperation {
     struct Options {
@@ -10,52 +9,43 @@ struct ReadPreReleaseVersionOperation: APIOperation {
         let filterVersion: String
     }
 
-    enum Error: LocalizedError {
-        case noVersionExists
-        case versionNotUnique
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case versionNotFound
+        case multipleVersionsFound
 
-        var errorDescription: String? {
+        var description: String {
             switch self {
-            case .noVersionExists:
+            case .versionNotFound:
                 return "No prerelease version exists"
-            case .versionNotUnique:
+            case .multipleVersionsFound:
                 return "More than 1 prerelease version returned"
             }
         }
     }
 
-    typealias PreReleaseVersion = AppStoreConnect_Swift_SDK.PrereleaseVersion
-    typealias Relationships = [AppStoreConnect_Swift_SDK.PreReleaseVersionRelationship]?
-    typealias Output = (preReleaseVersion: PreReleaseVersion, relationships: Relationships)
+    typealias Output = (preReleaseVersion: PrereleaseVersion, includes: [PreReleaseVersionsResponse.Included])
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
+    func execute() async throws -> Output {
+        var filters: [ListPreReleaseVersionsV1.Filter] = []
+        if options.filterAppId.isNotEmpty { filters += [.app([options.filterAppId])] }
+        if options.filterVersion.isNotEmpty { filters += [.version([options.filterVersion])] }
 
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Output, Swift.Error> {
-        var filters: [ListPrereleaseVersions.Filter] = []
-        filters += options.filterAppId.isEmpty ? [] : [.app([options.filterAppId])]
-        filters += options.filterVersion.isEmpty ? [] : [.version([options.filterVersion])]
+        let response = try await service.request(.listPreReleaseVersionsV1(
+            filters: filters,
+            includes: [.app]
+        ))
 
-        let endpoint = APIEndpoint.prereleaseVersions(
-            filter: filters,
-            include: [.app]
-        )
+        if response.data.count > 1 {
+            throw Error.multipleVersionsFound
+        }
 
-        return requestor.request(endpoint)
-            .tryMap { response throws -> Output in
-                if response.data.count > 1 {
-                    throw Error.versionNotUnique
-                }
+        guard let preReleaseVersion = response.data.first else {
+            throw Error.versionNotFound
+        }
 
-                guard let preReleaseVersion = response.data.first else {
-                    throw Error.noVersionExists
-                }
-
-                return Output(preReleaseVersion: preReleaseVersion, relationships: response.included)
-            }
-            .eraseToAnyPublisher()
+        return (preReleaseVersion: preReleaseVersion, includes: response.included ?? [])
     }
 }

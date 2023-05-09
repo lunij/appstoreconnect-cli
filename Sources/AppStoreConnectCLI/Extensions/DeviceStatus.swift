@@ -1,21 +1,16 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
-extension DeviceStatus: CaseIterable, ExpressibleByArgument, CustomStringConvertible {
-    public typealias AllCases = [DeviceStatus]
+typealias DeviceStatus = Bagbutik_Models.Device.Attributes.Status
 
-    public static var allCases: AllCases {
-        [.enabled, .disabled]
+extension DeviceStatus: ExpressibleByArgument {
+    public static var allValueStrings: [String] {
+        allCases.map { $0.rawValue.lowercased() }
     }
 
     public init?(argument: String) {
         self.init(rawValue: argument.uppercased())
-    }
-
-    public var description: String {
-        rawValue.lowercased()
     }
 }

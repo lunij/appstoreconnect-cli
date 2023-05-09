@@ -26,9 +26,37 @@ struct AddTestersToGroupCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        try service.addTestersToGroup(bundleId: bundleId, groupName: groupName, emails: emails)
+        let testerIds = try await emails.asyncMap {
+            try await GetBetaTesterOperation(
+                service: service,
+                options: .init(identifier: .email($0))
+            )
+            .execute()
+            .id
+        }
+
+        let app = try await ReadAppOperation(
+            service: service,
+            options: .init(identifier: .bundleId(bundleId))
+        )
+        .execute()
+
+        let groupId = try await GetBetaGroupOperation(
+            service: service,
+            options: .init(appId: app.id, bundleId: bundleId, betaGroupName: groupName)
+        )
+        .execute()
+        .id
+
+        try await AddTesterToGroupOperation(
+            service: service,
+            options: .init(
+                addStrategy: .addTestersToGroup(testerIds: testerIds, groupId: groupId)
+            )
+        )
+        .execute()
     }
 }

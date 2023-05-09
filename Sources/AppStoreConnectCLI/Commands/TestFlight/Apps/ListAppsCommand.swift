@@ -1,8 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Foundation
+import Bagbutik_Models
 
 struct ListAppsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -25,16 +24,15 @@ struct ListAppsCommand: CommonParsableCommand {
     @Option(parsing: .upToNextOption, help: "Filter the results by the specified app SKUs")
     var filterSkus: [String] = []
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let apps = try service.listApps(
-            bundleIds: filterBundleIds,
-            names: filterNames,
-            skus: filterSkus,
-            limit: limit
+        try await ListAppsOperation(
+            service: service,
+            options: .init(bundleIds: filterBundleIds, names: filterNames, skus: filterSkus, limit: limit)
         )
-
-        try apps.render(options: common.outputOptions)
+        .execute()
+        .map(App.init)
+        .render(options: common.outputOptions)
     }
 }

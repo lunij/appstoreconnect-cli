@@ -1,22 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
-import SwiftyTextTable
-import Yams
-
-enum DeviceError: Error, LocalizedError {
-    case notFound(String)
-
-    var failureReason: String? {
-        switch self {
-        case let .notFound(udid):
-            return "Unable to find device with UDID of '\(udid)'."
-        }
-    }
-}
+import Bagbutik_Models
 
 struct ReadDeviceInfoCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -30,25 +15,21 @@ struct ReadDeviceInfoCommand: CommonParsableCommand {
     @Argument(help: "The UDID of the device to find.")
     var udid: String
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        let devices = try await service
+            .request(.listDevicesV1(filters: [.udid([udid])]))
+            .data
+            .filter { $0.attributes?.udid == udid }
 
-        let request = APIEndpoint.listDevices(
-            filter: [.udid([udid])]
-        )
+        if devices.count > 1 {
+            throw DeviceError.deviceNotUnique(udid)
+        }
 
-        let device = try service.request(request)
-            .map(\.data)
-            .tryMap { devices -> AppStoreConnect_Swift_SDK.Device in
-                guard let device = devices.first(where: { $0.attributes.udid == self.udid }) else {
-                    throw DeviceError.notFound(self.udid)
-                }
+        guard let device = devices.first else {
+            throw DeviceError.deviceNotFound(udid)
+        }
 
-                return device
-            }
-            .map(Device.init)
-            .await()
-
-        try device.render(options: common.outputOptions)
+        try Device(device).render(options: common.outputOptions)
     }
 }

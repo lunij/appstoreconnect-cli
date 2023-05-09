@@ -1,37 +1,24 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct RemoveTesterOperation: APIOperation {
     struct Options {
-        enum RemoveStrategy {
-            case removeTestersFromGroup(testerIds: [String], groupId: String)
-            case removeTesterFromGroups(testerId: String, groupIds: [String])
-        }
-
         let removeStrategy: RemoveStrategy
     }
 
-    private let options: Options
+    enum RemoveStrategy {
+        case removeTestersFromGroup(testerIds: [String], groupId: String)
+        case removeTesterFromGroups(testerId: String, groupIds: [String])
+    }
 
-    var endpoint: APIEndpoint<Void> {
+    let service: BagbutikServiceProtocol
+    let options: Options
+
+    func execute() async throws {
         switch options.removeStrategy {
         case let .removeTesterFromGroups(testerId, groupIds):
-            return APIEndpoint.remove(betaTesterWithId: testerId, fromBetaGroupsWithIds: groupIds)
+            try await service.request(.deleteBetaGroupsForBetaTesterV1(id: testerId, requestBody: .init(data: groupIds.map { .init(id: $0) })))
         case let .removeTestersFromGroup(testerIds, groupId):
-            return APIEndpoint.remove(betaTestersWithIds: testerIds, fromBetaGroupWithId: groupId)
+            try await service.request(.deleteBetaTestersForBetaGroupV1(id: groupId, requestBody: .init(data: testerIds.map { .init(id: $0) })))
         }
-    }
-
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<Void, Error> {
-        requestor
-            .request(endpoint)
-            .eraseToAnyPublisher()
     }
 }

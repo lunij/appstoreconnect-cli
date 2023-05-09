@@ -1,11 +1,10 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct BundleId: Codable, Equatable {
+    let id: String
     let identifier: String?
     let name: String?
     let platform: String?
@@ -15,18 +14,15 @@ struct BundleId: Codable, Equatable {
 // MARK: - Extensions
 
 extension BundleId {
-    init(_ apiBundleId: AppStoreConnect_Swift_SDK.BundleId) {
-        let attributes = apiBundleId.attributes
+    init(_ bundleId: Bagbutik_Models.BundleId) {
+        let attributes = bundleId.attributes
         self.init(
+            id: bundleId.id,
             identifier: attributes?.identifier,
             name: attributes?.name,
             platform: attributes?.platform?.rawValue,
             seedId: attributes?.seedId
         )
-    }
-
-    init(_ response: AppStoreConnect_Swift_SDK.BundleIdResponse) {
-        self.init(response.data)
     }
 }
 

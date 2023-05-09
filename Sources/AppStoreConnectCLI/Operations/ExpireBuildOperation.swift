@@ -1,30 +1,20 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
-
 struct ExpireBuildOperation: APIOperation {
     struct Options {
         let buildId: String
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Void, Error> {
-        let buildModifyEndpoint = APIEndpoint.modify(
-            buildWithId: options.buildId,
-            appEncryptionDeclarationId: "",
-            expired: true,
-            usesNonExemptEncryption: nil
-        )
-
-        return requestor.request(buildModifyEndpoint)
-            .map { _ in }
-            .eraseToAnyPublisher()
+    func execute() async throws {
+        _ = try await service.request(.updateBuildV1(id: options.buildId, requestBody: .init(data: .init(
+            id: options.buildId,
+            attributes: .init(
+                expired: true,
+                usesNonExemptEncryption: nil
+            )
+        ))))
     }
 }

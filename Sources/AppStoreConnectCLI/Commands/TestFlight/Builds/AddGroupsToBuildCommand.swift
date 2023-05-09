@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Combine
-import Foundation
 
 struct AddGroupsToBuildCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -25,14 +23,20 @@ struct AddGroupsToBuildCommand: CommonParsableCommand {
         }
     }
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        try service.addGroupsToBuild(
+        let (buildId, groupIds) = try await service.buildIdAndGroupIdsFrom(
             bundleId: build.bundleId,
             version: build.preReleaseVersion,
             buildNumber: build.buildNumber,
             groupNames: groupNames
         )
+
+        try await AddGroupsToBuildOperation(
+            service: service,
+            options: .init(groupIds: groupIds, buildId: buildId)
+        )
+        .execute()
     }
 }

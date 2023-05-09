@@ -1,7 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 
 struct TestFlightPullCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -21,10 +20,10 @@ struct TestFlightPullCommand: CommonParsableCommand {
     @Option(help: "Path to output/write the TestFlight configuration.")
     var outputPath = "./config/apps"
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
 
-        let testflightProgram = try service.getTestFlightProgram(bundleIds: filterBundleIds)
+        let testflightProgram = try await service.getTestFlightProgram(bundleIds: filterBundleIds)
 
         try writeTestFlightConfiguration(program: testflightProgram, to: outputPath)
     }

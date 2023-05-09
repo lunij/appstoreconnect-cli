@@ -1,17 +1,15 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct GetUserInfoOperation: APIOperation {
-    enum Error: LocalizedError {
-        case couldNotFindUser(email: String)
+    enum Error: Swift.Error, CustomStringConvertible, Equatable {
+        case userNotFound(email: String)
 
-        var failureReason: String? {
+        var description: String {
             switch self {
-            case let .couldNotFindUser(email):
-                return "Couldn't find user with input email: '\(email)' or email not unique"
+            case let .userNotFound(email):
+                return "User not found (\(email))"
             }
         }
     }
@@ -21,27 +19,20 @@ struct GetUserInfoOperation: APIOperation {
         let includeVisibleApps: Bool
     }
 
+    let service: BagbutikServiceProtocol
     let options: Options
 
-    private let endpoint: APIEndpoint<UsersResponse>
+    func execute() async throws -> Bagbutik_Models.User {
+        let users = try await service.request(.listUsersV1(
+            filters: [.username([options.email])],
+            includes: options.includeVisibleApps ? [.visibleApps] : nil
+        ))
+        .data
 
-    init(options: Options) {
-        let filters: [ListUsers.Filter] = [.username([options.email])]
-        let include = options.includeVisibleApps ? [ListUsers.Include.visibleApps] : []
+        guard let user = users.first else {
+            throw Error.userNotFound(email: options.email)
+        }
 
-        endpoint = APIEndpoint.users(include: include, filter: filters)
-
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<AppStoreConnect_Swift_SDK.User, Swift.Error> {
-        requestor.request(endpoint)
-            .tryMap { [options] response in
-                guard let user = response.data.first else {
-                    throw Error.couldNotFindUser(email: options.email)
-                }
-                return user
-            }
-            .eraseToAnyPublisher()
+        return user
     }
 }

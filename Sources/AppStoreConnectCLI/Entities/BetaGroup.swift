@@ -1,12 +1,10 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct BetaGroup: Codable, Equatable {
-    let id: String?
+    let id: String
     let app: App?
     let groupName: String?
     let isInternal: Bool?
@@ -18,6 +16,53 @@ struct BetaGroup: Codable, Equatable {
 }
 
 // MARK: - Extensions
+
+extension BetaGroup {
+    init(
+        _ betaGroup: Bagbutik_Models.BetaGroup,
+        app: Bagbutik_Models.App?
+    ) throws {
+        self.init(
+            id: betaGroup.id,
+            app: try app.map(App.init),
+            groupName: betaGroup.attributes?.name,
+            isInternal: betaGroup.attributes?.isInternalGroup,
+            publicLink: betaGroup.attributes?.publicLink,
+            publicLinkEnabled: betaGroup.attributes?.publicLinkEnabled,
+            publicLinkLimit: betaGroup.attributes?.publicLinkLimit,
+            publicLinkLimitEnabled: betaGroup.attributes?.publicLinkLimitEnabled,
+            creationDate: betaGroup.attributes?.createdDate?.formattedDate
+        )
+    }
+
+    init(
+        _ betaGroup: Bagbutik_Models.BetaGroup,
+        _ includes: [Bagbutik_Models.BetaGroupsResponse.Included]
+    ) throws {
+        var app: Bagbutik_Models.App?
+
+        for include in includes {
+            switch include {
+            case let .app(value):
+                app = value
+            default:
+                break
+            }
+        }
+
+        self.init(
+            id: betaGroup.id,
+            app: try app.map(App.init),
+            groupName: betaGroup.attributes?.name,
+            isInternal: betaGroup.attributes?.isInternalGroup,
+            publicLink: betaGroup.attributes?.publicLink,
+            publicLinkEnabled: betaGroup.attributes?.publicLinkEnabled,
+            publicLinkLimit: betaGroup.attributes?.publicLinkLimit,
+            publicLinkLimitEnabled: betaGroup.attributes?.publicLinkLimitEnabled,
+            creationDate: betaGroup.attributes?.createdDate?.formattedDate
+        )
+    }
+}
 
 extension BetaGroup: ResultRenderable {}
 
@@ -50,24 +95,5 @@ extension BetaGroup: TableInfoProvider {
             publicLinkEnabled ?? "",
             creationDate ?? ""
         ]
-    }
-}
-
-extension BetaGroup {
-    init(
-        _ apiApp: AppStoreConnect_Swift_SDK.App?,
-        _ apiBetaGroup: AppStoreConnect_Swift_SDK.BetaGroup
-    ) throws {
-        self.init(
-            id: apiBetaGroup.id,
-            app: try apiApp.map(App.init),
-            groupName: apiBetaGroup.attributes?.name,
-            isInternal: apiBetaGroup.attributes?.isInternalGroup,
-            publicLink: apiBetaGroup.attributes?.publicLink,
-            publicLinkEnabled: apiBetaGroup.attributes?.publicLinkEnabled,
-            publicLinkLimit: apiBetaGroup.attributes?.publicLinkLimit,
-            publicLinkLimitEnabled: apiBetaGroup.attributes?.publicLinkLimitEnabled,
-            creationDate: apiBetaGroup.attributes?.createdDate?.formattedDate
-        )
     }
 }

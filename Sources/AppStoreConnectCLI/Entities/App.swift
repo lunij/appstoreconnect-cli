@@ -1,8 +1,6 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
-import Foundation
+import Bagbutik_Models
 import SwiftyTextTable
 
 struct App: Codable, Equatable {
@@ -27,15 +25,15 @@ struct App: Codable, Equatable {
 // MARK: - Extensions
 
 extension App {
-    init(_ apiApp: AppStoreConnect_Swift_SDK.App) throws {
-        let attributes = apiApp.attributes
+    init(_ app: Bagbutik_Models.App) throws {
+        let attributes = app.attributes
 
         guard let bundleId = attributes?.bundleId else {
-            throw Error.bundleIdMissing(id: apiApp.id)
+            throw Error.bundleIdMissing(id: app.id)
         }
 
         self.init(
-            id: apiApp.id,
+            id: app.id,
             bundleId: bundleId,
             name: attributes?.name,
             primaryLocale: attributes?.primaryLocale,
@@ -65,36 +63,5 @@ extension App: TableInfoProvider {
             primaryLocale ?? "",
             sku ?? ""
         ]
-    }
-}
-
-extension AppStoreConnectService {
-    private enum AppError: LocalizedError {
-        case couldntFindApp(bundleId: [String])
-
-        var errorDescription: String? {
-            switch self {
-            case let .couldntFindApp(bundleIds):
-                return "No apps were found matching \(bundleIds)."
-            }
-        }
-    }
-
-    /// Find the opaque internal identifier for an application that related to this bundle ID.
-    func getAppResourceIdsFrom(bundleIds: [String]) -> AnyPublisher<[String], Error> {
-        let getAppResourceIdRequest = APIEndpoint.apps(
-            filters: [ListApps.Filter.bundleId(bundleIds)]
-        )
-
-        return request(getAppResourceIdRequest)
-            .tryMap { (response: AppsResponse) throws -> [AppStoreConnect_Swift_SDK.App] in
-                guard !response.data.isEmpty else {
-                    throw AppError.couldntFindApp(bundleId: bundleIds)
-                }
-
-                return response.data
-            }
-            .compactMap { $0.map(\.id) }
-            .eraseToAnyPublisher()
     }
 }

@@ -1,9 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
 import ArgumentParser
-import Combine
-import Foundation
+import Bagbutik_Models
 
 struct ListBuildsCommand: CommonParsableCommand {
     static var configuration = CommandConfiguration(
@@ -53,37 +51,51 @@ struct ListBuildsCommand: CommonParsableCommand {
     @Option(
         parsing: .upToNextOption,
         help: ArgumentHelp(
-            "Filter by the processing state a build \(ListBuilds.Filter.ProcessingState.allCases)",
+            "Filter by the processing state of a build: \(BuildProcessingState.allValueStringsFormatted)",
             valueName: "processing-state"
         )
     )
-    var filterProcessingStates: [ListBuilds.Filter.ProcessingState] = []
+    var filterProcessingStates: [BuildProcessingState] = []
 
     @Option(
         parsing: .upToNextOption,
         help: ArgumentHelp(
-            "Filter by the beta review state of a build",
+            "Filter by the beta review state of a build: \(BetaReviewState.allValueStringsFormatted)",
             valueName: "beta-review-state"
         )
     )
-    var filterBetaReviewStates: [String] = []
+    var filterBetaReviewStates: [BetaReviewState] = []
 
     @Option(help: "Limit the number of individualTesters & betaBuildLocalizations")
     var limit: Int?
 
-    func run() throws {
+    func run() async throws {
         let service = try makeService()
+        var filterAppIds: [String] = []
 
-        let builds = try service.listBuilds(
-            filterBundleIds: filterBundleIds,
-            filterExpired: includeExpired ? [] : ["false"],
-            filterPreReleaseVersions: filterPreReleaseVersions,
-            filterBuildNumbers: filterBuildNumbers,
-            filterProcessingStates: filterProcessingStates,
-            filterBetaReviewStates: filterBetaReviewStates,
-            limit: limit
+        if filterBundleIds.isNotEmpty {
+            filterAppIds = try await GetAppsOperation(
+                service: service,
+                options: .init(bundleIds: filterBundleIds)
+            )
+            .execute()
+            .map(\.id)
+        }
+
+        try await ListBuildsOperation(
+            service: service,
+            options: .init(
+                filterAppIds: filterAppIds,
+                filterExpired: includeExpired ? [] : ["false"],
+                filterPreReleaseVersions: filterPreReleaseVersions,
+                filterBuildNumbers: filterBuildNumbers,
+                filterProcessingStates: filterProcessingStates,
+                filterBetaReviewStates: filterBetaReviewStates,
+                limit: limit
+            )
         )
-
-        try builds.render(options: common.outputOptions)
+        .execute()
+        .map(Build.init)
+        .render(options: common.outputOptions)
     }
 }

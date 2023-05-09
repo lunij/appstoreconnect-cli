@@ -1,13 +1,11 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import Combine
-import Foundation
-
 protocol APIOperation {
     associatedtype Options
     associatedtype Output
+    associatedtype Service
 
-    init(options: Options)
+    init(service: Service, options: Options)
 
-    func execute(with requestor: EndpointRequestor) throws -> AnyPublisher<Output, Error>
+    func execute() async throws -> Output
 }

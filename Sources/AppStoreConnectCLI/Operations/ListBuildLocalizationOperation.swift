@@ -1,7 +1,7 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
-import AppStoreConnect_Swift_SDK
-import Combine
+import Bagbutik_Models
+import Bagbutik_TestFlight
 
 struct ListBuildLocalizationOperation: APIOperation {
     struct Options {
@@ -9,35 +9,21 @@ struct ListBuildLocalizationOperation: APIOperation {
         let limit: Int?
     }
 
-    private let options: Options
+    let service: BagbutikServiceProtocol
+    let options: Options
 
-    init(options: Options) {
-        self.options = options
-    }
-
-    func execute(with requestor: EndpointRequestor) -> AnyPublisher<[BetaBuildLocalization], Error> {
-        guard options.limit != nil else {
-            return requestor.requestAllPages { [options] in
-                .betaBuildLocalizations(
-                    ofBuildWithId: options.id,
-                    fields: [],
-                    next: $0
-                )
-            }
-            .map { $0.flatMap(\.data) }
-            .eraseToAnyPublisher()
+    func execute() async throws -> [BetaBuildLocalization] {
+        if options.limit == nil {
+            return try await service
+                .requestAllPages(.listBetaBuildLocalizationsForBuildV1(id: options.id))
+                .data
         }
 
-        return requestor.request(
-            .betaBuildLocalizations(
-                ofBuildWithId: options.id,
-                fields: [],
+        return try await service
+            .request(.listBetaBuildLocalizationsForBuildV1(
+                id: options.id,
                 limit: options.limit
-            )
-        )
-        .map(\.data)
-        .eraseToAnyPublisher()
+            ))
+            .data
     }
 }
-
-extension BetaBuildLocalizationsResponse: PaginatedResponse {}

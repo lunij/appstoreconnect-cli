@@ -1,18 +1,18 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import ArgumentParser
-import Foundation
 
 struct ProfilesCommand: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "profiles",
-        abstract: "Create, delete, and download provisioning profiles that enable app installations for development and distribution.",
+        abstract: "Create, delete, update, list and download provisioning profiles that enable app installations for development and distribution.",
         subcommands: [
             CreateProfileCommand.self,
             DeleteProfileCommand.self,
             ListProfilesCommand.self,
             ListProfilesByBundleIdCommand.self,
-            ReadProfileCommand.self
+            ReadProfileCommand.self,
+            UpdateProfileCommand.self
         ],
         defaultSubcommand: ListProfilesCommand.self
     )
