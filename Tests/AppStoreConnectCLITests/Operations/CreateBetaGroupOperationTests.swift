@@ -4,22 +4,21 @@ import Bagbutik_Models
 import XCTest
 @testable import AppStoreConnectCLI
 
-final class CreateBetaGroupOperationTests: XCTestCase {
+final class CreateBetaGroupOperationTests: BaseTestCase {
     func test_createBetaGroup_success() async throws {
         let expectedApp = App.fake()
+        mockService.requestReturnValue = BetaGroupResponse.fake(data: .fake())
 
-        let service = BagbutikServiceMock { _, _ in
-            (try Fixture(named: "v1/betagroups/betagroup_response").data, HTTPURLResponse.fake())
-        }
-        let betaGroup = try await CreateBetaGroupOperation(service: service, options: .fake(app: expectedApp))
+        let betaGroup = try await CreateBetaGroupOperation(service: mockService, options: .fake(app: expectedApp))
             .execute()
 
+        XCTAssertEqual(mockService.calls, [.request(path: "/v1/betaGroups")])
         XCTAssertEqual(betaGroup.app?.id, expectedApp.id)
-        XCTAssertEqual(betaGroup.id, "12345678-90ab-cdef-1234-567890abcdef")
+        XCTAssertEqual(betaGroup.id, "fakeId")
     }
 
     func test_createBetaGroup_propagatesUpstreamErrors() async throws {
-        let service = BagbutikServiceMock { _, _ in
+        let service = BagbutikServiceOverrideMock { _, _ in
             throw FakeError()
         }
 

@@ -78,7 +78,7 @@ struct ListPreReleaseVersionsCommand: CommonParsableCommand {
             )
         )
         .execute()
-        .map(PreReleaseVersion.init)
+        .flatMap { try $0.preReleaseVersions() }
         .render(options: common.outputOptions)
     }
 }

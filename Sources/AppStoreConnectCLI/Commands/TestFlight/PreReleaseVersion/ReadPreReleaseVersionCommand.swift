@@ -40,13 +40,12 @@ struct ReadPreReleaseVersionCommand: CommonParsableCommand {
             .id
         }
 
-        let output = try await ReadPreReleaseVersionOperation(
+        try await ReadPreReleaseVersionOperation(
             service: service,
             options: .init(filterAppId: filterAppId, filterVersion: version)
         )
         .execute()
-
-        try PreReleaseVersion(output.preReleaseVersion, output.includes)
-            .render(options: common.outputOptions)
+        .preReleaseVersions()
+        .render(options: common.outputOptions)
     }
 }

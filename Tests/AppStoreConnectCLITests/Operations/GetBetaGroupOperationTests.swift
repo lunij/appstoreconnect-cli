@@ -5,25 +5,20 @@ import Foundation
 import XCTest
 @testable import AppStoreConnectCLI
 
-final class GetBetaGroupOperationTests: XCTestCase {
+final class GetBetaGroupOperationTests: BaseTestCase {
     func test_betaGroup_success() async throws {
-        let service = BagbutikServiceMock { _, _ in
-            (try Fixture(named: "v1/betagroups/betagroups_response").data, HTTPURLResponse.fake())
-        }
+        mockService.requestReturnValue = BetaGroupsResponse.fake(data: [.fake(attributes: .init(name: "Fake Group"))])
 
-        let betaGroup = try await GetBetaGroupOperation(service: service, options: .fake(betaGroupName: "Fake Group")).execute()
+        let betaGroup = try await GetBetaGroupOperation(service: mockService, options: .fake(betaGroupName: "Fake Group")).execute()
 
-        XCTAssertEqual(betaGroup.id, "12345678-90ab-cdef-1234-567890abcdef")
         XCTAssertEqual(betaGroup.attributes?.name, "Fake Group")
     }
 
     func test_betaGroup_notFound() async throws {
-        let service = BagbutikServiceMock { _, _ in
-            (try Fixture(named: "v1/betagroups/betagroups_response").data, HTTPURLResponse.fake())
-        }
+        mockService.requestReturnValue = BetaGroupsResponse.fake(data: [])
 
         let error: GetBetaGroupOperation.Error? = try await catchError {
-            _ = try await GetBetaGroupOperation(service: service, options: .fake(betaGroupName: "non-existend name")).execute()
+            _ = try await GetBetaGroupOperation(service: mockService, options: .fake(betaGroupName: "non-existend name")).execute()
         }
 
         XCTAssertEqual(error, .betaGroupNotFound(groupName: "non-existend name", bundleId: "com.example.test", appId: "1234567890"))

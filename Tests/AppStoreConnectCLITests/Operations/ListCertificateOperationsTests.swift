@@ -5,14 +5,12 @@ import Bagbutik_Provisioning
 import XCTest
 @testable import AppStoreConnectCLI
 
-final class ListCertificateOperationsTests: XCTestCase {
+final class ListCertificateOperationsTests: BaseTestCase {
     func test_certificateNotFound() async throws {
-        let service = BagbutikServiceMock { _, _ in
-            (try Fixture(named: "v1/certificates/no_certificate").data, HTTPURLResponse.fake())
-        }
+        mockService.requestAllPagesResponses = [CertificatesResponse.fake(data: [])]
 
         let error: ListCertificatesOperation.Error? = try await catchError {
-            _ = try await ListCertificatesOperation(service: service, options: .fake()).execute()
+            _ = try await ListCertificatesOperation(service: mockService, options: .fake()).execute()
         }
 
         XCTAssertEqual(error, .certificatesNotFound)

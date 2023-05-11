@@ -6,12 +6,12 @@ import XCTest
 
 final class UpdateBetaGroupOperationTests: XCTestCase {
     func test_updateBetaGroup_success() async throws {
-        let service = BagbutikServiceMock { _, _ in
+        let mockService = BagbutikServiceOverrideMock { _, _ in
             let response = BetaGroupResponse(data: .fake(), links: .fake())
             return (try response.encode(), HTTPURLResponse.fake())
         }
 
-        let betaGroup = try await UpdateBetaGroupOperation(service: service, options: .fake()).execute()
+        let betaGroup = try await UpdateBetaGroupOperation(service: mockService, options: .fake()).execute()
 
         XCTAssertEqual(betaGroup.id, "fakeId")
     }

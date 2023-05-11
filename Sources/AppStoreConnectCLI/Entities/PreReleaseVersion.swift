@@ -11,19 +11,19 @@ struct PreReleaseVersion: Codable, Equatable {
 
 // MARK: - Extensions
 
-extension PreReleaseVersion {
+extension Bagbutik_Models.PreReleaseVersionsResponse {
+    func preReleaseVersions() throws -> [PreReleaseVersion] {
+        try data.map { version in
+            try .init(version, app: getApp(for: version))
+        }
+    }
+}
+
+private extension PreReleaseVersion {
     init(
         _ preReleaseVersion: Bagbutik_Models.PrereleaseVersion,
-        _ includes: [Bagbutik_Models.PreReleaseVersionsResponse.Included]
+        app: Bagbutik_Models.App?
     ) throws {
-        var app: Bagbutik_Models.App?
-
-        for include in includes {
-            if case let .app(value) = include {
-                app = value
-            }
-        }
-
         self.init(
             app: try app.map(App.init),
             platform: preReleaseVersion.attributes?.platform?.rawValue,

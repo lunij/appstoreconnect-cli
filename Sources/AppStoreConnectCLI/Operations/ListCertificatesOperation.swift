@@ -99,6 +99,16 @@ struct LossyCertificate: Codable {
     var attributes: Attributes?
     var type: String { "certificates" }
 
+    init(
+        id: String,
+        links: ResourceLinks,
+        attributes: LossyCertificate.Attributes? = nil
+    ) {
+        self.id = id
+        self.links = links
+        self.attributes = attributes
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)

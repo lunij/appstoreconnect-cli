@@ -1,26 +1,25 @@
 // Copyright 2023 Itty Bitty Apps Pty Ltd
 
 import Bagbutik_Models
-import Foundation
 import XCTest
 @testable import AppStoreConnectCLI
 
-final class CreateCertificateOperationTests: XCTestCase {
-    let options = CreateCertificateOperation.Options(
-        certificateType: .iOSDevelopment,
-        csrContent: ""
-    )
+final class CreateCertificateOperationTests: BaseTestCase {
+    func test_createsCertificate_success() async throws {
+        mockService.requestReturnValue = CertificateResponse.fake(data: .fake())
 
-    func testExecute_success() async throws {
-        let service = BagbutikServiceMock { _, _ in
-            (try Fixture(named: "v1/certificates/created_success").data, HTTPURLResponse.fake())
-        }
+        let certificate = try await CreateCertificateOperation(service: mockService, options: .fake()).execute()
 
-        let operation = CreateCertificateOperation(service: service, options: options)
-        let certificate = try await operation.execute()
+        XCTAssertEqual(mockService.calls, [.request(path: "/v1/certificates")])
+        XCTAssertEqual(certificate.id, "fakeId")
+    }
+}
 
-        XCTAssertEqual(certificate.attributes?.name, "Mac Installer Distribution: Hello")
-        XCTAssertEqual(certificate.attributes?.platform, .macOS)
-        XCTAssertEqual(certificate.attributes?.certificateContent, "MIIFpDCCBIygAwIBAgIIbgb/7NS42MgwDQ")
+private extension CreateCertificateOperation.Options {
+    static func fake(
+        certificateType: CertificateType = .iOSDevelopment,
+        csrContent: String = "fakeCsrContent"
+    ) -> Self {
+        .init(certificateType: certificateType, csrContent: csrContent)
     }
 }

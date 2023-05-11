@@ -5,8 +5,8 @@ import Bagbutik_TestFlight
 
 struct ReadPreReleaseVersionOperation: APIOperation {
     struct Options {
-        let filterAppId: String
-        let filterVersion: String
+        var filterAppId = ""
+        var filterVersion = ""
     }
 
     enum Error: Swift.Error, CustomStringConvertible, Equatable {
@@ -23,12 +23,10 @@ struct ReadPreReleaseVersionOperation: APIOperation {
         }
     }
 
-    typealias Output = (preReleaseVersion: PrereleaseVersion, includes: [PreReleaseVersionsResponse.Included])
-
     let service: BagbutikServiceProtocol
     let options: Options
 
-    func execute() async throws -> Output {
+    func execute() async throws -> PreReleaseVersionsResponse {
         var filters: [ListPreReleaseVersionsV1.Filter] = []
         if options.filterAppId.isNotEmpty { filters += [.app([options.filterAppId])] }
         if options.filterVersion.isNotEmpty { filters += [.version([options.filterVersion])] }
@@ -46,6 +44,6 @@ struct ReadPreReleaseVersionOperation: APIOperation {
             throw Error.versionNotFound
         }
 
-        return (preReleaseVersion: preReleaseVersion, includes: response.included ?? [])
+        return response
     }
 }
