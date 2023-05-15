@@ -1,0 +1,6 @@
+sources:
+  - ../../Sources/AppStoreConnectCLI
+templates:
+  - ../../Templates
+output:
+  Generated

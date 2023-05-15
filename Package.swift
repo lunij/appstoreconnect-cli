@@ -67,7 +67,8 @@ extension [Package.Dependency] {
     static var plugins: [Element] {
         Environment.isDevelopment ? [
             .package(url: "git@github.com:lunij/SwiftFormatPlugin", from: "0.50.7"),
-            .package(url: "git@github.com:lunij/SwiftLintPlugin", from: "0.50.3")
+            .package(url: "git@github.com:lunij/SwiftLintPlugin", from: "0.50.3"),
+            .package(url: "https://github.com/krzysztofzablocki/Sourcery", from: "2.0.2")
         ] : []
     }
 }
